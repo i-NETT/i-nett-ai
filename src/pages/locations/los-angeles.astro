@@ -1,0 +1,88 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Locations', url: '/coverage' },
+  { name: 'Los Angeles', url: '/locations/los-angeles' },
+];
+---
+<PageLayout
+  title="Managed AI in Los Angeles : Fortify AI by i-NETT"
+  description="Fortify AI for Los Angeles County firms. Managed AI for mid-market professional services, entertainment, healthcare, legal, and financial firms across LA. HIPAA, GDPR, SOC, CCPA ready."
+  eyebrow="Los Angeles County"
+  pageHeading="Managed AI for Los Angeles firms."
+  pageLead="Fortify AI deploys compliance-ready AI infrastructure into mid-market firms across Los Angeles County, from Downtown LA and the Westside through the South Bay, Pasadena, and the San Fernando Valley."
+  breadcrumbs={breadcrumbs}
+  localBusiness={{
+    name: 'i-NETT (Los Angeles)',
+    url: `${SITE.url}/locations/los-angeles`,
+    city: 'Los Angeles',
+    region: 'CA',
+    lat: 34.0522,
+    lng: -118.2437,
+  }}
+>
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Built for the LA mid-market</span>
+      <h2>From entertainment counsel to multi-site clinics.</h2>
+      <p class="lead">
+        Los Angeles County&rsquo;s mid-market is one of the most diverse in the country.
+        Fortify AI deploys configured AI infrastructure into law firms, advisory practices,
+        healthcare groups, agencies, and professional services firms operating across the
+        county. Each deployment is configured to your regulatory environment and reviewed
+        by your compliance team.
+      </p>
+      <ul class="check-list">
+        <li>HIPAA, GDPR, SOC, and CCPA configuration built into deployment</li>
+        <li>Dedicated tenant, customer data isolated to your environment</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+        <li>Remote-first delivery with on-site engagement across LA County by arrangement</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container">
+      <h2>Industries we serve in Los Angeles County</h2>
+      <div class="grid grid-4">
+        <a href="/industries/healthcare" class="card industry-card">
+          <h3>Healthcare</h3>
+          <p>HIPAA-aligned AI for practices and provider groups.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/industries/legal" class="card industry-card">
+          <h3>Legal</h3>
+          <p>Privilege-aware AI for law firms.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/industries/financial-services" class="card industry-card">
+          <h3>Financial Services</h3>
+          <p>Regulator-ready AI for advisors.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/industries/professional-services" class="card industry-card">
+          <h3>Professional Services</h3>
+          <p>Confidentiality-first AI for consulting and agencies.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .industry-card { color: var(--color-text); position: relative; padding-bottom: var(--space-7); }
+  .industry-card .arrow { position: absolute; bottom: var(--space-5); right: var(--space-5); color: var(--color-accent-500); }
+  .check-list { list-style: none; padding: 0; margin: var(--space-6) 0; display: grid; gap: var(--space-3); }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

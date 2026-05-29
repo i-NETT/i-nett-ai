@@ -1,0 +1,58 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Locations', url: '/coverage' },
+  { name: 'San Diego', url: '/locations/san-diego' },
+  { name: 'La Mesa', url: '/locations/san-diego/la-mesa' },
+];
+---
+<PageLayout
+  title="Managed AI in La Mesa : Fortify AI by i-NETT"
+  description="Fortify AI for La Mesa firms. Managed AI for legal, financial services, regional healthcare networks, and professional services firms across La Mesa and East County. HIPAA, GDPR, SOC, CCPA ready."
+  eyebrow="La Mesa, San Diego"
+  pageHeading="Managed AI for La Mesa firms."
+  pageLead="La Mesa anchors a strong East County mid-market in legal, financial services, regional healthcare, and professional services. Fortify AI deploys configured, compliance-ready AI for the firms operating across this community."
+  breadcrumbs={breadcrumbs}
+  localBusiness={{
+    name: 'i-NETT (La Mesa)',
+    url: `${SITE.url}/locations/san-diego/la-mesa`,
+    city: 'La Mesa',
+    region: 'CA',
+    lat: 32.7678,
+    lng: -117.0231,
+  }}
+>
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Built for La Mesa&rsquo;s buyer</span>
+      <h2>Compliance-grade AI for East County firms.</h2>
+      <p class="lead">
+        La Mesa&rsquo;s mid-market firms operate inside the same regulatory environment as
+        their downtown counterparts and deserve the same operating standard. Fortify AI
+        is configured for HIPAA, GDPR, SOC, and CCPA from day one, regardless of which
+        county your office sits in.
+      </p>
+      <ul class="check-list">
+        <li>Dedicated tenant, customer data isolated to your environment</li>
+        <li>HIPAA, GDPR, SOC, and CCPA configuration built into deployment</li>
+        <li>SEC, FINRA, and state regulatory configuration for financial services firms</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+      </ul>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .check-list { list-style: none; padding: 0; margin: var(--space-6) 0; display: grid; gap: var(--space-3); }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

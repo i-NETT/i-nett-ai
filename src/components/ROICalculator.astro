@@ -1,0 +1,370 @@
+---
+import { INDUSTRY_PRESETS, SITE } from '@lib/site';
+
+interface Props {
+  variant?: 'inline' | 'modal';
+  id?: string;
+  showMethodologyLink?: boolean;
+}
+const { variant = 'inline', id = 'roi-calc', showMethodologyLink = true } = Astro.props;
+const calcId = id;
+---
+<div class:list={['roi-calc', `roi-calc--${variant}`]} data-roi-calc id={calcId}>
+  <div class="roi-calc__header">
+    <span class="eyebrow">Fortify AI ROI calculator</span>
+    <h3 class="roi-calc__title">Estimate your annual AI productivity opportunity</h3>
+    <p class="roi-calc__sub">Pick an industry to autofill realistic defaults. Adjust the sliders to match your firm.</p>
+  </div>
+
+  <div class="roi-calc__controls">
+    <div class="roi-field">
+      <label for={`${calcId}-industry`}>Industry</label>
+      <select id={`${calcId}-industry`} data-roi-industry>
+        {INDUSTRY_PRESETS.map((p) => (
+          <option value={p.id} data-employees={p.employees} data-hourly={p.hourly}>
+            {p.label}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    <div class="roi-field">
+      <div class="roi-field__head">
+        <label for={`${calcId}-employees`}>Employees</label>
+        <output for={`${calcId}-employees`} data-roi-employees-output>150</output>
+      </div>
+      <input
+        id={`${calcId}-employees`}
+        type="range"
+        min="10"
+        max="1000"
+        step="10"
+        value="150"
+        data-roi-employees
+        aria-label="Number of employees"
+      />
+      <div class="roi-field__scale"><span>10</span><span>1,000</span></div>
+    </div>
+
+    <div class="roi-field">
+      <div class="roi-field__head">
+        <label for={`${calcId}-hourly`}>Average hourly cost (USD)</label>
+        <output for={`${calcId}-hourly`} data-roi-hourly-output>$52</output>
+      </div>
+      <input
+        id={`${calcId}-hourly`}
+        type="range"
+        min="25"
+        max="200"
+        step="1"
+        value="52"
+        data-roi-hourly
+        aria-label="Average hourly fully loaded cost per employee in US dollars"
+      />
+      <div class="roi-field__scale"><span>$25</span><span>$200</span></div>
+    </div>
+
+    <div class="roi-field">
+      <div class="roi-field__head">
+        <label for={`${calcId}-hours`}>Hours saved per week per employee</label>
+        <output for={`${calcId}-hours`} data-roi-hours-output>5</output>
+      </div>
+      <input
+        id={`${calcId}-hours`}
+        type="range"
+        min="1"
+        max="15"
+        step="1"
+        value="5"
+        data-roi-hours
+        aria-label="Hours saved per week per employee"
+      />
+      <div class="roi-field__scale"><span>1</span><span>15</span></div>
+    </div>
+  </div>
+
+  <div class="roi-calc__results" aria-live="polite">
+    <p class="roi-calc__annual-label">Estimated annual productivity opportunity</p>
+    <p class="roi-calc__annual" data-roi-annual>$1,950,000</p>
+    <div class="roi-calc__secondary">
+      <div>
+        <p class="roi-calc__sub-label">Per month</p>
+        <p class="roi-calc__sub-value" data-roi-monthly>$168,870</p>
+      </div>
+      <div>
+        <p class="roi-calc__sub-label">Per week</p>
+        <p class="roi-calc__sub-value" data-roi-weekly>$39,000</p>
+      </div>
+    </div>
+    <p class="roi-calc__context" data-roi-context>
+      For a typical healthcare practice with 150 employees, that is what a five hour per week productivity uplift is worth, year over year.
+    </p>
+  </div>
+
+  <div class="roi-calc__ctas">
+    <a href={SITE.bookingUrl} class="btn btn-accent" target="_blank" rel="noopener">
+      Book a 30 minute consultation
+    </a>
+    {showMethodologyLink && (
+      <a href="/roi-calculator" class="btn btn-outline">See full methodology</a>
+    )}
+  </div>
+
+  <p class="disclaimer roi-calc__disclaimer">
+    Estimated savings are based on assumed inputs and industry productivity research.
+    Actual results vary by industry, deployment scope, and execution. This calculator
+    is for illustrative purposes only and is not a guarantee of results. Wage data
+    sourced from U.S. Bureau of Labor Statistics Occupational Employment Statistics,
+    May 2024. Productivity assumptions sourced from recent studies on generative AI
+    impact in knowledge work (4 to 8 hours per employee per week is the industry-cited
+    range; this calculator defaults to 5).
+  </p>
+</div>
+
+<style>
+  .roi-calc {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border-radius: var(--radius-xl);
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border: 1px solid var(--color-border);
+  }
+  .roi-calc--modal { border: none; }
+  .roi-calc__header { margin-bottom: var(--space-6); }
+  .roi-calc__title {
+    font-size: var(--fs-xl);
+    margin-top: var(--space-2);
+  }
+  .roi-calc__sub {
+    color: var(--color-text-soft);
+    margin-top: var(--space-2);
+    font-size: var(--fs-sm);
+  }
+
+  .roi-calc__controls {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 640px) {
+    .roi-calc__controls { grid-template-columns: 1fr 1fr; }
+  }
+
+  .roi-field { display: flex; flex-direction: column; gap: var(--space-2); }
+  .roi-field__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+  .roi-field label {
+    font-weight: 600;
+    font-size: var(--fs-sm);
+  }
+  .roi-field output {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-md);
+    color: var(--color-accent-500);
+  }
+  .roi-field select {
+    padding: 0.75em 1em;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-bg);
+    min-height: 48px;
+    font-size: var(--fs-base);
+  }
+  .roi-field__scale {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+  }
+
+  /* Range track */
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--color-bg-muted);
+    border-radius: var(--radius-pill);
+    outline: none;
+    margin: var(--space-2) 0;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: var(--color-accent-500);
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,180,255,0.4);
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background: var(--color-accent-500);
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,180,255,0.4);
+    cursor: pointer;
+  }
+  input[type="range"]:focus-visible {
+    box-shadow: 0 0 0 3px rgba(0,180,255,0.35);
+  }
+
+  .roi-calc__results {
+    margin-top: var(--space-7);
+    padding: var(--space-6);
+    background: linear-gradient(135deg, var(--color-ink-900) 0%, var(--color-ink-700) 100%);
+    border-radius: var(--radius-lg);
+    color: #fff;
+    text-align: center;
+  }
+  .roi-calc__annual-label {
+    text-transform: uppercase;
+    font-size: var(--fs-xs);
+    letter-spacing: 0.12em;
+    color: var(--color-glow);
+    font-weight: 600;
+  }
+  .roi-calc__annual {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.75rem, 1.75rem + 6vw, 5.5rem);
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: #fff;
+    margin: var(--space-3) 0;
+    background: linear-gradient(180deg, #fff 0%, #B7C6D8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .roi-calc__secondary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    max-width: 360px;
+    margin: var(--space-5) auto 0;
+    padding-top: var(--space-5);
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .roi-calc__sub-label {
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: var(--space-1);
+  }
+  .roi-calc__sub-value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-lg);
+    color: #fff;
+  }
+  .roi-calc__context {
+    margin-top: var(--space-5);
+    color: rgba(255,255,255,0.85);
+    font-size: var(--fs-sm);
+    max-width: 60ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .roi-calc__ctas {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin-top: var(--space-6);
+  }
+  @media (min-width: 640px) {
+    .roi-calc__ctas { flex-direction: row; justify-content: center; }
+  }
+  .roi-calc__disclaimer {
+    margin-top: var(--space-5);
+    text-align: center;
+  }
+</style>
+
+<script>
+  type Ctx = {
+    el: HTMLElement;
+    industry: HTMLSelectElement;
+    employees: HTMLInputElement;
+    hourly: HTMLInputElement;
+    hours: HTMLInputElement;
+    out: {
+      employees: HTMLElement;
+      hourly: HTMLElement;
+      hours: HTMLElement;
+      annual: HTMLElement;
+      monthly: HTMLElement;
+      weekly: HTMLElement;
+      context: HTMLElement;
+    };
+  };
+
+  const fmtUSD = (n: number) =>
+    n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  const fmtNum = (n: number) => n.toLocaleString('en-US');
+
+  function calc(ctx: Ctx) {
+    const employees = Number(ctx.employees.value);
+    const hourly = Number(ctx.hourly.value);
+    const hours = Number(ctx.hours.value);
+
+    const weekly = employees * hourly * hours;
+    const monthly = weekly * 4.33;
+    const annual = employees * hourly * hours * 50;
+
+    ctx.out.employees.textContent = fmtNum(employees);
+    ctx.out.hourly.textContent = fmtUSD(hourly);
+    ctx.out.hours.textContent = String(hours);
+    ctx.out.annual.textContent = fmtUSD(annual);
+    ctx.out.monthly.textContent = fmtUSD(monthly);
+    ctx.out.weekly.textContent = fmtUSD(weekly);
+
+    const industryLabel = ctx.industry.options[ctx.industry.selectedIndex].text.toLowerCase();
+    ctx.out.context.textContent =
+      `For a ${industryLabel} firm with ${fmtNum(employees)} employees, ` +
+      `that is what a ${hours} hour per week productivity uplift is worth, year over year.`;
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-roi-calc]').forEach((el) => {
+    const ctx: Ctx = {
+      el,
+      industry: el.querySelector('[data-roi-industry]') as HTMLSelectElement,
+      employees: el.querySelector('[data-roi-employees]') as HTMLInputElement,
+      hourly: el.querySelector('[data-roi-hourly]') as HTMLInputElement,
+      hours: el.querySelector('[data-roi-hours]') as HTMLInputElement,
+      out: {
+        employees: el.querySelector('[data-roi-employees-output]') as HTMLElement,
+        hourly: el.querySelector('[data-roi-hourly-output]') as HTMLElement,
+        hours: el.querySelector('[data-roi-hours-output]') as HTMLElement,
+        annual: el.querySelector('[data-roi-annual]') as HTMLElement,
+        monthly: el.querySelector('[data-roi-monthly]') as HTMLElement,
+        weekly: el.querySelector('[data-roi-weekly]') as HTMLElement,
+        context: el.querySelector('[data-roi-context]') as HTMLElement,
+      },
+    };
+
+    ctx.industry.addEventListener('change', () => {
+      const opt = ctx.industry.options[ctx.industry.selectedIndex];
+      const emp = opt.getAttribute('data-employees');
+      const hr = opt.getAttribute('data-hourly');
+      if (emp) ctx.employees.value = emp;
+      if (hr) ctx.hourly.value = hr;
+      calc(ctx);
+    });
+    [ctx.employees, ctx.hourly, ctx.hours].forEach((input) =>
+      input.addEventListener('input', () => calc(ctx))
+    );
+    calc(ctx);
+  });
+</script>

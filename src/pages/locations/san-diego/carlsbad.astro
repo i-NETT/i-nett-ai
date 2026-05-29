@@ -1,0 +1,58 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Locations', url: '/coverage' },
+  { name: 'San Diego', url: '/locations/san-diego' },
+  { name: 'Carlsbad', url: '/locations/san-diego/carlsbad' },
+];
+---
+<PageLayout
+  title="Managed AI in Carlsbad : Fortify AI by i-NETT"
+  description="Fortify AI for Carlsbad firms. Managed AI for life sciences, technology, professional services, and multi-office firms in Carlsbad and the North County corridor. HIPAA, GDPR, SOC, CCPA ready."
+  eyebrow="Carlsbad, San Diego"
+  pageHeading="Managed AI for Carlsbad firms."
+  pageLead="Carlsbad is one of the strongest mid-market corridors in San Diego County, with deep concentrations in life sciences, technology, and professional services. Fortify AI deploys compliance-ready AI for the firms operating across this ecosystem."
+  breadcrumbs={breadcrumbs}
+  localBusiness={{
+    name: 'i-NETT (Carlsbad)',
+    url: `${SITE.url}/locations/san-diego/carlsbad`,
+    city: 'Carlsbad',
+    region: 'CA',
+    lat: 33.1581,
+    lng: -117.3506,
+  }}
+>
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Built for the Carlsbad corridor</span>
+      <h2>Compliance-grade AI for life sciences, technology, and professional firms.</h2>
+      <p class="lead">
+        Carlsbad&rsquo;s mid-market is unusually concentrated in life sciences, medical
+        device, technology, and the legal and accounting firms that support them.
+        Fortify AI deploys AI infrastructure that meets the regulatory environment each
+        of these industries operates inside.
+      </p>
+      <ul class="check-list">
+        <li>HIPAA configuration for life sciences and clinical research adjacent work</li>
+        <li>Dedicated tenant, customer data isolated to your environment</li>
+        <li>SOC alignment for technology firms</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+      </ul>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .check-list { list-style: none; padding: 0; margin: var(--space-6) 0; display: grid; gap: var(--space-3); }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

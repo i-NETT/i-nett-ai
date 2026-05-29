@@ -1,0 +1,86 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Locations', url: '/coverage' },
+  { name: 'Orange County', url: '/locations/orange-county' },
+];
+---
+<PageLayout
+  title="Managed AI in Orange County : Fortify AI by i-NETT"
+  description="Fortify AI for Orange County firms. Managed AI for mid-market healthcare, legal, financial services, and professional services firms across Newport Beach, Irvine, Costa Mesa, Anaheim, and beyond. HIPAA, GDPR, SOC, CCPA ready."
+  eyebrow="Orange County"
+  pageHeading="Managed AI for Orange County firms."
+  pageLead="Fortify AI deploys compliance-ready AI infrastructure into Orange County&rsquo;s mid-market firms. From Newport Beach and Irvine through Anaheim, Santa Ana, and the South County coast, our deployment team configures and operates AI environments built for the regulators your firm answers to."
+  breadcrumbs={breadcrumbs}
+  localBusiness={{
+    name: 'i-NETT (Orange County)',
+    url: `${SITE.url}/locations/orange-county`,
+    city: 'Irvine',
+    region: 'CA',
+    lat: 33.6846,
+    lng: -117.8265,
+  }}
+>
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Built for the OC mid-market</span>
+      <h2>Healthcare, legal, financial. Configured, operated, defensible.</h2>
+      <p class="lead">
+        Orange County has one of the densest concentrations of mid-market healthcare,
+        legal, and financial services firms in the country. Fortify AI is built for
+        exactly that buyer.
+      </p>
+      <ul class="check-list">
+        <li>HIPAA, GDPR, SOC, and CCPA configuration built into deployment</li>
+        <li>Dedicated tenant, customer data isolated to your environment</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+        <li>On-site readiness and pilot engagement across Irvine, Newport Beach, Costa Mesa, and Anaheim</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container">
+      <h2>Industries we serve in Orange County</h2>
+      <div class="grid grid-4">
+        <a href="/industries/healthcare" class="card industry-card">
+          <h3>Healthcare</h3>
+          <p>HIPAA-aligned AI for practices and provider groups.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/industries/legal" class="card industry-card">
+          <h3>Legal</h3>
+          <p>Privilege-aware AI for law firms.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/industries/financial-services" class="card industry-card">
+          <h3>Financial Services</h3>
+          <p>Regulator-ready AI for advisors.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/industries/professional-services" class="card industry-card">
+          <h3>Professional Services</h3>
+          <p>Confidentiality-first AI for consulting and accounting.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .industry-card { color: var(--color-text); position: relative; padding-bottom: var(--space-7); }
+  .industry-card .arrow { position: absolute; bottom: var(--space-5); right: var(--space-5); color: var(--color-accent-500); }
+  .check-list { list-style: none; padding: 0; margin: var(--space-6) 0; display: grid; gap: var(--space-3); }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

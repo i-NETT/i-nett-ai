@@ -1,0 +1,123 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import FAQ from '@components/FAQ.astro';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Industries', url: '/industries/financial-services' },
+  { name: 'Financial Services', url: '/industries/financial-services' },
+];
+
+const faqs = [
+  {
+    q: 'Is Fortify AI configured for SEC, FINRA, and state regulator scrutiny?',
+    a: 'Yes. Fortify AI deployments for financial services are configured to support SEC, FINRA, and applicable state regulatory frameworks. Configuration is documented and reviewed by your compliance team. Books and records, communications retention, and supervision considerations are reflected in the deployment design.'
+  },
+  {
+    q: 'How does Fortify AI handle non-public information and client data?',
+    a: 'Non-public information and client data are isolated to your dedicated tenant. We do not use customer data for model training or share it across clients. Audit logging is enabled by default. Access is role-based and supervisable.'
+  },
+  {
+    q: 'Which financial services workflows return value first?',
+    a: 'Client communication drafting, meeting note summarization, regulatory and policy knowledge retrieval, RIA and broker-dealer documentation, and operational reporting are the typical first deployments. We prioritize the workflow that returns the most advisor time in the first 90 days.'
+  },
+  {
+    q: 'Can Fortify AI support our supervisory program?',
+    a: 'Yes. Audit logging, role-based access, and content controls are built into deployment. Supervisory review workflows are scoped during the readiness assessment with your compliance team.'
+  },
+];
+---
+<PageLayout
+  title="AI for Financial Services Firms : Regulator-ready managed AI"
+  description="Fortify AI for financial services. Configured for SEC, FINRA, and state regulatory frameworks. Dedicated tenant, audit logging, supervisory review support. Built for RIAs, broker-dealers, wealth management, and advisory firms."
+  eyebrow="Financial Services"
+  pageHeading="AI for financial services firms, built for the regulators you actually answer to."
+  pageLead="Fortify AI deploys client communication, meeting documentation, policy retrieval, and operational reporting workflows into financial services firms that need defensible configuration, audit-ready operations, and supervisory review built in."
+  breadcrumbs={breadcrumbs}
+  faqs={faqs}
+  service={{
+    name: 'Fortify AI for Financial Services',
+    description: 'Managed AI deployment for financial services firms. Configured for SEC, FINRA, and state regulatory frameworks. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
+  }}
+>
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Regulatory posture</span>
+      <h2>Configured for SEC, FINRA, and state oversight from day one.</h2>
+      <p class="lead">
+        Financial services firms cannot deploy AI tooling that ignores books-and-records,
+        supervision, and communications retention obligations. Fortify AI is configured
+        to support your regulatory framework from the first workflow we ship.
+      </p>
+      <ul class="check-list">
+        <li>Dedicated tenant, non-public information isolated to your environment</li>
+        <li>We do not use customer data for model training or share it across clients</li>
+        <li>Audit logging enabled by default, supervisable by your compliance team</li>
+        <li>Role-based access for advisors, operations, and compliance staff</li>
+        <li>Communications retention aligned to your record-keeping policy</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container">
+      <span class="eyebrow">Where it shows up first</span>
+      <h2>The financial services workflows we ship first.</h2>
+      <div class="grid grid-3" style="margin-top: var(--space-7);">
+        <div class="card">
+          <h3>Client communication drafting</h3>
+          <p>Market commentary, portfolio updates, and follow-up messages drafted in your advisor voice. Always reviewed before send.</p>
+        </div>
+        <div class="card">
+          <h3>Meeting documentation</h3>
+          <p>Client meeting notes, suitability documentation, and next-action summaries generated from your inputs.</p>
+        </div>
+        <div class="card">
+          <h3>Policy and regulatory retrieval</h3>
+          <p>Your firm’s policies, procedures, and regulatory reference material made searchable and conversational, scoped to authorized staff.</p>
+        </div>
+        <div class="card">
+          <h3>Onboarding documentation</h3>
+          <p>New client onboarding packets, KYC documentation prep, and account opening summaries generated for your operations team to review.</p>
+        </div>
+        <div class="card">
+          <h3>Operational reporting</h3>
+          <p>Practice operations and book-of-business reporting in plain language, pulled from your authorized data sources.</p>
+        </div>
+        <div class="card">
+          <h3>Research synthesis</h3>
+          <p>External research, market commentary, and proprietary analysis synthesized into briefs for your advisor team. Citation to source preserved.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container-narrow">
+      <p class="disclaimer">
+        This content is for informational purposes only and does not constitute financial,
+        investment, or regulatory advice. Financial services deployments are configured per
+        applicable regulations and reviewed by your compliance team. Underwritten by
+        Lloyd&rsquo;s of London cybersecurity insurance policy.
+      </p>
+    </div>
+  </section>
+
+  <FAQ items={faqs} />
+</PageLayout>
+
+<style>
+  .check-list {
+    list-style: none; padding: 0; margin: var(--space-6) 0;
+    display: grid; gap: var(--space-3);
+  }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

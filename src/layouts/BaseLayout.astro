@@ -1,0 +1,122 @@
+---
+import '@/styles/global.css';
+import SEO from '@components/SEO.astro';
+import SchemaOrg from '@components/SchemaOrg.astro';
+import Header from '@components/Header.astro';
+import Footer from '@components/Footer.astro';
+import { SITE } from '@lib/site';
+
+interface BreadcrumbItem { name: string; url: string; }
+interface FaqItem { q: string; a: string; }
+interface LocalBusinessSpec {
+  name: string; url: string; city: string; region?: string; lat?: number; lng?: number;
+}
+interface ServiceSpec { name: string; description: string; areaServed?: string[]; }
+
+interface Props {
+  title: string;
+  description: string;
+  canonical?: string;
+  ogImage?: string;
+  noindex?: boolean;
+  type?: 'website' | 'article';
+  pageType?: 'WebPage' | 'WebApplication' | 'AboutPage' | 'ContactPage' | 'CollectionPage';
+  breadcrumbs?: BreadcrumbItem[];
+  faqs?: FaqItem[];
+  localBusiness?: LocalBusinessSpec;
+  service?: ServiceSpec;
+  podcast?: boolean;
+  person?: boolean;
+  bodyClass?: string;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  noindex = false,
+  type = 'website',
+  pageType = 'WebPage',
+  breadcrumbs,
+  faqs,
+  localBusiness,
+  service,
+  podcast = false,
+  person = false,
+  bodyClass,
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="preload"
+      as="style"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      onload="this.rel='stylesheet'"
+    />
+    <noscript>
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      />
+    </noscript>
+
+    <SEO
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      noindex={noindex}
+      type={type}
+    />
+    <SchemaOrg
+      pageType={pageType}
+      pageName={title}
+      pageDescription={description}
+      breadcrumbs={breadcrumbs}
+      faqs={faqs}
+      localBusiness={localBusiness}
+      service={service}
+      podcast={podcast}
+      person={person}
+    />
+  </head>
+  <body class={bodyClass}>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // Reveal-on-scroll. Add hidden class then remove via IntersectionObserver.
+      // No-JS fallback: elements stay visible (default).
+      const reveals = document.querySelectorAll<HTMLElement>('.reveal');
+      if (reveals.length && 'IntersectionObserver' in window) {
+        reveals.forEach((el) => el.classList.add('reveal--hidden'));
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.remove('reveal--hidden');
+                io.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -10% 0px', threshold: 0.05 }
+        );
+        reveals.forEach((el) => io.observe(el));
+      }
+    </script>
+  </body>
+</html>

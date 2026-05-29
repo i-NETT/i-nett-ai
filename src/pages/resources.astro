@@ -1,0 +1,156 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Resources', url: '/resources' },
+];
+---
+<PageLayout
+  title="Resources : AI Readiness Scan, capability briefs, and more"
+  description="Fortify AI resources for mid-market leadership. Take the AI Readiness Scan, download the capability brief, or subscribe to The Digital Dilemma podcast."
+  eyebrow="Resources"
+  pageHeading="Tools and assets for your team."
+  pageLead="A short list of resources to help you scope, evaluate, and brief your team on a managed AI deployment."
+  breadcrumbs={breadcrumbs}
+>
+  <!-- AI READINESS SCAN -->
+  <section class="section" id="scan">
+    <div class="container container-narrow">
+      <div class="resource-card resource-card--feature">
+        <span class="pill pill-accent">Featured</span>
+        <h2>AI Readiness Scan</h2>
+        <p class="lead">
+          A short, scored assessment of your firm&rsquo;s readiness to deploy managed AI.
+          Built for CEOs and operational owners. Takes about five minutes. Output is a
+          scored summary you can share with your leadership team.
+        </p>
+
+        <form class="scan-form" id="scan-form" novalidate>
+          <p class="scan-form__hint">
+            Enter your business email to receive your scan link. We send it once. No newsletter.
+          </p>
+          <div class="scan-form__row">
+            <label for="scan-email" class="sr-only">Business email</label>
+            <input
+              id="scan-email"
+              name="email"
+              type="email"
+              required
+              placeholder="you@yourfirm.com"
+              autocomplete="email"
+            />
+            <button type="submit" class="btn btn-accent">Get the scan &rarr;</button>
+          </div>
+          <p class="scan-form__notice" role="status" aria-live="polite" id="scan-status"></p>
+        </form>
+        <p class="disclaimer">
+          By submitting your email, you consent to i-NETT contacting you about the AI Readiness Scan.
+          See our <a href="/privacy">privacy policy</a>. The full scan integration ships post-launch.
+          In the interim, submissions are routed to our team for direct follow up.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- OTHER RESOURCES -->
+  <section class="section section-soft">
+    <div class="container">
+      <div class="grid grid-3">
+        <article class="resource-card">
+          <h3>Fortify AI capability brief</h3>
+          <p>A printable overview of Fortify AI, the deployment process, compliance posture, and engagement model. Built for sharing with your board or compliance committee.</p>
+          <a href="/contact?topic=capability-brief" class="btn btn-outline">Request the brief</a>
+        </article>
+        <article class="resource-card">
+          <h3>The Digital Dilemma podcast</h3>
+          <p>Nick Dreyfus interviews founders, technologists, and CEOs on AI, cybersecurity, and the operational realities of running a modern business.</p>
+          <a href={SITE.podcastUrl} class="btn btn-outline" target="_blank" rel="noopener">Listen on Apple</a>
+        </article>
+        <article class="resource-card">
+          <h3>30 minute consultation</h3>
+          <p>Scope your environment, identify your highest-leverage AI deployments, and walk through what a Fortify AI rollout looks like for your firm.</p>
+          <a href={SITE.bookingUrl} class="btn btn-accent" target="_blank" rel="noopener">Book a consultation</a>
+        </article>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .resource-card {
+    padding: var(--space-6);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .resource-card .btn { align-self: flex-start; }
+  .resource-card--feature {
+    background: linear-gradient(135deg, var(--color-ink-900) 0%, var(--color-ink-700) 100%);
+    color: var(--color-text-on-dark);
+    border: none;
+    padding: var(--space-8);
+  }
+  .resource-card--feature h2 { color: #fff; margin-top: var(--space-3); }
+  .resource-card--feature .lead { color: var(--color-text-on-dark-soft); }
+  .scan-form { margin-top: var(--space-5); }
+  .scan-form__hint {
+    color: var(--color-text-on-dark-soft);
+    font-size: var(--fs-sm);
+    margin-bottom: var(--space-3);
+  }
+  .scan-form__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .scan-form__row input {
+    flex: 1;
+    padding: 0.85em 1em;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    font-size: var(--fs-base);
+    min-height: 48px;
+  }
+  .scan-form__row input::placeholder { color: rgba(255,255,255,0.45); }
+  .scan-form__row input:focus { border-color: var(--color-accent-500); outline: none; }
+  .scan-form__notice {
+    margin-top: var(--space-3);
+    color: var(--color-glow);
+    font-size: var(--fs-sm);
+    min-height: 1.5em;
+  }
+  .resource-card--feature .disclaimer { color: rgba(183, 198, 216, 0.7); margin-top: var(--space-4); }
+  .resource-card--feature .disclaimer a { color: var(--color-glow); }
+  @media (min-width: 480px) {
+    .scan-form__row { flex-direction: row; }
+  }
+</style>
+
+<script>
+  const form = document.getElementById('scan-form') as HTMLFormElement | null;
+  const status = document.getElementById('scan-status');
+  if (form && status) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const email = String(data.get('email') ?? '').trim();
+      if (!email.includes('@')) {
+        status.textContent = 'Please enter a valid business email.';
+        return;
+      }
+      // Pre-launch placeholder: store locally and confirm. Real HubSpot integration ships post-launch.
+      try {
+        localStorage.setItem('fortify_scan_request', JSON.stringify({ email, ts: Date.now() }));
+      } catch {}
+      status.textContent = 'Thank you. Your scan link will be sent within one business day.';
+      form.reset();
+    });
+  }
+</script>

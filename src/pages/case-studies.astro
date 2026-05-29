@@ -1,0 +1,92 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Case Studies', url: '/case-studies' },
+];
+
+const placeholders = [
+  {
+    industry: 'Healthcare',
+    headline: 'Multi-provider practice: clinical documentation deployment',
+    summary: 'A San Diego County multi-provider practice deploying Fortify AI for clinical documentation and intake workflows. Pilot in progress.'
+  },
+  {
+    industry: 'Legal',
+    headline: 'Boutique litigation firm: matter intake and document summarization',
+    summary: 'A mid-market litigation firm deploying Fortify AI for matter intake summarization and discovery support. Pilot in progress.'
+  },
+  {
+    industry: 'Financial Services',
+    headline: 'RIA: client communication and meeting documentation',
+    summary: 'A registered investment advisor deploying Fortify AI for advisor meeting documentation and client communication drafting. Pilot in progress.'
+  },
+  {
+    industry: 'Professional Services',
+    headline: 'Boutique consulting firm: deliverable drafting and proposal automation',
+    summary: 'A management consulting firm deploying Fortify AI for first-draft client deliverables and proposal generation. Pilot in progress.'
+  },
+];
+---
+<PageLayout
+  title="Case Studies : Fortify AI deployments in the field"
+  description="Fortify AI case studies. Deployments in healthcare, legal, financial services, and professional services. Outcomes and operating learnings from mid-market firms."
+  eyebrow="Case Studies"
+  pageHeading="Fortify AI in the field."
+  pageLead="Detailed deployment case studies are published as engagements complete their first measurement cycle. Below is the current pilot pipeline, with case study write-ups to follow."
+  breadcrumbs={breadcrumbs}
+  pageType="CollectionPage"
+>
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-2 case-grid">
+        {placeholders.map((p) => (
+          <article class="case-card">
+            <span class="pill pill-accent">{p.industry}</span>
+            <h3>{p.headline}</h3>
+            <p>{p.summary}</p>
+            <p class="case-card__status">Case study publishing post-launch</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container container-narrow">
+      <span class="eyebrow">Want to be in the next case study?</span>
+      <h2>Most of our published case studies start as pilots in this pipeline.</h2>
+      <p class="lead">
+        If your firm is interested in a structured, measured Fortify AI deployment we
+        can publish as a case study, that is a conversation we want to have. Selected
+        pilots receive engagement pricing in exchange for permission to publish
+        anonymized outcomes.
+      </p>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .case-grid { gap: var(--space-6); }
+  .case-card {
+    padding: var(--space-6);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .case-card h3 { margin-top: var(--space-2); }
+  .case-card__status {
+    margin-top: auto;
+    padding-top: var(--space-4);
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-accent-500);
+    font-weight: 600;
+    border-top: 1px solid var(--color-border);
+  }
+</style>

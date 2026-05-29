@@ -1,0 +1,115 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Terms', url: '/terms' },
+];
+const updated = 'May 28, 2026';
+---
+<PageLayout
+  title="Terms of Use : Fortify AI by i-NETT"
+  description="Terms of use for i-nett.ai. Acceptable use, intellectual property, disclaimers, and limitations of liability for use of the Fortify AI marketing website."
+  eyebrow="Legal"
+  pageHeading="Terms of Use"
+  pageLead={`Last updated ${updated}. These terms govern your use of i-nett.ai. By accessing this site, you agree to these terms. If you do not agree, do not use the site.`}
+  breadcrumbs={breadcrumbs}
+  hideFinalCta={true}
+>
+  <section class="section">
+    <div class="container container-narrow legal">
+      <h2>Scope</h2>
+      <p>
+        These terms apply to the i-nett.ai marketing site. Engagements with i-NETT for
+        Fortify AI deployments are governed by separate written agreements, including a
+        Master Services Agreement and any required Business Associate Agreement or Data
+        Processing Agreement.
+      </p>
+
+      <h2>Use of the site</h2>
+      <p>
+        You agree to use the site lawfully and not to misuse it, including by attempting to
+        gain unauthorized access, by interfering with site operation, or by using automated
+        tools to scrape, harvest, or replicate the site beyond what is permitted by robots.txt
+        and applicable law.
+      </p>
+
+      <h2>Intellectual property</h2>
+      <p>
+        i-nett.ai, the Fortify AI brand, the i-NETT brand, and all site content are the
+        property of i-NETT or its licensors. You may quote, link, and reference our content
+        for non-commercial purposes with attribution. You may not republish, redistribute,
+        or commercially exploit site content without our written permission.
+      </p>
+
+      <h2>Third-party links and content</h2>
+      <p>
+        The site links to third-party content, including the HubSpot Meetings booking
+        calendar and Apple Podcasts. We are not responsible for the content, terms, or
+        privacy practices of third-party sites. Use of those services is governed by their
+        own terms.
+      </p>
+
+      <h2>Informational use only</h2>
+      <p>
+        Content on the site is for general informational purposes. It does not constitute
+        legal, financial, medical, regulatory, or compliance advice. For advice specific to
+        your situation, consult qualified professionals.
+      </p>
+
+      <h2>No guarantees</h2>
+      <p>
+        Estimates produced by tools such as the ROI calculator are illustrative and are not
+        guarantees of results. Actual results vary by industry, deployment scope, and
+        execution. The site is provided on an &ldquo;as is&rdquo; and &ldquo;as available&rdquo;
+        basis without warranties of any kind to the maximum extent permitted by law.
+      </p>
+
+      <h2>Limitation of liability</h2>
+      <p>
+        To the maximum extent permitted by law, i-NETT will not be liable for any indirect,
+        incidental, special, consequential, or punitive damages arising out of your use of
+        the site.
+      </p>
+
+      <h2>Indemnification</h2>
+      <p>
+        You agree to indemnify and hold i-NETT harmless from any claim arising out of your
+        misuse of the site or violation of these terms.
+      </p>
+
+      <h2>Governing law</h2>
+      <p>
+        These terms are governed by the laws of the State of California, without regard to
+        conflict-of-law principles. Any dispute arising out of these terms or your use of the
+        site will be resolved in the state or federal courts located in San Diego County,
+        California.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        We may update these terms from time to time. The &ldquo;Last updated&rdquo; date
+        above will reflect any change. Continued use of the site after changes constitutes
+        your acceptance of the updated terms.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions about these terms can be sent to
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      </p>
+
+      <p class="disclaimer">
+        These terms are informational and are not legal advice. For legal advice about how
+        these terms apply to your situation, consult qualified counsel.
+      </p>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .legal h2 { margin-top: var(--space-7); margin-bottom: var(--space-3); }
+  .legal h2:first-of-type { margin-top: 0; }
+  .legal p { margin-bottom: var(--space-4); }
+</style>

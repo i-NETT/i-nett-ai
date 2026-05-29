@@ -1,0 +1,142 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import FAQ from '@components/FAQ.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Industries', url: '/industries/healthcare' },
+  { name: 'Healthcare', url: '/industries/healthcare' },
+];
+
+const faqs = [
+  {
+    q: 'Is Fortify AI HIPAA compliant?',
+    a: 'Fortify AI deployments for healthcare are built for HIPAA compliance. Deployments are configured to your regulatory environment and reviewed by your compliance team. Protected Health Information is isolated to your dedicated tenant. We do not use customer data for model training or share it across clients. Underwritten by Lloyd’s of London cybersecurity insurance policy.'
+  },
+  {
+    q: 'Will we need a Business Associate Agreement?',
+    a: 'Yes. A Business Associate Agreement (BAA) is executed as part of the engagement. Our deployment configuration is documented and reviewable by your compliance officer and your privacy counsel.'
+  },
+  {
+    q: 'What workflows do healthcare practices deploy first?',
+    a: 'Clinical documentation, patient intake summarization, prior authorization drafting, internal knowledge retrieval across protocols and policies, and operational reporting. We start with the workflow that returns the most clinician time in the first 90 days.'
+  },
+  {
+    q: 'Can our EHR be integrated?',
+    a: 'Yes. Most major EHRs support integration through documented APIs. Integration scope is defined during the readiness assessment and depends on your EHR vendor, your IT environment, and your compliance review.'
+  },
+  {
+    q: 'What size practice is Fortify AI built for?',
+    a: 'Fortify AI is built for mid-market healthcare organizations, typically 30 to 150 employees. That includes multi-provider practices, specialty groups, behavioral health organizations, and small-to-mid hospital systems. We can scope larger deployments through the readiness assessment.'
+  },
+];
+---
+<PageLayout
+  title="AI for Healthcare Practices : HIPAA-aligned managed AI"
+  description="Fortify AI for healthcare practices. HIPAA-aligned deployment, isolated to your tenant, reviewed by your compliance team. Built for multi-provider groups, specialty practices, and behavioral health organizations in Southern California, the United States, and Canada."
+  eyebrow="Healthcare"
+  pageHeading="AI for healthcare practices, built for HIPAA from day one."
+  pageLead="Fortify AI deploys clinical documentation, intake, knowledge retrieval, and operational workflows into healthcare practices that need to stay defensible at every step. HIPAA-aligned configuration, dedicated tenant, full audit logging, and a managed services team behind every deployment."
+  breadcrumbs={breadcrumbs}
+  faqs={faqs}
+  service={{
+    name: 'Fortify AI for Healthcare',
+    description: 'HIPAA-aligned managed AI deployment for healthcare practices and provider groups. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
+  }}
+>
+  <!-- COMPLIANCE FIRST -->
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Compliance posture</span>
+      <h2>Built for HIPAA. Reviewed by your compliance team.</h2>
+      <p class="lead">
+        Healthcare practices cannot afford to deploy AI tooling that treats compliance as
+        a feature add. Fortify AI is configured for HIPAA from day one. Protected Health
+        Information is isolated to your dedicated tenant. We do not use customer data
+        for model training or share it across clients.
+      </p>
+      <ul class="check-list">
+        <li>Business Associate Agreement executed at engagement</li>
+        <li>Dedicated tenant, PHI isolated to your environment</li>
+        <li>Audit logging enabled by default, reviewable by your compliance officer</li>
+        <li>Role-based access for clinicians, admins, and operations staff</li>
+        <li>Encryption at rest and in transit</li>
+        <li>Quarterly compliance review built into the engagement</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- WORKFLOWS -->
+  <section class="section section-soft">
+    <div class="container">
+      <span class="eyebrow">Where it shows up first</span>
+      <h2>The healthcare workflows we ship first.</h2>
+      <div class="grid grid-3" style="margin-top: var(--space-7);">
+        <div class="card">
+          <h3>Clinical documentation</h3>
+          <p>Encounter notes, progress notes, and visit summaries drafted from your inputs, reviewed and signed by your clinician.</p>
+        </div>
+        <div class="card">
+          <h3>Patient intake summarization</h3>
+          <p>New patient histories, intake forms, and referral packets summarized into a structured pre-visit brief for your clinical team.</p>
+        </div>
+        <div class="card">
+          <h3>Prior authorization drafting</h3>
+          <p>First-draft prior authorization letters generated from your clinical documentation, ready for your authorization specialist to review.</p>
+        </div>
+        <div class="card">
+          <h3>Internal knowledge retrieval</h3>
+          <p>Your protocols, policies, formularies, and clinical reference material made searchable and conversational, scoped to authorized staff.</p>
+        </div>
+        <div class="card">
+          <h3>Operational reporting</h3>
+          <p>Practice operations and revenue cycle reporting in plain language, pulled from your authorized data sources for your leadership team.</p>
+        </div>
+        <div class="card">
+          <h3>Patient communication drafts</h3>
+          <p>Follow-up messages, instructions, and patient education drafts produced to your practice voice. Always reviewed by your team before send.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DISCLAIMER -->
+  <section class="section">
+    <div class="container container-narrow">
+      <p class="disclaimer">
+        This content is for informational purposes only and does not constitute medical,
+        legal, or compliance advice. Healthcare-specific deployments are configured per
+        HIPAA requirements and reviewed by your compliance team. Built for HIPAA, GDPR,
+        SOC, and CCPA compliance. Underwritten by Lloyd&rsquo;s of London cybersecurity
+        insurance policy.
+      </p>
+    </div>
+  </section>
+
+  <FAQ items={faqs} />
+</PageLayout>
+
+<style>
+  .check-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-6) 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .check-list li {
+    padding-left: 2em;
+    position: relative;
+  }
+  .check-list li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

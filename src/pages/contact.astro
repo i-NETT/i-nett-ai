@@ -1,0 +1,113 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Contact', url: '/contact' },
+];
+---
+<PageLayout
+  title="Contact : Book a 30 minute Fortify AI consultation"
+  description="Book a 30 minute Fortify AI consultation with our team. Direct contact for partnerships, press, and general inquiries about managed AI for mid-market firms."
+  eyebrow="Contact"
+  pageHeading="Talk to the team behind Fortify AI."
+  pageLead="The fastest path is to book a 30 minute consultation directly. For partnerships, press, and general inquiries, use the channels below."
+  breadcrumbs={breadcrumbs}
+  pageType="ContactPage"
+  hideFinalCta={true}
+>
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-2 contact-grid">
+        <div class="contact-primary">
+          <span class="eyebrow">Primary path</span>
+          <h2>Book a 30 minute consultation</h2>
+          <p class="lead">
+            Scope your environment, identify the highest-leverage AI deployments for
+            your firm, and walk through what a Fortify AI rollout looks like. Held by
+            our team directly, no qualification gate.
+          </p>
+          <a href={SITE.bookingUrl} class="btn btn-accent btn-lg" target="_blank" rel="noopener">
+            Open the booking calendar
+          </a>
+          <p class="contact-note">
+            Calendar opens in a new tab. We use HubSpot Meetings for scheduling.
+          </p>
+        </div>
+
+        <div class="contact-secondary">
+          <span class="eyebrow">Other channels</span>
+          <h2>Direct contact</h2>
+          <dl class="contact-list">
+            <div>
+              <dt>Email</dt>
+              <dd><a href={`mailto:${SITE.email}`}>{SITE.email}</a></dd>
+            </div>
+            <div>
+              <dt>Phone</dt>
+              <dd><a href={`tel:${SITE.phone}`}>{SITE.phoneDisplay}</a></dd>
+            </div>
+            <div>
+              <dt>Parent organization</dt>
+              <dd><a href={SITE.parentUrl} rel="noopener">i-nett.com</a></dd>
+            </div>
+            <div>
+              <dt>Region</dt>
+              <dd>Southern California headquarters. Service across the United States and Canada.</dd>
+            </div>
+            <div>
+              <dt>Press</dt>
+              <dd><a href={`mailto:${SITE.email}?subject=Press inquiry`}>{SITE.email}</a></dd>
+            </div>
+            <div>
+              <dt>Podcast guest inquiries</dt>
+              <dd><a href={`mailto:${SITE.email}?subject=Digital Dilemma guest`}>{SITE.email}</a></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .contact-grid { gap: var(--space-7); align-items: start; }
+  .contact-primary {
+    padding: var(--space-7);
+    background: linear-gradient(135deg, var(--color-ink-900) 0%, var(--color-ink-700) 100%);
+    color: var(--color-text-on-dark);
+    border-radius: var(--radius-xl);
+  }
+  .contact-primary h2 { color: #fff; margin-top: var(--space-3); }
+  .contact-primary .lead { color: var(--color-text-on-dark-soft); margin: var(--space-4) 0 var(--space-5); }
+  .contact-primary .eyebrow { color: var(--color-glow); }
+  .contact-note {
+    margin-top: var(--space-4);
+    font-size: var(--fs-xs);
+    color: rgba(183, 198, 216, 0.7);
+  }
+  .contact-secondary {
+    padding: var(--space-6);
+    background: var(--color-bg-soft);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+  }
+  .contact-secondary h2 { margin-top: var(--space-3); margin-bottom: var(--space-5); }
+  .contact-list {
+    display: grid;
+    gap: var(--space-4);
+  }
+  .contact-list dt {
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .contact-list dd {
+    margin: 0;
+    font-size: var(--fs-md);
+  }
+</style>

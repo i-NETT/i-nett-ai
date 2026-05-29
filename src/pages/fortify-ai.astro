@@ -1,0 +1,169 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import FAQ from '@components/FAQ.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Fortify AI', url: '/fortify-ai' },
+];
+
+const faqs = [
+  {
+    q: 'What does Fortify AI actually deliver?',
+    a: 'Fortify AI delivers a configured, operated AI environment for your firm. That includes a dedicated tenant, integration with your data sources, role-based access, audit logging, compliance-aligned configuration, and managed operations from the i-NETT team.'
+  },
+  {
+    q: 'What is included in a Fortify AI engagement?',
+    a: 'Discovery and readiness assessment, deployment configuration, integration with up to three approved data sources, role-based access setup, user enablement for your team, quarterly compliance review, and ongoing managed operations including monitoring, updates, and model evaluation.'
+  },
+  {
+    q: 'Who owns the data?',
+    a: 'You do. Customer data is isolated to your dedicated tenant. We do not use customer data for model training or share it across clients. Data residency and retention are configured to your compliance requirements.'
+  },
+  {
+    q: 'What is the engagement model?',
+    a: 'Fortify AI is delivered as a managed subscription with a defined deployment scope. Pricing scales with the number of users, the number of workflows in production, and the depth of integration. We size the engagement during the readiness assessment.'
+  },
+];
+---
+<PageLayout
+  title="Fortify AI : Managed AI deployment for mid-market firms"
+  description="Fortify AI is the managed AI offering from i-NETT. Compliance-ready infrastructure, configured to your regulatory environment, operated by our team. HIPAA, GDPR, SOC, CCPA. Underwritten by Lloyd's of London cybersecurity insurance policy."
+  eyebrow="The product"
+  pageHeading="Fortify AI is managed AI for the firms regulators trust."
+  pageLead="Mid-market firms need AI capability without the risk profile of consumer tooling. Fortify AI is the configured deployment, the compliance posture, and the managed operations team that delivers exactly that."
+  breadcrumbs={breadcrumbs}
+  faqs={faqs}
+  service={{
+    name: 'Fortify AI',
+    description: 'Managed AI infrastructure for regulated mid-market firms. HIPAA, GDPR, SOC, CCPA aligned. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
+  }}
+>
+  <!-- WHAT IT IS -->
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-2 feat-grid">
+        <div>
+          <span class="eyebrow">What it is</span>
+          <h2>A configured, operated AI environment for your firm.</h2>
+          <p class="lead">
+            Fortify AI is not a license bundle. It is the deployment, the configuration,
+            and the team behind it. We build your environment, integrate it with your
+            systems, configure it for your regulatory footprint, and operate it for you
+            from day one.
+          </p>
+        </div>
+        <ul class="feat-list">
+          <li><strong>Dedicated tenant.</strong> Your data, your environment, your audit trail.</li>
+          <li><strong>Compliance configuration.</strong> HIPAA, GDPR, SOC, CCPA built into deployment.</li>
+          <li><strong>Integration with your systems.</strong> Up to three approved data sources in scope at launch.</li>
+          <li><strong>Role-based access.</strong> Granular control for clinicians, attorneys, advisors, and admins.</li>
+          <li><strong>Audit logging.</strong> Full activity logs for compliance review.</li>
+          <li><strong>Managed operations.</strong> Monitoring, updates, model evaluation, quarterly compliance review.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT IT DOES -->
+  <section class="section section-soft">
+    <div class="container">
+      <span class="eyebrow">What it does</span>
+      <h2>The workflows we ship first.</h2>
+      <p class="lead">
+        Our deployment team starts with the workflows that return the most value in the
+        first 90 days. We expand from there as your team builds confidence.
+      </p>
+      <div class="grid grid-3" style="margin-top: var(--space-7);">
+        <div class="card">
+          <h3>Documentation</h3>
+          <p>Clinical notes, legal memoranda, advisory write-ups, consulting deliverables. Drafted from your inputs, reviewed by your team.</p>
+        </div>
+        <div class="card">
+          <h3>Knowledge retrieval</h3>
+          <p>Your firm&rsquo;s playbooks, prior matters, policies, and reference material made searchable and conversational, scoped to authorized users.</p>
+        </div>
+        <div class="card">
+          <h3>Intake and triage</h3>
+          <p>Incoming requests classified, summarized, and routed. Standard responses drafted for review before they go out.</p>
+        </div>
+        <div class="card">
+          <h3>Summarization</h3>
+          <p>Long-form documents, meeting transcripts, and email threads reduced to action-ready summaries with citation back to source.</p>
+        </div>
+        <div class="card">
+          <h3>Client communication</h3>
+          <p>Draft replies, status updates, and follow-ups that match your firm&rsquo;s voice and your client&rsquo;s history. Always reviewed before send.</p>
+        </div>
+        <div class="card">
+          <h3>Reporting and analysis</h3>
+          <p>Operational and financial reporting pulled from your authorized data sources, with natural-language drill-down for your leadership team.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMPLIANCE BLOCK -->
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Compliance posture</span>
+      <h2>Built for HIPAA, GDPR, SOC, and CCPA. Reviewed by your compliance team.</h2>
+      <p class="lead">
+        Every Fortify AI deployment is configured to the regulatory environment your
+        firm operates inside. Configuration is documented. Audit logging is enabled by
+        default. Your compliance team reviews the deployment before it goes live and
+        again every quarter.
+      </p>
+      <div class="callout">
+        <p class="callout__lead">
+          Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy.
+        </p>
+        <p>
+          Fortify AI deployments operate inside an environment backed by a Lloyd&rsquo;s
+          of London cybersecurity insurance policy. That is a financial backstop, not a
+          marketing claim.
+        </p>
+      </div>
+      <p class="disclaimer">
+        Built for HIPAA, GDPR, SOC, and CCPA compliance. Deployments are configured to
+        your regulatory environment and reviewed by your compliance team.
+      </p>
+    </div>
+  </section>
+
+  <FAQ items={faqs} />
+</PageLayout>
+
+<style>
+  .feat-grid { gap: var(--space-7); align-items: start; }
+  .feat-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .feat-list li {
+    padding: var(--space-4);
+    background: var(--color-bg-soft);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-accent-500);
+  }
+
+  .callout {
+    background: linear-gradient(135deg, var(--color-ink-900) 0%, var(--color-ink-700) 100%);
+    color: var(--color-text-on-dark);
+    padding: var(--space-7);
+    border-radius: var(--radius-xl);
+    margin: var(--space-7) 0;
+  }
+  .callout__lead {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-lg);
+    color: #fff;
+    margin-bottom: var(--space-3);
+  }
+  .callout p { color: var(--color-text-on-dark-soft); }
+</style>

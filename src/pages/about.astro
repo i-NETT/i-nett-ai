@@ -1,0 +1,180 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'About', url: '/about' },
+];
+---
+<PageLayout
+  title="About i-NETT : Managed IT, cybersecurity, and managed AI"
+  description="i-NETT is a Southern California managed services provider delivering managed IT, cybersecurity, and managed AI to mid-market firms across the United States and Canada. Fortify AI is our managed AI offering."
+  eyebrow="About"
+  pageHeading="i-NETT is the team behind Fortify AI."
+  pageLead="We have spent two decades operating IT and cybersecurity for mid-market firms in regulated industries. Fortify AI is the next layer of that operating discipline."
+  breadcrumbs={breadcrumbs}
+  pageType="AboutPage"
+  person={true}
+>
+  <!-- WHO WE ARE -->
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Who we are</span>
+      <h2>A Southern California managed services provider serving North America.</h2>
+      <p class="lead">
+        i-NETT is headquartered in Southern California with primary client community
+        across San Diego, Orange County, Los Angeles, and Ventura counties. Through
+        the Technology Assurance Group network, we extend service into 148 cities
+        across the United States and Canada.
+      </p>
+      <p>
+        Our work spans managed IT, cybersecurity, and now managed AI. Every engagement
+        is built on the same operating discipline: configure for compliance from day
+        one, isolate customer data, document configuration, and back the deployment
+        with insured operating standards.
+      </p>
+    </div>
+  </section>
+
+  <!-- LEADERSHIP -->
+  <section class="section section-soft">
+    <div class="container">
+      <span class="eyebrow">Leadership</span>
+      <h2>The people behind every engagement.</h2>
+      <div class="grid grid-2 people-grid">
+        <article class="person-card" id="nick-dreyfus">
+          <img src="/assets/brand/nick-headshot.jpg" alt="Nick Dreyfus, VP of Business Development at i-NETT" width="160" height="160" loading="lazy" />
+          <div>
+            <h3>Nick Dreyfus</h3>
+            <p class="person-card__role">VP of Business Development, i-NETT</p>
+            <p>
+              Nick leads commercial strategy and client engagement at i-NETT. He hosts
+              The Digital Dilemma, a podcast on AI, cybersecurity, and the operational
+              realities of running a modern business. Recognized as Chamber Ambassador
+              of the Year 2025. Twenty years working alongside mid-market CEOs on
+              technology, compliance, and growth.
+            </p>
+            <p>
+              <strong>Areas of focus:</strong> Managed AI deployment for regulated
+              industries, mid-market IT strategy, cybersecurity posture, and the
+              operational economics of AI adoption.
+            </p>
+            <p>
+              <a href={SITE.social.linkedinPerson} target="_blank" rel="noopener">LinkedIn &rarr;</a>
+              &nbsp;&middot;&nbsp;
+              <a href={SITE.podcastUrl} target="_blank" rel="noopener">The Digital Dilemma podcast &rarr;</a>
+            </p>
+          </div>
+        </article>
+        <article class="person-card">
+          <img src="/assets/brand/dale-stein-headshot.jpg" alt="Dale Stein, co-founder of Technology Assurance Group" width="160" height="160" loading="lazy" />
+          <div>
+            <h3>Dale Stein</h3>
+            <p class="person-card__role">Co-founder, Technology Assurance Group</p>
+            <p>
+              Dale co-founded the Technology Assurance Group, the national managed
+              services network behind i-NETT&rsquo;s coverage footprint. TAG operates
+              across 148 cities in the United States and Canada, ISO 27001 aligned,
+              and built for the firms regulators trust.
+            </p>
+            <p>
+              TAG&rsquo;s network is the operational backbone that makes Fortify AI
+              deployable beyond a single region while maintaining a consistent
+              operating standard across every engagement.
+            </p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CREDENTIALS -->
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Credentials and recognition</span>
+      <h2>What backs the operating standard.</h2>
+      <div class="cred-grid">
+        <div class="cred">
+          <img src="/assets/brand/hipaa-compliant.png" alt="HIPAA Compliant" width="72" height="72" loading="lazy" />
+          <h3>HIPAA Compliant</h3>
+          <p>Operational configuration built for HIPAA from day one, reviewable by your compliance team.</p>
+        </div>
+        <div class="cred">
+          <img src="/assets/brand/iso-27001.png" alt="ISO 27001 aligned via TAG" width="72" height="72" loading="lazy" />
+          <h3>ISO 27001 aligned</h3>
+          <p>Through the Technology Assurance Group network. Operating standard maintained across 148 service cities.</p>
+        </div>
+        <div class="cred">
+          <img src="/assets/brand/chamber-ambassador-2025.png" alt="Chamber Ambassador 2025" width="72" height="72" loading="lazy" />
+          <h3>Chamber Ambassador 2025</h3>
+          <p>Nick Dreyfus recognized as Chamber of Commerce Ambassador of the Year.</p>
+        </div>
+        <div class="cred">
+          <div class="cred__textmark">Lloyd&rsquo;s</div>
+          <h3>Lloyd&rsquo;s of London policy</h3>
+          <p>Fortify AI deployments operate inside an environment underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .people-grid { gap: var(--space-6); }
+  .person-card {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: var(--space-5);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    align-items: start;
+  }
+  .person-card img {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--color-border);
+  }
+  .person-card h3 { margin-bottom: 4px; }
+  .person-card__role {
+    color: var(--color-accent-500);
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    margin-bottom: var(--space-3);
+  }
+  .person-card p { margin-bottom: var(--space-3); }
+  .person-card p:last-child { margin-bottom: 0; }
+
+  .cred-grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+    margin-top: var(--space-6);
+  }
+  @media (min-width: 720px) {
+    .cred-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  .cred {
+    padding: var(--space-5);
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .cred img { width: 56px; height: 56px; object-fit: contain; }
+  .cred__textmark {
+    width: 56px; height: 56px;
+    display: inline-grid;
+    place-items: center;
+    background: var(--color-ink-800);
+    color: #fff;
+    border-radius: var(--radius-md);
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+</style>

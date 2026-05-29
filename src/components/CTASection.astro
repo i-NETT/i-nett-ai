@@ -1,0 +1,51 @@
+---
+import { SITE } from '@lib/site';
+interface Props {
+  eyebrow?: string;
+  heading?: string;
+  body?: string;
+  primaryLabel?: string;
+  primaryHref?: string;
+  secondaryLabel?: string;
+  secondaryHref?: string;
+  variant?: 'dark' | 'light';
+}
+const {
+  eyebrow = 'Start here',
+  heading = 'Ready to evaluate Fortify AI?',
+  body = 'Book a 30 minute consultation with our team. We will scope your environment, identify the two or three highest-leverage AI deployments for your firm, and outline what a Fortify AI rollout looks like.',
+  primaryLabel = 'Book a 30 minute consultation',
+  primaryHref = SITE.bookingUrl,
+  secondaryLabel = 'Take the AI Readiness Scan',
+  secondaryHref = '/resources#scan',
+  variant = 'dark',
+} = Astro.props;
+---
+<section class:list={['section cta-section', variant === 'dark' && 'section-dark']} aria-labelledby="cta-heading">
+  <div class="container container-narrow cta-inner">
+    <span class="eyebrow">{eyebrow}</span>
+    <h2 id="cta-heading">{heading}</h2>
+    <p class="lead">{body}</p>
+    <div class="cta-buttons">
+      <a href={primaryHref} class="btn btn-accent btn-lg" target={primaryHref.startsWith('http') ? '_blank' : undefined} rel={primaryHref.startsWith('http') ? 'noopener' : undefined}>
+        {primaryLabel}
+      </a>
+      <a href={secondaryHref} class="btn btn-outline btn-lg">{secondaryLabel}</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-inner { text-align: center; }
+  .cta-inner .lead { margin: var(--space-4) auto var(--space-6); }
+  .cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    justify-content: center;
+    align-items: stretch;
+  }
+  @media (min-width: 640px) {
+    .cta-buttons { flex-direction: row; align-items: center; }
+  }
+</style>

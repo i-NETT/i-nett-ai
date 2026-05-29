@@ -1,0 +1,36 @@
+# build
+dist/
+.output/
+
+# deps
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment
+.env
+.env.production
+.env.local
+.env.*.local
+
+# astro
+.astro/
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# editor
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
+
+# lockfiles (let CI generate)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

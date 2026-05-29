@@ -1,0 +1,77 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '@components/Breadcrumbs.astro';
+import CTASection from '@components/CTASection.astro';
+
+interface BreadcrumbItem { name: string; url: string; }
+interface FaqItem { q: string; a: string; }
+interface LocalBusinessSpec {
+  name: string; url: string; city: string; region?: string; lat?: number; lng?: number;
+}
+interface ServiceSpec { name: string; description: string; areaServed?: string[]; }
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow?: string;
+  pageHeading?: string;
+  pageLead?: string;
+  breadcrumbs?: BreadcrumbItem[];
+  faqs?: FaqItem[];
+  localBusiness?: LocalBusinessSpec;
+  service?: ServiceSpec;
+  podcast?: boolean;
+  person?: boolean;
+  pageType?: 'WebPage' | 'WebApplication' | 'AboutPage' | 'ContactPage' | 'CollectionPage';
+  hideFinalCta?: boolean;
+}
+const {
+  title,
+  description,
+  eyebrow,
+  pageHeading,
+  pageLead,
+  breadcrumbs,
+  faqs,
+  localBusiness,
+  service,
+  podcast,
+  person,
+  pageType,
+  hideFinalCta = false,
+} = Astro.props;
+---
+<BaseLayout
+  title={title}
+  description={description}
+  breadcrumbs={breadcrumbs}
+  faqs={faqs}
+  localBusiness={localBusiness}
+  service={service}
+  podcast={podcast}
+  person={person}
+  pageType={pageType}
+>
+  <section class="page-header">
+    <div class="container">
+      {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
+      {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+      <h1>{pageHeading ?? title}</h1>
+      {pageLead && <p class="lead">{pageLead}</p>}
+    </div>
+  </section>
+
+  <slot />
+
+  {!hideFinalCta && <CTASection />}
+</BaseLayout>
+
+<style>
+  .page-header {
+    padding: var(--space-9) 0 var(--space-7);
+    background: linear-gradient(180deg, var(--color-bg-soft) 0%, var(--color-bg) 100%);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .page-header h1 { margin-top: var(--space-2); }
+  .page-header .lead { margin-top: var(--space-4); }
+</style>

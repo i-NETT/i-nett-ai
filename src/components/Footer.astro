@@ -1,0 +1,209 @@
+---
+import { SITE, NAV_INDUSTRIES, NAV_LOCATIONS, NAV_FOOTER_RESOURCES, NAV_LEGAL } from '@lib/site';
+const year = new Date().getFullYear();
+---
+<footer class="site-footer" role="contentinfo">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col footer-col--brand">
+        <a href="/" class="footer-brand">
+          <span class="footer-brand__product">Fortify AI</span>
+          <span class="footer-brand__parent">by i-NETT</span>
+        </a>
+        <p class="footer-tagline">
+          Managed AI for mid-market firms. HIPAA, GDPR, SOC, and CCPA ready.
+          Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy.
+        </p>
+        <div class="footer-badges">
+          <img src="/assets/brand/hipaa-compliant.png" alt="HIPAA Compliant" width="80" height="80" loading="lazy" />
+          <img src="/assets/brand/iso-27001.png" alt="ISO 27001 Compliant via TAG" width="80" height="80" loading="lazy" />
+          <img src="/assets/brand/chamber-ambassador-2025.png" alt="Chamber Ambassador of the Year 2025" width="80" height="80" loading="lazy" />
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-heading">Product</h2>
+        <ul>
+          <li><a href="/fortify-ai">Fortify AI</a></li>
+          <li><a href="/how-it-works">How it works</a></li>
+          <li><a href="/roi-calculator">ROI calculator</a></li>
+          <li><a href="/coverage">Coverage</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-heading">Industries</h2>
+        <ul>
+          {NAV_INDUSTRIES.map((i) => (
+            <li><a href={i.href}>{i.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-heading">Locations</h2>
+        <ul>
+          {NAV_LOCATIONS.map((l) => (
+            <li><a href={l.href}>{l.label}</a></li>
+          ))}
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h2 class="footer-heading">Company</h2>
+        <ul>
+          <li><a href="/about">About i-NETT</a></li>
+          {NAV_FOOTER_RESOURCES.map((r) => (
+            <li><a href={r.href}>{r.label}</a></li>
+          ))}
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-cta">
+      <div>
+        <p class="footer-cta__eyebrow">Ready when you are.</p>
+        <p class="footer-cta__line">Book a 30 minute Fortify AI consultation.</p>
+      </div>
+      <a href={SITE.bookingUrl} class="btn btn-accent btn-lg" target="_blank" rel="noopener">
+        Book a consultation
+      </a>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">
+        &copy; {year} i-NETT. All rights reserved. Fortify AI is a product of i-NETT.
+        Visit our parent organization at <a href={SITE.parentUrl} rel="noopener">i-nett.com</a>.
+      </p>
+      <ul class="footer-legal">
+        {NAV_LEGAL.map((l) => (
+          <li><a href={l.href}>{l.label}</a></li>
+        ))}
+        <li><a href={SITE.podcastUrl} target="_blank" rel="noopener">Podcast</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-ink-900);
+    color: var(--color-text-on-dark-soft);
+    padding: var(--space-12) 0 var(--space-7);
+    padding-bottom: calc(var(--space-7) + env(safe-area-inset-bottom));
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-7);
+  }
+  @media (min-width: 640px) {
+    .footer-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (min-width: 960px) {
+    .footer-grid { grid-template-columns: 2fr 1fr 1fr 1fr 1fr; }
+  }
+  .footer-col--brand { max-width: 36ch; }
+  .footer-brand {
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.1;
+    color: #fff;
+    margin-bottom: var(--space-4);
+  }
+  .footer-brand__product {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: #fff;
+  }
+  .footer-brand__parent {
+    font-size: 0.6875rem;
+    color: var(--color-text-on-dark-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .footer-tagline {
+    font-size: var(--fs-sm);
+    color: var(--color-text-on-dark-soft);
+    line-height: var(--lh-normal);
+    margin-bottom: var(--space-5);
+  }
+  .footer-badges {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .footer-badges img {
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
+    background: rgba(255,255,255,0.04);
+    border-radius: var(--radius-md);
+    padding: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .footer-heading {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #fff;
+    margin-bottom: var(--space-4);
+  }
+  .footer-col ul { list-style: none; padding: 0; margin: 0; }
+  .footer-col li { margin-bottom: var(--space-2); }
+  .footer-col a {
+    color: var(--color-text-on-dark-soft);
+    font-size: var(--fs-sm);
+    transition: color var(--dur-fast) var(--ease-out);
+  }
+  .footer-col a:hover { color: var(--color-glow); }
+
+  .footer-cta {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    align-items: flex-start;
+    padding: var(--space-7) 0;
+    margin: var(--space-7) 0 var(--space-5);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .footer-cta__eyebrow {
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-glow);
+    margin-bottom: var(--space-2);
+  }
+  .footer-cta__line {
+    font-family: var(--font-display);
+    font-size: var(--fs-xl);
+    font-weight: 600;
+    color: #fff;
+    line-height: 1.2;
+  }
+  @media (min-width: 720px) {
+    .footer-cta { flex-direction: row; justify-content: space-between; align-items: center; }
+  }
+
+  .footer-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: var(--fs-xs);
+  }
+  .footer-copy { color: var(--color-text-on-dark-soft); }
+  .footer-copy a { color: var(--color-glow); }
+  .footer-legal { list-style: none; padding: 0; margin: 0; display: flex; gap: var(--space-4); flex-wrap: wrap; }
+  .footer-legal a { color: var(--color-text-on-dark-soft); font-size: var(--fs-xs); }
+  .footer-legal a:hover { color: var(--color-glow); }
+
+  @media (min-width: 720px) {
+    .footer-bottom { flex-direction: row; align-items: center; }
+  }
+</style>

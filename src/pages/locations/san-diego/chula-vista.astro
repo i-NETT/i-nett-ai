@@ -1,0 +1,58 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Locations', url: '/coverage' },
+  { name: 'San Diego', url: '/locations/san-diego' },
+  { name: 'Chula Vista', url: '/locations/san-diego/chula-vista' },
+];
+---
+<PageLayout
+  title="Managed AI in Chula Vista : Fortify AI by i-NETT"
+  description="Fortify AI for Chula Vista firms. Managed AI for healthcare, cross-border professional services, financial firms, and regional businesses across Chula Vista and South County. HIPAA, GDPR, SOC, CCPA ready."
+  eyebrow="Chula Vista, San Diego"
+  pageHeading="Managed AI for Chula Vista firms."
+  pageLead="Chula Vista anchors a deep South County mid-market with strong concentrations in healthcare, cross-border professional services, financial firms, and the businesses operating between San Diego and the Tijuana commercial corridor. Fortify AI deploys compliance-ready AI built for these realities."
+  breadcrumbs={breadcrumbs}
+  localBusiness={{
+    name: 'i-NETT (Chula Vista)',
+    url: `${SITE.url}/locations/san-diego/chula-vista`,
+    city: 'Chula Vista',
+    region: 'CA',
+    lat: 32.6401,
+    lng: -117.0842,
+  }}
+>
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Built for Chula Vista&rsquo;s buyer</span>
+      <h2>Compliance-grade AI for the South County mid-market.</h2>
+      <p class="lead">
+        Chula Vista&rsquo;s firms operate in one of the most binationally connected commercial
+        corridors in North America. Fortify AI deploys configured AI infrastructure that
+        meets US compliance requirements while supporting the operational realities of
+        firms doing business on both sides of the border.
+      </p>
+      <ul class="check-list">
+        <li>HIPAA, GDPR, SOC, and CCPA configuration built into deployment</li>
+        <li>Dedicated tenant, customer data isolated to your environment</li>
+        <li>Data residency configurable for cross-border workflows</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+      </ul>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .check-list { list-style: none; padding: 0; margin: var(--space-6) 0; display: grid; gap: var(--space-3); }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

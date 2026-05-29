@@ -1,0 +1,58 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Locations', url: '/coverage' },
+  { name: 'San Diego', url: '/locations/san-diego' },
+  { name: 'Del Mar', url: '/locations/san-diego/del-mar' },
+];
+---
+<PageLayout
+  title="Managed AI in Del Mar : Fortify AI by i-NETT"
+  description="Fortify AI for Del Mar firms. Managed AI for wealth management, family office, legal, and professional services firms in Del Mar and the North Coast corridor. HIPAA, GDPR, SOC, CCPA ready."
+  eyebrow="Del Mar, San Diego"
+  pageHeading="Managed AI for Del Mar firms."
+  pageLead="Del Mar&rsquo;s mid-market skews toward wealth management, family office, legal, and specialty professional services firms. Fortify AI deploys compliance-ready AI configured for the discretion these firms operate inside."
+  breadcrumbs={breadcrumbs}
+  localBusiness={{
+    name: 'i-NETT (Del Mar)',
+    url: `${SITE.url}/locations/san-diego/del-mar`,
+    city: 'Del Mar',
+    region: 'CA',
+    lat: 32.9595,
+    lng: -117.2653,
+  }}
+>
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Built for Del Mar&rsquo;s buyer</span>
+      <h2>Discretion-grade AI for wealth, advisory, and family office firms.</h2>
+      <p class="lead">
+        Del Mar&rsquo;s mid-market firms operate under client expectations that consumer
+        AI tooling was not designed to meet. Fortify AI deployments are configured to
+        keep non-public client information isolated to your tenant, supervisable by your
+        compliance team, and defensible to your regulator of record.
+      </p>
+      <ul class="check-list">
+        <li>Dedicated tenant, non-public client information isolated</li>
+        <li>SEC, FINRA, and state regulatory configuration</li>
+        <li>HIPAA configuration for healthcare-adjacent advisory work</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+      </ul>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .check-list { list-style: none; padding: 0; margin: var(--space-6) 0; display: grid; gap: var(--space-3); }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

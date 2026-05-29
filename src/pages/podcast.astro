@@ -1,0 +1,79 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Podcast', url: '/podcast' },
+];
+---
+<PageLayout
+  title="The Digital Dilemma : Hosted by Nick Dreyfus"
+  description="The Digital Dilemma podcast. Nick Dreyfus interviews founders, technologists, and CEOs on AI, cybersecurity, and the operational realities of running a modern mid-market business."
+  eyebrow="The Digital Dilemma"
+  pageHeading="A podcast for the mid-market CEO making technology decisions in real time."
+  pageLead="Hosted by Nick Dreyfus, VP of Business Development at i-NETT. Conversations on AI, cybersecurity, compliance, and the operational realities of running a modern business. New episodes regularly."
+  breadcrumbs={breadcrumbs}
+  podcast={true}
+>
+  <section class="section">
+    <div class="container container-narrow">
+      <div class="podcast-hero">
+        <h2>Listen and subscribe</h2>
+        <p class="lead">
+          The Digital Dilemma is available on Apple Podcasts and through the i-NETT
+          parent site. Full episode archive and shownotes are syndicated through both.
+        </p>
+        <div class="podcast-ctas">
+          <a href={SITE.podcastUrl} class="btn btn-primary btn-lg" target="_blank" rel="noopener">
+            Listen on Apple Podcasts
+          </a>
+          <a href={SITE.parentUrl} class="btn btn-outline btn-lg" target="_blank" rel="noopener">
+            Visit i-nett.com
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container container-narrow">
+      <span class="eyebrow">What to expect</span>
+      <h2>Conversations our buyer is already having.</h2>
+      <ul class="topic-list">
+        <li><strong>How AI changes the operating model</strong> of a mid-market practice, firm, or business.</li>
+        <li><strong>Compliance and AI</strong>: HIPAA, GDPR, SOC, CCPA, and what defensible deployment actually looks like.</li>
+        <li><strong>Cybersecurity for mid-market firms</strong>: posture, insurance, incident readiness.</li>
+        <li><strong>Operating discipline</strong>: how high-performing firms run technology decisions.</li>
+        <li><strong>Founder conversations</strong>: candid interviews with operators and technologists.</li>
+      </ul>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .podcast-hero { text-align: center; }
+  .podcast-ctas {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    justify-content: center;
+    margin-top: var(--space-5);
+  }
+  @media (min-width: 480px) {
+    .podcast-ctas { flex-direction: row; }
+  }
+  .topic-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-6) 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .topic-list li {
+    padding: var(--space-4);
+    background: var(--color-bg);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-accent-500);
+  }
+</style>

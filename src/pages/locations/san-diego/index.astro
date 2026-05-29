@@ -1,0 +1,151 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import FAQ from '@components/FAQ.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Locations', url: '/coverage' },
+  { name: 'San Diego', url: '/locations/san-diego' },
+];
+
+const faqs = [
+  {
+    q: 'Where in San Diego County do you work?',
+    a: 'Across the full county. Our densest client community is in central San Diego, Del Mar, Carlsbad, Oceanside, Poway, La Mesa, and Chula Vista. We engage on-site for readiness assessment and pilot phases throughout the county.'
+  },
+  {
+    q: 'Why is San Diego your primary market?',
+    a: 'San Diego is i-NETT&rsquo;s densest client community and the headquarters region for our team. The county has a deep mid-market in healthcare, life sciences, defense, professional services, and financial services, all of which are Fortify AI&rsquo;s core buyers.'
+  },
+  {
+    q: 'Do you work with biotech and life sciences firms in the Torrey Pines corridor?',
+    a: 'Yes. Many of our San Diego clients are life sciences, clinical research, and adjacent professional services firms operating in the Torrey Pines, Sorrento Valley, and UTC corridors. Compliance configuration is critical for this buyer and is built into every Fortify AI deployment.'
+  },
+  {
+    q: 'How fast can a San Diego firm get started?',
+    a: 'The first step is a 30 minute consultation, typically scheduled within the same week. From signed engagement, San Diego firms see their first production AI workflow live within four to six weeks.'
+  },
+];
+---
+<PageLayout
+  title="AI Consulting and Managed AI in San Diego : Fortify AI by i-NETT"
+  description="Fortify AI for San Diego County firms. Managed AI for mid-market healthcare, life sciences, legal, financial services, and professional services firms across San Diego, Del Mar, Carlsbad, Oceanside, Poway, La Mesa, and Chula Vista. HIPAA, GDPR, SOC, CCPA ready."
+  eyebrow="San Diego, primary market"
+  pageHeading="Managed AI for San Diego firms."
+  pageLead="San Diego is i-NETT&rsquo;s home market and densest client community. Fortify AI deploys configured, compliance-ready AI infrastructure into mid-market healthcare, life sciences, legal, financial services, and professional services firms across the county."
+  breadcrumbs={breadcrumbs}
+  faqs={faqs}
+  localBusiness={{
+    name: 'i-NETT (San Diego)',
+    url: `${SITE.url}/locations/san-diego`,
+    city: 'San Diego',
+    region: 'CA',
+    lat: 32.7157,
+    lng: -117.1611,
+  }}
+>
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Built for the San Diego mid-market</span>
+      <h2>Where Fortify AI lands first in San Diego County.</h2>
+      <p class="lead">
+        San Diego&rsquo;s mid-market is unusually deep in regulated and relationship-driven
+        industries: healthcare and provider groups, life sciences and clinical research,
+        defense and adjacent professional services, multi-office law firms, RIA and wealth
+        management firms, and the consulting and agency ecosystem that supports them.
+        Fortify AI is built for exactly this buyer.
+      </p>
+      <ul class="check-list">
+        <li>HIPAA, GDPR, SOC, and CCPA configuration built into deployment</li>
+        <li>Dedicated tenant, customer data isolated to your environment</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+        <li>On-site engagement available throughout the county for readiness and pilot phases</li>
+        <li>Quarterly compliance review available in person at your office</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container">
+      <span class="eyebrow">Cities we serve</span>
+      <h2>Fortify AI across San Diego County.</h2>
+      <div class="grid grid-3 city-grid">
+        <a href="/locations/san-diego/del-mar" class="card industry-card">
+          <h3>Del Mar</h3>
+          <p>Wealth management, family office, professional services.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/locations/san-diego/carlsbad" class="card industry-card">
+          <h3>Carlsbad</h3>
+          <p>Life sciences, technology, multi-office professional services.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/locations/san-diego/oceanside" class="card industry-card">
+          <h3>Oceanside</h3>
+          <p>Healthcare, manufacturing, regional professional firms.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/locations/san-diego/poway" class="card industry-card">
+          <h3>Poway</h3>
+          <p>Defense-adjacent professional services, healthcare practices.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/locations/san-diego/la-mesa" class="card industry-card">
+          <h3>La Mesa</h3>
+          <p>Legal, financial services, regional healthcare networks.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/locations/san-diego/chula-vista" class="card industry-card">
+          <h3>Chula Vista</h3>
+          <p>Healthcare, cross-border professional services, financial firms.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>Industries we serve in San Diego</h2>
+      <div class="grid grid-4">
+        <a href="/industries/healthcare" class="card industry-card">
+          <h3>Healthcare</h3>
+          <p>HIPAA-aligned AI for practices and provider groups.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/industries/legal" class="card industry-card">
+          <h3>Legal</h3>
+          <p>Privilege-aware AI for law firms.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/industries/financial-services" class="card industry-card">
+          <h3>Financial Services</h3>
+          <p>Regulator-ready AI for advisors.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+        <a href="/industries/professional-services" class="card industry-card">
+          <h3>Professional Services</h3>
+          <p>Confidentiality-first AI for consulting and agencies.</p>
+          <span class="arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <FAQ items={faqs} />
+</PageLayout>
+
+<style>
+  .industry-card { color: var(--color-text); position: relative; padding-bottom: var(--space-7); }
+  .industry-card .arrow { position: absolute; bottom: var(--space-5); right: var(--space-5); color: var(--color-accent-500); }
+  .check-list { list-style: none; padding: 0; margin: var(--space-6) 0; display: grid; gap: var(--space-3); }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

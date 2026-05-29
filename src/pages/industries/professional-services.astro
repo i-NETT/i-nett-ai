@@ -1,0 +1,111 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import FAQ from '@components/FAQ.astro';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Industries', url: '/industries/professional-services' },
+  { name: 'Professional Services', url: '/industries/professional-services' },
+];
+
+const faqs = [
+  {
+    q: 'What counts as a professional services firm here?',
+    a: 'Accounting and tax firms, management consulting firms, marketing and brand agencies, architecture and engineering practices, executive search, and other relationship-driven service businesses. If your firm sells knowledge work delivered by named experts, Fortify AI is built for you.'
+  },
+  {
+    q: 'How does Fortify AI protect client confidentiality?',
+    a: 'Customer data is isolated to your dedicated tenant. We do not use customer data for model training or share it across clients. Engagement letters, client deliverables, and proprietary methodologies stay inside your environment.'
+  },
+  {
+    q: 'What workflows return value first for a consulting or accounting firm?',
+    a: 'Deliverable drafting, engagement summarization, internal knowledge retrieval across prior client work, proposal and RFP drafting, and meeting documentation are typical first deployments. We start with the workflow that returns the most senior practitioner time in the first 90 days.'
+  },
+  {
+    q: 'Does Fortify AI work for boutique firms under 50 employees?',
+    a: 'Yes. Many of our deployments are boutique consulting, agency, and professional services firms in the 20 to 80 employee range. The Fortify AI engagement model scales down to firms where the founder is also the senior practitioner.'
+  },
+];
+---
+<PageLayout
+  title="AI for Professional Services Firms : Managed AI for consulting, accounting, and agencies"
+  description="Fortify AI for professional services firms. Confidentiality-first deployment, dedicated tenant, audit logging. Built for consulting firms, accounting practices, agencies, and boutique advisory businesses."
+  eyebrow="Professional Services"
+  pageHeading="AI for professional services firms, built around client confidentiality and senior practitioner leverage."
+  pageLead="Fortify AI deploys deliverable drafting, engagement summarization, knowledge retrieval, and proposal workflows into the firms that sell knowledge work delivered by named experts. Confidentiality-first configuration, dedicated tenant, and a managed services team operating it for you."
+  breadcrumbs={breadcrumbs}
+  faqs={faqs}
+  service={{
+    name: 'Fortify AI for Professional Services',
+    description: 'Managed AI deployment for professional services firms including consulting, accounting, agencies, and advisory practices. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
+  }}
+>
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Confidentiality posture</span>
+      <h2>Client work product stays in your tenant.</h2>
+      <p class="lead">
+        Professional services firms live on confidentiality and proprietary methodology.
+        Fortify AI is built so neither leaves your environment.
+      </p>
+      <ul class="check-list">
+        <li>Dedicated tenant, engagement work isolated to your environment</li>
+        <li>We do not use customer data for model training or share it across clients</li>
+        <li>Audit logging enabled by default, reviewable by your firm leadership</li>
+        <li>Role-based access for partners, senior practitioners, and engagement staff</li>
+        <li>Workspace-level isolation for sensitive engagements</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container">
+      <span class="eyebrow">Where it shows up first</span>
+      <h2>The professional services workflows we ship first.</h2>
+      <div class="grid grid-3" style="margin-top: var(--space-7);">
+        <div class="card">
+          <h3>Deliverable drafting</h3>
+          <p>First-draft client deliverables, reports, and memoranda generated from your inputs and your firm’s methodology. Reviewed and refined by your team.</p>
+        </div>
+        <div class="card">
+          <h3>Engagement summarization</h3>
+          <p>Engagement-level summaries, status reports, and weekly client updates assembled from your project artifacts.</p>
+        </div>
+        <div class="card">
+          <h3>Internal knowledge retrieval</h3>
+          <p>Your firm’s prior engagements, methodologies, frameworks, and proposals made searchable and conversational, scoped to authorized staff.</p>
+        </div>
+        <div class="card">
+          <h3>Proposal and RFP drafting</h3>
+          <p>First-draft proposals and RFP responses built from your prior wins and your firm’s methodology, ready for partner-level review.</p>
+        </div>
+        <div class="card">
+          <h3>Meeting documentation</h3>
+          <p>Client meeting notes, decision logs, and next-action summaries generated from your inputs and routed into your project tracker.</p>
+        </div>
+        <div class="card">
+          <h3>Research synthesis</h3>
+          <p>Market scans, competitive analyses, and industry briefs synthesized for your engagement team with citation back to source.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <FAQ items={faqs} />
+</PageLayout>
+
+<style>
+  .check-list {
+    list-style: none; padding: 0; margin: var(--space-6) 0;
+    display: grid; gap: var(--space-3);
+  }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

@@ -1,0 +1,145 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Privacy', url: '/privacy' },
+];
+const updated = 'May 28, 2026';
+---
+<PageLayout
+  title="Privacy Policy : Fortify AI by i-NETT"
+  description="Privacy policy covering CCPA, GDPR, and PIPEDA obligations. How i-NETT collects, uses, retains, and protects information about visitors and customers of i-nett.ai."
+  eyebrow="Legal"
+  pageHeading="Privacy Policy"
+  pageLead={`Last updated ${updated}. This policy explains how i-NETT collects, uses, and protects information about visitors and customers of i-nett.ai. Built to satisfy CCPA, GDPR, and PIPEDA obligations.`}
+  breadcrumbs={breadcrumbs}
+  hideFinalCta={true}
+>
+  <section class="section">
+    <div class="container container-narrow legal">
+      <h2>Who we are</h2>
+      <p>
+        i-NETT (referred to here as &ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;)
+        operates the website at <a href="https://i-nett.ai">i-nett.ai</a> and the Fortify AI
+        managed AI offering. Our parent organization site is at
+        <a href={SITE.parentUrl}>i-nett.com</a>.
+      </p>
+
+      <h2>What we collect</h2>
+      <p>We collect two categories of information:</p>
+      <ul>
+        <li>
+          <strong>Information you provide.</strong> When you submit a form, request a consultation,
+          subscribe to the podcast, or contact us, you may provide your name, business email,
+          phone number, firm name, role, and any message content you send.
+        </li>
+        <li>
+          <strong>Information collected automatically.</strong> When you visit the site, our servers
+          and analytics tools collect standard log information such as IP address, browser type,
+          referring URL, pages visited, and timestamps. We use this to operate, secure, and
+          improve the site.
+        </li>
+      </ul>
+
+      <h2>What we do not do</h2>
+      <ul>
+        <li>We do not sell personal information.</li>
+        <li>We do not share personal information with third parties for their independent marketing purposes.</li>
+        <li>We do not use customer data submitted through Fortify AI deployments to train AI models.</li>
+        <li>We do not share customer data across Fortify AI customers.</li>
+      </ul>
+
+      <h2>How we use information</h2>
+      <ul>
+        <li>To respond to your inquiries and provide the services you request.</li>
+        <li>To operate, secure, and improve i-nett.ai.</li>
+        <li>To send you transactional or service messages related to a Fortify AI engagement or your inquiry.</li>
+        <li>To comply with legal obligations, enforce our terms, and protect our rights.</li>
+      </ul>
+
+      <h2>Legal bases (GDPR)</h2>
+      <p>
+        For visitors and customers in the European Economic Area and United Kingdom, we process
+        personal information on the following legal bases: your consent, performance of a
+        contract with you, our legitimate interests in operating and securing our business, and
+        compliance with legal obligations.
+      </p>
+
+      <h2>Your rights</h2>
+      <p>Depending on where you live, you may have the following rights:</p>
+      <ul>
+        <li><strong>CCPA (California):</strong> right to know, right to delete, right to correct, right to opt out of sale or sharing, right to limit use of sensitive personal information, and right to non-discrimination.</li>
+        <li><strong>GDPR (EEA and UK):</strong> right of access, rectification, erasure, restriction of processing, data portability, and objection.</li>
+        <li><strong>PIPEDA (Canada):</strong> right to access your personal information, right to challenge accuracy, and right to withdraw consent subject to legal and contractual restrictions.</li>
+      </ul>
+      <p>
+        To exercise any of these rights, contact us at
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>. We will respond within the timeframe
+        required by applicable law.
+      </p>
+
+      <h2>Cookies and analytics</h2>
+      <p>
+        We use essential cookies to operate the site and may use analytics tools to understand
+        site usage. Where required by law, we obtain consent before placing non-essential cookies
+        or analytics tags. You can control cookies through your browser settings.
+      </p>
+
+      <h2>Data retention</h2>
+      <p>
+        We retain personal information for as long as needed to provide our services, comply with
+        legal obligations, resolve disputes, and enforce our agreements. Retention periods vary
+        by data type and are reviewed periodically.
+      </p>
+
+      <h2>Security</h2>
+      <p>
+        We use administrative, technical, and physical safeguards designed to protect personal
+        information against unauthorized access, use, disclosure, alteration, or destruction.
+        Our managed services posture is ISO 27001 aligned through the Technology Assurance Group
+        network. Fortify AI deployments operate inside an environment underwritten by Lloyd&rsquo;s
+        of London cybersecurity insurance policy.
+      </p>
+
+      <h2>International transfers</h2>
+      <p>
+        Information may be stored and processed in the United States or other jurisdictions. We
+        use appropriate safeguards, including contractual measures, where required by applicable
+        law.
+      </p>
+
+      <h2>Children</h2>
+      <p>
+        The site is not directed to children under 13, and we do not knowingly collect personal
+        information from children under 13.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        We may update this policy from time to time. When we do, we will revise the &ldquo;Last
+        updated&rdquo; date above. Material changes will be communicated as required by applicable
+        law.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        Questions about this policy or your information can be sent to
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a>.
+      </p>
+
+      <p class="disclaimer">
+        This privacy policy is informational and is not legal advice. If you require legal advice
+        about how this policy applies to your situation, consult qualified counsel.
+      </p>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .legal h2 { margin-top: var(--space-7); margin-bottom: var(--space-3); }
+  .legal h2:first-of-type { margin-top: 0; }
+  .legal ul { display: grid; gap: var(--space-2); margin-bottom: var(--space-4); }
+  .legal p { margin-bottom: var(--space-4); }
+</style>

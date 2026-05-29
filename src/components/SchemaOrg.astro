@@ -1,0 +1,230 @@
+---
+import { SITE, SERVICE_AREAS } from '@lib/site';
+
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+interface FaqItem {
+  q: string;
+  a: string;
+}
+interface LocalBusinessSpec {
+  name: string;
+  url: string;
+  city: string;
+  region?: string;
+  lat?: number;
+  lng?: number;
+}
+interface ServiceSpec {
+  name: string;
+  description: string;
+  areaServed?: string[];
+}
+
+interface Props {
+  pageType?: 'WebPage' | 'WebApplication' | 'AboutPage' | 'ContactPage' | 'CollectionPage';
+  pageName?: string;
+  pageDescription?: string;
+  breadcrumbs?: BreadcrumbItem[];
+  faqs?: FaqItem[];
+  localBusiness?: LocalBusinessSpec;
+  service?: ServiceSpec;
+  podcast?: boolean;
+  person?: boolean;
+  includeOrganization?: boolean;
+}
+
+const {
+  pageType = 'WebPage',
+  pageName,
+  pageDescription,
+  breadcrumbs,
+  faqs,
+  localBusiness,
+  service,
+  podcast = false,
+  person = false,
+  includeOrganization = true,
+} = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, SITE.url).toString();
+
+const graph: any[] = [];
+
+if (includeOrganization) {
+  graph.push({
+    '@type': 'Organization',
+    '@id': `${SITE.url}/#organization`,
+    name: SITE.parent,
+    legalName: 'i-NETT',
+    url: SITE.parentUrl,
+    sameAs: [SITE.parentUrl, SITE.url, SITE.social.linkedinPerson],
+    logo: {
+      '@type': 'ImageObject',
+      url: `${SITE.url}/assets/brand/inett-logo.png`,
+      width: 800,
+      height: 800,
+    },
+    description:
+      'i-NETT is a managed IT, cybersecurity, and managed AI provider serving mid-market firms in Southern California, the United States, and Canada.',
+    foundingLocation: {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: SITE.address.locality,
+        addressRegion: SITE.address.region,
+        addressCountry: SITE.address.country,
+      },
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'sales',
+      telephone: SITE.phone,
+      areaServed: ['US', 'CA'],
+      availableLanguage: ['English'],
+    },
+  });
+
+  graph.push({
+    '@type': 'Brand',
+    '@id': `${SITE.url}/#brand-fortify-ai`,
+    name: 'Fortify AI',
+    url: SITE.url,
+    description:
+      'Fortify AI is the managed AI offering from i-NETT. Built for HIPAA, GDPR, SOC, and CCPA compliance, underwritten by Lloyd’s of London cybersecurity insurance policy.',
+    parentOrganization: { '@id': `${SITE.url}/#organization` },
+  });
+
+  graph.push({
+    '@type': 'WebSite',
+    '@id': `${SITE.url}/#website`,
+    url: SITE.url,
+    name: `${SITE.name} by ${SITE.parent}`,
+    publisher: { '@id': `${SITE.url}/#organization` },
+    inLanguage: 'en-US',
+  });
+}
+
+graph.push({
+  '@type': pageType,
+  '@id': `${canonicalUrl}#${pageType.toLowerCase()}`,
+  url: canonicalUrl,
+  name: pageName,
+  description: pageDescription,
+  inLanguage: 'en-US',
+  isPartOf: { '@id': `${SITE.url}/#website` },
+  about: { '@id': `${SITE.url}/#brand-fortify-ai` },
+});
+
+if (breadcrumbs && breadcrumbs.length) {
+  graph.push({
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((b, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: b.name,
+      item: new URL(b.url, SITE.url).toString(),
+    })),
+  });
+}
+
+if (faqs && faqs.length) {
+  graph.push({
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  });
+}
+
+if (localBusiness) {
+  graph.push({
+    '@type': 'LocalBusiness',
+    '@id': `${canonicalUrl}#localbusiness`,
+    name: localBusiness.name,
+    url: localBusiness.url,
+    telephone: SITE.phone,
+    image: `${SITE.url}/assets/brand/inett-logo.png`,
+    priceRange: '$$$',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: localBusiness.city,
+      addressRegion: localBusiness.region ?? 'CA',
+      addressCountry: 'US',
+    },
+    ...(localBusiness.lat && localBusiness.lng
+      ? {
+          geo: {
+            '@type': 'GeoCoordinates',
+            latitude: localBusiness.lat,
+            longitude: localBusiness.lng,
+          },
+        }
+      : {}),
+    areaServed: SERVICE_AREAS.map((a) => ({ '@type': 'Place', name: a })),
+    parentOrganization: { '@id': `${SITE.url}/#organization` },
+  });
+}
+
+if (service) {
+  graph.push({
+    '@type': 'Service',
+    '@id': `${canonicalUrl}#service`,
+    name: service.name,
+    description: service.description,
+    serviceType: 'Managed AI',
+    provider: { '@id': `${SITE.url}/#organization` },
+    brand: { '@id': `${SITE.url}/#brand-fortify-ai` },
+    areaServed: (service.areaServed ?? Array.from(SERVICE_AREAS)).map((a) => ({
+      '@type': 'Place',
+      name: a,
+    })),
+  });
+}
+
+if (podcast) {
+  graph.push({
+    '@type': 'PodcastSeries',
+    '@id': `${SITE.url}/podcast#series`,
+    name: SITE.podcastTitle,
+    url: SITE.podcastUrl,
+    description:
+      'Conversations on AI, cybersecurity, and the operational realities of running a modern mid-market business.',
+    author: {
+      '@type': 'Person',
+      name: SITE.podcastHost,
+      jobTitle: 'VP of Business Development',
+      worksFor: { '@id': `${SITE.url}/#organization` },
+    },
+  });
+}
+
+if (person) {
+  graph.push({
+    '@type': 'Person',
+    '@id': `${SITE.url}/about#nick-dreyfus`,
+    name: 'Nick Dreyfus',
+    jobTitle: 'VP of Business Development',
+    image: `${SITE.url}/assets/brand/nick-headshot.jpg`,
+    worksFor: { '@id': `${SITE.url}/#organization` },
+    sameAs: [SITE.social.linkedinPerson],
+    knowsAbout: [
+      'Managed AI',
+      'Cybersecurity',
+      'HIPAA Compliance',
+      'Mid-market IT strategy',
+      'AI deployment for regulated industries',
+    ],
+  });
+}
+
+const ldJson = {
+  '@context': 'https://schema.org',
+  '@graph': graph,
+};
+---
+<script type="application/ld+json" set:html={JSON.stringify(ldJson)} />

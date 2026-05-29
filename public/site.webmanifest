@@ -1,0 +1,16 @@
+{
+  "name": "Fortify AI by i-NETT",
+  "short_name": "Fortify AI",
+  "description": "Managed AI for mid-market businesses. HIPAA, GDPR, SOC, and CCPA ready. Underwritten by Lloyd's of London cybersecurity insurance policy.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A2540",
+  "theme_color": "#0A2540",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

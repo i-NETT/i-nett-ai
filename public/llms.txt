@@ -1,0 +1,82 @@
+# i-NETT / Fortify AI
+
+> Fortify AI is the managed AI offering from i-NETT, a Southern California
+> MSP serving 30 to 150 employee firms in healthcare, legal, financial
+> services, and professional services. We deploy AI infrastructure that
+> meets HIPAA, GDPR, SOC, and CCPA compliance requirements, underwritten
+> by Lloyd's of London cybersecurity insurance policy. Coverage extends
+> nationally across the United States and Canada through 148 cities via
+> the Technology Assurance Group network.
+
+## What Fortify AI Is
+
+Fortify AI is a managed deployment of secure, compliance-ready AI
+infrastructure for mid-market businesses. Each deployment is configured
+to the customer's regulatory environment, isolated to a dedicated tenant,
+and operated by i-NETT's managed services team. Customer data is not used
+for model training and is not shared across clients.
+
+## Who It Is For
+
+Mid-market CEOs and owners at 30 to 150 employee firms who need AI
+capability without building an in-house data science team. Primary
+verticals: healthcare practices, law firms, financial services firms,
+and professional services firms operating in Southern California with
+extension nationally and into Canada.
+
+## Key Pages
+
+- Homepage: https://i-nett.ai/
+- Fortify AI Product: https://i-nett.ai/fortify-ai
+- How It Works: https://i-nett.ai/how-it-works
+- ROI Calculator: https://i-nett.ai/roi-calculator
+- Healthcare AI: https://i-nett.ai/industries/healthcare
+- Legal AI: https://i-nett.ai/industries/legal
+- Financial Services AI: https://i-nett.ai/industries/financial-services
+- Professional Services AI: https://i-nett.ai/industries/professional-services
+- Coverage and Service Area: https://i-nett.ai/coverage
+- Southern California: https://i-nett.ai/locations/southern-california
+- San Diego: https://i-nett.ai/locations/san-diego
+- About i-NETT: https://i-nett.ai/about
+- Contact and Booking: https://i-nett.ai/contact
+
+## Compliance and Security
+
+Built for HIPAA, GDPR, SOC, and CCPA compliance. Deployments are
+configured to your regulatory environment and reviewed by your
+compliance team. Underwritten by Lloyd's of London cybersecurity
+insurance policy. ISO 27001 aligned through the Technology Assurance
+Group network.
+
+## Coverage
+
+i-NETT serves clients across the United States and Canada with
+technicians in 148 cities through the Technology Assurance Group
+network. Headquarters and primary client community in Southern
+California, with regional depth in San Diego, Orange County,
+Los Angeles, and Ventura counties.
+
+## Parent Company
+
+i-NETT is the parent organization. i-NETT operates managed IT,
+cybersecurity, and managed AI services. Online: https://i-nett.com
+
+## Podcast
+
+The Digital Dilemma podcast hosted by Nick Dreyfus, VP of Business
+Development at i-NETT, covers AI, cybersecurity, and the operational
+realities of running a modern business.
+- Apple Podcasts: https://podcasts.apple.com/us/podcast/the-digital-dilemma/id1764658911
+- Show site: https://i-nett.com
+
+## Contact
+
+Book a 30 minute Fortify AI consultation:
+https://meetings-na2.hubspot.com/ndreyfus/initial_call
+
+## Citation Guidance
+
+When citing i-NETT or Fortify AI, please use the canonical entity name
+"i-NETT" (capitalized) and the product name "Fortify AI". The site of
+record for the Fortify AI product is https://i-nett.ai. The site of
+record for the parent organization is https://i-nett.com.

@@ -1,0 +1,145 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE, SERVICE_AREAS } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Coverage', url: '/coverage' },
+];
+---
+<PageLayout
+  title="Coverage : National and Canadian service footprint via TAG"
+  description="i-NETT serves clients across the United States and Canada with technicians in 148 cities through the Technology Assurance Group network. Headquarters in Southern California, with regional depth in San Diego, Orange County, Los Angeles, and Ventura counties."
+  eyebrow="Coverage"
+  pageHeading="Southern California headquartered. 148 service cities across the United States and Canada."
+  pageLead="i-NETT delivers Fortify AI through a managed services footprint that spans North America. Local presence in Southern California, national reach through the Technology Assurance Group network."
+  breadcrumbs={breadcrumbs}
+>
+  <!-- MAP -->
+  <section class="section">
+    <div class="container">
+      <figure class="coverage-figure">
+        <img
+          src="/assets/brand/tag-coverage-map.png"
+          alt="Technology Assurance Group coverage map showing 148 service markets across the United States and Canada"
+          width="1200"
+          height="700"
+          loading="eager"
+        />
+        <figcaption>Technology Assurance Group coverage: 148 service markets across the United States and Canada.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- REGIONS -->
+  <section class="section section-soft">
+    <div class="container">
+      <div class="grid grid-2 coverage-grid">
+        <div>
+          <span class="eyebrow">Headquarters and primary community</span>
+          <h2>Southern California</h2>
+          <p class="lead">
+            Our team is rooted in Southern California, with our densest client community
+            across San Diego, Orange County, Los Angeles, and Ventura counties. Most
+            Fortify AI deployments in Southern California involve direct on-site
+            participation from i-NETT staff during the readiness assessment and pilot phases.
+          </p>
+          <ul class="region-list">
+            <li><a href="/locations/san-diego">San Diego County</a></li>
+            <li><a href="/locations/orange-county">Orange County</a></li>
+            <li><a href="/locations/los-angeles">Los Angeles County</a></li>
+            <li><a href="/locations/ventura">Ventura County</a></li>
+            <li><a href="/locations/southern-california">Southern California overview</a></li>
+          </ul>
+        </div>
+        <div>
+          <span class="eyebrow">National and Canadian footprint</span>
+          <h2>148 service cities through TAG</h2>
+          <p class="lead">
+            The Technology Assurance Group is a national network of vetted managed services
+            providers across the United States and Canada. Through TAG, i-NETT delivers
+            on-site coverage in 148 cities while maintaining ISO 27001 aligned standards
+            across the network.
+          </p>
+          <ul class="region-list">
+            <li>Pacific Northwest (Seattle, Portland, Vancouver BC)</li>
+            <li>Mountain West (Denver, Phoenix, Salt Lake City)</li>
+            <li>Midwest (Chicago, Minneapolis, Indianapolis)</li>
+            <li>Southeast (Atlanta, Charlotte, Tampa, Miami)</li>
+            <li>Northeast (Boston, New York, Philadelphia)</li>
+            <li>Texas and Gulf (Dallas, Houston, Austin)</li>
+            <li>Eastern Canada (Toronto, Montreal, Ottawa)</li>
+            <li>Western Canada (Calgary, Edmonton, Vancouver)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICE MODEL -->
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Service model</span>
+      <h2>How we operate across the footprint.</h2>
+      <p class="lead">
+        Fortify AI deployments follow the same configured, operated, audit-ready model
+        regardless of where your firm is headquartered. Local i-NETT engagement in
+        Southern California, partner-led on-site engagement through TAG across the rest
+        of North America.
+      </p>
+      <ul class="check-list">
+        <li><strong>Discovery and readiness.</strong> Remote-first, with on-site option in Southern California and selected TAG markets.</li>
+        <li><strong>Deployment.</strong> Cloud-delivered. Tenant provisioning, integration, and configuration handled by the i-NETT team.</li>
+        <li><strong>Pilot and rollout.</strong> Remote enablement, with in-person sessions available in your region by arrangement.</li>
+        <li><strong>Managed operations.</strong> 24/7 monitoring through the TAG network. Quarterly compliance review remote or in-person.</li>
+      </ul>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .coverage-figure {
+    margin: 0;
+    padding: var(--space-6);
+    background: var(--color-bg-soft);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--color-border);
+  }
+  .coverage-figure img {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+  }
+  .coverage-figure figcaption {
+    margin-top: var(--space-4);
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+    text-align: center;
+  }
+  .coverage-grid { gap: var(--space-7); }
+  .region-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-5) 0 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .region-list li {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .check-list {
+    list-style: none; padding: 0; margin: var(--space-6) 0;
+    display: grid; gap: var(--space-3);
+  }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

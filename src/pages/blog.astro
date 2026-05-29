@@ -1,0 +1,84 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Blog', url: '/blog' },
+];
+
+const upcoming = [
+  {
+    cat: 'Healthcare',
+    title: 'What a HIPAA-aligned AI deployment actually looks like inside a 100-employee practice',
+  },
+  {
+    cat: 'Legal',
+    title: 'ABA Model Rule 1.6 and AI: the configuration decisions that matter for mid-market firms',
+  },
+  {
+    cat: 'Financial Services',
+    title: 'Books-and-records, supervision, and AI tooling: what your compliance team needs to see',
+  },
+  {
+    cat: 'Operations',
+    title: 'The two workflows that return AI value fastest in a mid-market firm',
+  },
+  {
+    cat: 'Compliance',
+    title: 'What "underwritten by Lloyd&rsquo;s of London" really means for your AI deployment',
+  },
+  {
+    cat: 'Leadership',
+    title: 'What a CEO actually needs to know before signing an AI deployment engagement',
+  },
+];
+---
+<PageLayout
+  title="Blog : Fortify AI by i-NETT"
+  description="Insights on managed AI, compliance, and the operational realities of deploying AI inside mid-market firms. From the team at i-NETT and the Fortify AI deployment practice."
+  eyebrow="Blog"
+  pageHeading="Insights from the deployment front line."
+  pageLead="The Fortify AI blog publishes on managed AI, compliance configuration, and the operational realities of running AI inside a mid-market firm. Initial articles publish in the weeks following launch."
+  breadcrumbs={breadcrumbs}
+  pageType="CollectionPage"
+>
+  <section class="section">
+    <div class="container">
+      <span class="eyebrow">Upcoming</span>
+      <h2>The first set of articles.</h2>
+      <div class="grid grid-2 article-grid">
+        {upcoming.map((a) => (
+          <article class="article-card">
+            <span class="pill">{a.cat}</span>
+            <h3 set:html={a.title} />
+            <p class="article-card__status">Publishing post-launch</p>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .article-grid { gap: var(--space-5); }
+  .article-card {
+    padding: var(--space-6);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .article-card h3 { font-size: var(--fs-lg); margin-top: var(--space-2); }
+  .article-card__status {
+    margin-top: auto;
+    padding-top: var(--space-4);
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-accent-500);
+    font-weight: 600;
+    border-top: 1px solid var(--color-border);
+  }
+</style>

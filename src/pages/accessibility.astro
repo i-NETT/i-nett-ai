@@ -1,0 +1,83 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Accessibility', url: '/accessibility' },
+];
+const updated = 'May 28, 2026';
+---
+<PageLayout
+  title="Accessibility Statement : Fortify AI by i-NETT"
+  description="Our accessibility commitment, target conformance level (WCAG 2.2 AA), and how to request accommodations or report accessibility issues with i-nett.ai."
+  eyebrow="Legal"
+  pageHeading="Accessibility Statement"
+  pageLead={`Last updated ${updated}. i-NETT is committed to ensuring i-nett.ai is accessible to everyone, including people with disabilities. We target WCAG 2.2 AA conformance and continuously improve based on testing and user feedback.`}
+  breadcrumbs={breadcrumbs}
+  hideFinalCta={true}
+>
+  <section class="section">
+    <div class="container container-narrow legal">
+      <h2>Our commitment</h2>
+      <p>
+        We design, build, and operate i-nett.ai with accessibility as a core requirement,
+        not an afterthought. Our goal is conformance with the Web Content Accessibility
+        Guidelines (WCAG) 2.2 Level AA across all pages.
+      </p>
+
+      <h2>What we have done</h2>
+      <ul>
+        <li>Semantic HTML structure throughout the site</li>
+        <li>Skip-to-content link as the first focusable element</li>
+        <li>Visible, high-contrast focus indicators on all interactive elements</li>
+        <li>Keyboard navigation supported across the entire site</li>
+        <li>Touch targets sized to a minimum of 44 by 44 pixels</li>
+        <li>Color contrast ratios of at least 4.5:1 for body text and 3:1 for large text</li>
+        <li>Descriptive alt text on informative images</li>
+        <li>Respect for the prefers-reduced-motion media query</li>
+        <li>Forms with associated labels, error states, and ARIA-live regions where appropriate</li>
+        <li>Single-page modal patterns with focus trapping, escape-to-close, and restored focus on exit</li>
+      </ul>
+
+      <h2>Where we are still improving</h2>
+      <p>
+        Accessibility is ongoing work. If you encounter an issue that prevents you from using
+        the site, please tell us. We treat accessibility reports as priority items.
+      </p>
+
+      <h2>Request an accommodation</h2>
+      <p>
+        If you need a specific accommodation to engage with i-NETT, including alternative
+        formats of any content on this site, contact us at
+        <a href={`mailto:${SITE.email}`}>{SITE.email}</a> or by phone at
+        <a href={`tel:${SITE.phone}`}>{SITE.phoneDisplay}</a>. We will work with you to provide
+        the information or service you need in a format you can use.
+      </p>
+
+      <h2>Report an accessibility issue</h2>
+      <p>
+        Email <a href={`mailto:${SITE.email}?subject=Accessibility issue`}>{SITE.email}</a> with
+        the URL where you encountered the issue, a description of the issue, and the assistive
+        technology and browser you were using. We will acknowledge your report within five
+        business days.
+      </p>
+
+      <h2>Third-party content</h2>
+      <p>
+        Where the site embeds third-party content such as scheduling calendars or podcast
+        players, we work with those providers to ensure their experiences are accessible. If
+        you encounter an accessibility barrier in third-party content embedded on i-nett.ai,
+        report it to us and we will work with the vendor to resolve it or provide an alternative
+        path.
+      </p>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .legal h2 { margin-top: var(--space-7); margin-bottom: var(--space-3); }
+  .legal h2:first-of-type { margin-top: 0; }
+  .legal ul { display: grid; gap: var(--space-2); margin-bottom: var(--space-4); }
+  .legal p { margin-bottom: var(--space-4); }
+</style>

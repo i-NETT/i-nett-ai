@@ -1,0 +1,140 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import FAQ from '@components/FAQ.astro';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Industries', url: '/industries/legal' },
+  { name: 'Legal', url: '/industries/legal' },
+];
+
+const faqs = [
+  {
+    q: 'Is client data safe from training and cross-firm exposure?',
+    a: 'Yes. Customer data is isolated to your dedicated tenant. We do not use customer data for model training or share it across clients. Privileged and confidential material stays in your environment. Audit logging is enabled by default for compliance review by your firm.'
+  },
+  {
+    q: 'What about ABA Model Rule 1.6 obligations on client confidentiality?',
+    a: 'Fortify AI deployments are configured to support your firm’s confidentiality obligations under applicable bar rules, including ABA Model Rule 1.6. Configuration decisions, data residency, and access controls are documented and reviewed by your firm’s general counsel or compliance committee. The deployment supports your duty. Your firm remains responsible for the supervision and competent use requirements.'
+  },
+  {
+    q: 'Which legal workflows return value first?',
+    a: 'Document review and summarization, matter intake and conflict-screening prep, knowledge retrieval across your firm’s prior work product, contract analysis drafts, and discovery support are the typical first deployments. We start with the workflow that returns the most attorney and paralegal time in your highest-volume practice areas.'
+  },
+  {
+    q: 'Does Fortify AI replace our document management system?',
+    a: 'No. Fortify AI integrates with your existing document management, practice management, and time and billing systems. We deploy AI on top of your authorized data sources. We do not replace your system of record.'
+  },
+  {
+    q: 'Can Fortify AI support multi-office and multi-jurisdiction firms?',
+    a: 'Yes. Role-based access and data residency are configured per office or per practice group. Multi-jurisdiction firms can configure separate workspaces with shared knowledge as appropriate to bar rules and ethical screens.'
+  },
+];
+---
+<PageLayout
+  title="AI for Law Firms : Privilege-aware managed AI for legal practices"
+  description="Fortify AI for law firms. Privileged-information-safe deployment, dedicated tenant, audit logging, configured to support your firm's confidentiality obligations. Built for mid-market litigation, transactional, and specialty practices."
+  eyebrow="Legal"
+  pageHeading="AI for law firms, built to respect privilege from the ground up."
+  pageLead="Fortify AI deploys document review, matter intake, knowledge retrieval, and contract workflows into law firms that need defensible configuration and audit-ready operations. Built for the firms that take ABA Model Rule 1.6 seriously and operate under bar oversight."
+  breadcrumbs={breadcrumbs}
+  faqs={faqs}
+  service={{
+    name: 'Fortify AI for Law Firms',
+    description: 'Privilege-aware managed AI deployment for law firms. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
+  }}
+>
+  <!-- POSTURE -->
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Confidentiality posture</span>
+      <h2>Privileged client material stays in your tenant. Period.</h2>
+      <p class="lead">
+        Law firms operate under confidentiality duties that consumer AI tooling was
+        never designed to support. Fortify AI deployments are built around the
+        assumption that everything in the system is privileged or confidential until
+        proven otherwise. Configuration decisions are documented and reviewable by
+        your firm&rsquo;s general counsel.
+      </p>
+      <ul class="check-list">
+        <li>Dedicated tenant, privileged material isolated to your environment</li>
+        <li>We do not use customer data for model training or share it across clients</li>
+        <li>Audit logging enabled by default, reviewable by your firm leadership</li>
+        <li>Role-based access for attorneys, paralegals, staff, and outside counsel</li>
+        <li>Ethical screens supported through workspace-level access controls</li>
+        <li>Encryption at rest and in transit</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- WORKFLOWS -->
+  <section class="section section-soft">
+    <div class="container">
+      <span class="eyebrow">Where it shows up first</span>
+      <h2>The legal workflows we ship first.</h2>
+      <div class="grid grid-3" style="margin-top: var(--space-7);">
+        <div class="card">
+          <h3>Document review and summarization</h3>
+          <p>Long-form documents, depositions, and discovery materials reduced to action-ready summaries with citation back to source.</p>
+        </div>
+        <div class="card">
+          <h3>Matter intake and conflict prep</h3>
+          <p>New matter intake summarized, conflict-screening packets pre-assembled, and matter briefs drafted for partner review.</p>
+        </div>
+        <div class="card">
+          <h3>Knowledge retrieval</h3>
+          <p>Your firm’s prior work product, briefs, memoranda, and forms made searchable and conversational, scoped to authorized users.</p>
+        </div>
+        <div class="card">
+          <h3>Contract analysis drafts</h3>
+          <p>Standard contracts and amendments analyzed against your firm’s playbooks. First-pass redlines drafted for your attorneys to refine.</p>
+        </div>
+        <div class="card">
+          <h3>Memorandum drafting</h3>
+          <p>Internal research memos and client-facing memoranda drafted from your inputs and your firm’s knowledge base. Reviewed and signed by your attorney.</p>
+        </div>
+        <div class="card">
+          <h3>Client communication</h3>
+          <p>Status updates, follow-ups, and client-facing summaries drafted in your firm’s voice. Always reviewed by your attorney before send.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container container-narrow">
+      <p class="disclaimer">
+        This content is for informational purposes only and does not constitute legal
+        advice. Configurations are reviewed by your firm’s general counsel or compliance
+        committee. Built for HIPAA, GDPR, SOC, and CCPA compliance. Underwritten by
+        Lloyd&rsquo;s of London cybersecurity insurance policy.
+      </p>
+    </div>
+  </section>
+
+  <FAQ items={faqs} />
+</PageLayout>
+
+<style>
+  .check-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-6) 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .check-list li {
+    padding-left: 2em;
+    position: relative;
+  }
+  .check-list li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

@@ -1,0 +1,102 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Locations', url: '/coverage' },
+  { name: 'Southern California', url: '/locations/southern-california' },
+];
+---
+<PageLayout
+  title="Managed AI in Southern California : Fortify AI by i-NETT"
+  description="Fortify AI for Southern California firms. Headquartered in the region with primary client community across San Diego, Orange County, Los Angeles, and Ventura counties. HIPAA, GDPR, SOC, CCPA ready."
+  eyebrow="Southern California"
+  pageHeading="Managed AI for Southern California businesses."
+  pageLead="Fortify AI is built and operated from Southern California. Our densest client community spans San Diego, Orange County, Los Angeles, and Ventura counties. We engage on-site for readiness assessment and pilot phases across the region."
+  breadcrumbs={breadcrumbs}
+  localBusiness={{
+    name: 'i-NETT (Southern California)',
+    url: `${SITE.url}/locations/southern-california`,
+    city: 'San Diego',
+    region: 'CA',
+    lat: 32.7157,
+    lng: -117.1611,
+  }}
+>
+  <section class="section">
+    <div class="container">
+      <span class="eyebrow">Counties served</span>
+      <h2>Where we work most.</h2>
+      <div class="grid grid-4">
+        <a href="/locations/san-diego" class="card industry-card">
+          <h3>San Diego County</h3>
+          <p>Primary metro and densest client community.</p>
+          <span class="arrow" aria-hidden="true">&rarr;</span>
+        </a>
+        <a href="/locations/orange-county" class="card industry-card">
+          <h3>Orange County</h3>
+          <p>Healthcare, legal, financial services hub.</p>
+          <span class="arrow" aria-hidden="true">&rarr;</span>
+        </a>
+        <a href="/locations/los-angeles" class="card industry-card">
+          <h3>Los Angeles County</h3>
+          <p>Professional services and creative industries.</p>
+          <span class="arrow" aria-hidden="true">&rarr;</span>
+        </a>
+        <a href="/locations/ventura" class="card industry-card">
+          <h3>Ventura County</h3>
+          <p>Mid-market firms, regional operations.</p>
+          <span class="arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-soft">
+    <div class="container container-narrow">
+      <span class="eyebrow">Why Southern California firms choose Fortify AI</span>
+      <h2>Local engagement, national operating standard.</h2>
+      <p class="lead">
+        Southern California firms get the benefit of an on-the-ground i-NETT engagement
+        team and the operating discipline of a national managed services network. Most
+        Fortify AI deployments in Southern California include in-person readiness
+        assessment sessions, pilot kickoff workshops, and quarterly compliance review
+        meetings on request.
+      </p>
+      <ul class="check-list">
+        <li>On-site readiness assessment and pilot kickoff available across the four-county region</li>
+        <li>In-person enablement sessions for your team</li>
+        <li>Quarterly compliance review available in person at your office</li>
+        <li>Same managed operations standard as our national TAG deployments</li>
+      </ul>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .industry-card {
+    color: var(--color-text);
+    position: relative;
+    padding-bottom: var(--space-7);
+  }
+  .industry-card h3 { margin-bottom: var(--space-3); }
+  .industry-card .arrow {
+    position: absolute;
+    bottom: var(--space-5);
+    right: var(--space-5);
+    color: var(--color-accent-500);
+  }
+  .check-list {
+    list-style: none; padding: 0; margin: var(--space-6) 0;
+    display: grid; gap: var(--space-3);
+  }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

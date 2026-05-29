@@ -1,0 +1,57 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Locations', url: '/coverage' },
+  { name: 'San Diego', url: '/locations/san-diego' },
+  { name: 'Poway', url: '/locations/san-diego/poway' },
+];
+---
+<PageLayout
+  title="Managed AI in Poway : Fortify AI by i-NETT"
+  description="Fortify AI for Poway firms. Managed AI for defense-adjacent professional services, healthcare practices, technology firms, and regional businesses across Poway and inland San Diego. HIPAA, GDPR, SOC, CCPA ready."
+  eyebrow="Poway, San Diego"
+  pageHeading="Managed AI for Poway firms."
+  pageLead="Poway&rsquo;s mid-market is concentrated in defense-adjacent professional services, technology firms, and regional healthcare practices. Fortify AI deploys compliance-ready AI built for environments that take security configuration seriously."
+  breadcrumbs={breadcrumbs}
+  localBusiness={{
+    name: 'i-NETT (Poway)',
+    url: `${SITE.url}/locations/san-diego/poway`,
+    city: 'Poway',
+    region: 'CA',
+    lat: 32.9628,
+    lng: -117.0359,
+  }}
+>
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">Built for Poway&rsquo;s buyer</span>
+      <h2>Security-grade AI for defense-adjacent and regulated firms.</h2>
+      <p class="lead">
+        Poway hosts a meaningful concentration of defense-adjacent professional services
+        firms, technology companies, and healthcare practices. Each of these buyers
+        requires AI tooling that is configured for security from day one.
+      </p>
+      <ul class="check-list">
+        <li>Dedicated tenant, customer data isolated to your environment</li>
+        <li>Configuration aligned to defense-adjacent compliance requirements where applicable</li>
+        <li>HIPAA configuration for healthcare practices</li>
+        <li>Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy</li>
+      </ul>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .check-list { list-style: none; padding: 0; margin: var(--space-6) 0; display: grid; gap: var(--space-3); }
+  .check-list li { padding-left: 2em; position: relative; }
+  .check-list li::before {
+    content: ''; position: absolute; left: 0; top: 0.4em;
+    width: 18px; height: 18px;
+    background: var(--color-accent-500);
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 4px #fff, 0 0 0 2px var(--color-accent-500);
+  }
+</style>

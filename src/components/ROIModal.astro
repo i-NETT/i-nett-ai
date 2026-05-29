@@ -1,0 +1,136 @@
+---
+import ROICalculator from './ROICalculator.astro';
+---
+<button class="btn btn-accent btn-lg roi-modal-trigger" type="button" data-roi-open>
+  Try the ROI calculator
+  <span aria-hidden="true">&rarr;</span>
+</button>
+
+<div class="roi-modal" data-roi-modal hidden role="dialog" aria-modal="true" aria-labelledby="roi-modal-title">
+  <div class="roi-modal__backdrop" data-roi-close></div>
+  <div class="roi-modal__panel" role="document">
+    <header class="roi-modal__header">
+      <h2 id="roi-modal-title" class="sr-only">Fortify AI ROI calculator</h2>
+      <button class="roi-modal__close" type="button" data-roi-close aria-label="Close ROI calculator">
+        <svg viewBox="0 0 24 24" width="24" height="24" focusable="false" aria-hidden="true">
+          <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </header>
+    <div class="roi-modal__body">
+      <ROICalculator variant="modal" id="roi-modal-calc" />
+    </div>
+  </div>
+</div>
+
+<style>
+  .roi-modal-trigger {
+    display: inline-flex;
+    gap: 0.5em;
+  }
+  .roi-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    padding: var(--space-4);
+  }
+  .roi-modal[hidden] { display: none; }
+  .roi-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 11, 20, 0.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    animation: fade-in 200ms var(--ease-out);
+  }
+  .roi-modal__panel {
+    position: relative;
+    width: 100%;
+    max-width: 760px;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    background: var(--color-bg);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    animation: panel-in 320ms var(--ease-out);
+    -webkit-overflow-scrolling: touch;
+  }
+  .roi-modal__header {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,1) 60%, rgba(255,255,255,0));
+    z-index: 1;
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--space-4) var(--space-4) 0;
+  }
+  .roi-modal__close {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    color: var(--color-ink-800);
+    display: inline-grid;
+    place-items: center;
+    transition: background var(--dur-fast) var(--ease-out);
+  }
+  .roi-modal__close:hover { background: var(--color-bg-muted); }
+  .roi-modal__body { padding: 0 var(--space-2) var(--space-4); }
+
+  @keyframes fade-in { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes panel-in {
+    from { opacity: 0; transform: translateY(20px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .roi-modal__backdrop, .roi-modal__panel { animation: none; }
+  }
+</style>
+
+<script>
+  const modal = document.querySelector<HTMLElement>('[data-roi-modal]');
+  const openers = document.querySelectorAll<HTMLElement>('[data-roi-open]');
+  const closers = document.querySelectorAll<HTMLElement>('[data-roi-close]');
+
+  let lastFocus: HTMLElement | null = null;
+
+  const open = () => {
+    if (!modal) return;
+    lastFocus = document.activeElement as HTMLElement;
+    modal.hidden = false;
+    document.documentElement.style.overflow = 'hidden';
+    const closeBtn = modal.querySelector<HTMLElement>('.roi-modal__close');
+    closeBtn?.focus();
+  };
+
+  const close = () => {
+    if (!modal) return;
+    modal.hidden = true;
+    document.documentElement.style.overflow = '';
+    lastFocus?.focus();
+  };
+
+  openers.forEach((o) => o.addEventListener('click', open));
+  closers.forEach((c) => c.addEventListener('click', close));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && !modal.hidden) close();
+  });
+
+  // Trap focus inside the panel while open
+  modal?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Tab' || modal.hidden) return;
+    const focusables = modal.querySelectorAll<HTMLElement>(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && document.activeElement === first) {
+      e.preventDefault(); last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault(); first.focus();
+    }
+  });
+</script>

@@ -1,0 +1,123 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import ROICalculator from '@components/ROICalculator.astro';
+import FAQ from '@components/FAQ.astro';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'ROI calculator', url: '/roi-calculator' },
+];
+
+const faqs = [
+  {
+    q: 'Where do the wage defaults come from?',
+    a: 'Hourly cost defaults are anchored to U.S. Bureau of Labor Statistics Occupational Employment Statistics, May 2024. Defaults reflect typical fully-loaded hourly cost for representative roles within each industry vertical.'
+  },
+  {
+    q: 'Why five hours per week as the default?',
+    a: 'Recent studies on the productivity impact of generative AI in knowledge work cite a four to eight hour per employee per week range, depending on workflow fit, training, and adoption. We default to five hours as a defensible mid-point for early deployment.'
+  },
+  {
+    q: 'Is this number a guarantee?',
+    a: 'No. This calculator is for illustrative purposes only and is not a guarantee of results. Actual results vary by industry, deployment scope, and execution. Use the number as a sizing input for your board conversation, not as a forecast.'
+  },
+  {
+    q: 'How does Fortify AI actually capture this value?',
+    a: 'Through targeted workflow deployment. The first two or three workflows we ship for a typical mid-market firm are documentation, knowledge retrieval, and intake or triage. These are the workflows where time savings compound across your team. See our methodology for the full deployment process.'
+  },
+];
+---
+<PageLayout
+  title="ROI Calculator : Estimate your annual AI productivity opportunity"
+  description="Estimate your firm's annual AI productivity opportunity. Industry-specific defaults anchored to U.S. Bureau of Labor Statistics data. For illustrative purposes only."
+  eyebrow="ROI Calculator"
+  pageHeading="What is a five hour per week productivity uplift worth to your firm?"
+  pageLead="Pick your industry. Adjust the sliders. The number is yours to take to your board. Anchored to BLS Occupational Employment Statistics and current research on generative AI productivity in knowledge work."
+  breadcrumbs={breadcrumbs}
+  faqs={faqs}
+  pageType="WebApplication"
+>
+  <!-- CALCULATOR -->
+  <section class="section">
+    <div class="container container-narrow">
+      <ROICalculator variant="inline" id="roi-page-calc" showMethodologyLink={false} />
+    </div>
+  </section>
+
+  <!-- METHODOLOGY -->
+  <section class="section section-soft">
+    <div class="container container-narrow">
+      <span class="eyebrow">Methodology</span>
+      <h2>How this calculator works.</h2>
+
+      <h3>Calculation</h3>
+      <p>The calculator multiplies four inputs to produce three outputs.</p>
+      <ul>
+        <li><strong>Inputs:</strong> Industry, employee count, fully-loaded hourly cost, hours saved per employee per week.</li>
+        <li><strong>Weekly value:</strong> Employees &times; Hourly cost &times; Hours saved per week.</li>
+        <li><strong>Monthly value:</strong> Weekly &times; 4.33.</li>
+        <li><strong>Annual value:</strong> Employees &times; Hourly cost &times; Hours saved per week &times; 50 working weeks.</li>
+      </ul>
+
+      <h3>Data sources</h3>
+      <ul>
+        <li><strong>Hourly cost defaults.</strong> U.S. Bureau of Labor Statistics Occupational Employment Statistics, May 2024. Defaults reflect typical fully-loaded hourly cost for representative roles within each industry vertical.</li>
+        <li><strong>Hours saved defaults.</strong> Recent studies on the productivity impact of generative AI in knowledge work cite a four to eight hour per employee per week range. We default to five hours as a defensible mid-point for early deployment.</li>
+        <li><strong>Working weeks.</strong> 50 working weeks per year, accounting for typical paid time off, sick leave, and holidays.</li>
+      </ul>
+
+      <h3>How to use the number</h3>
+      <p>
+        The estimated annual productivity opportunity is a sizing input for your board
+        conversation. It tells you the upper bound of value at stake if your firm
+        captures the cited productivity range across your full team. It is not a
+        forecast and not a contractual commitment.
+      </p>
+      <p>
+        The real conversation is which two or three workflows in your firm capture
+        the most of that value in the first 90 days. That is what a Fortify AI
+        readiness assessment is designed to answer.
+      </p>
+
+      <h3>Industry defaults</h3>
+      <table>
+        <thead>
+          <tr><th>Industry</th><th>Default employees</th><th>Default hourly cost</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Healthcare</td><td>150</td><td>$52</td></tr>
+          <tr><td>Legal</td><td>75</td><td>$95</td></tr>
+          <tr><td>Financial Services</td><td>100</td><td>$68</td></tr>
+          <tr><td>Professional Services</td><td>50</td><td>$72</td></tr>
+          <tr><td>Real Estate</td><td>80</td><td>$48</td></tr>
+          <tr><td>Manufacturing</td><td>200</td><td>$42</td></tr>
+          <tr><td>Construction</td><td>60</td><td>$55</td></tr>
+          <tr><td>Nonprofit / Education</td><td>100</td><td>$38</td></tr>
+          <tr><td>Hospitality / Retail</td><td>250</td><td>$32</td></tr>
+        </tbody>
+      </table>
+
+      <p class="disclaimer">
+        Estimated savings are based on assumed inputs and industry productivity research.
+        Actual results vary by industry, deployment scope, and execution. This calculator
+        is for illustrative purposes only and is not a guarantee of results. Wage data
+        sourced from U.S. Bureau of Labor Statistics Occupational Employment Statistics,
+        May 2024. Productivity assumptions sourced from recent studies on generative AI
+        impact in knowledge work (four to eight hours per employee per week is the
+        industry-cited range; this calculator defaults to five).
+      </p>
+      <p class="disclaimer">
+        Healthcare-specific deployments are configured per HIPAA requirements and reviewed
+        by your compliance team. Financial services deployments are configured per applicable
+        regulations and reviewed by your compliance team.
+      </p>
+    </div>
+  </section>
+
+  <FAQ items={faqs} />
+</PageLayout>
+
+<style>
+  h3 { margin-top: var(--space-6); margin-bottom: var(--space-3); }
+  ul { margin-bottom: var(--space-4); display: grid; gap: var(--space-2); }
+</style>
