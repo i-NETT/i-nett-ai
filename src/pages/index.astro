@@ -152,7 +152,7 @@ const faqs = [
         </p>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal reveal-up reveal-delay-1">
+        <button type="button" class="card pillar-card reveal reveal-up reveal-delay-1" data-pillar-open="pillar-1" aria-haspopup="dialog">
           <span class="card-num">01</span>
           <h3>Compliance-first infrastructure</h3>
           <p>
@@ -160,8 +160,9 @@ const faqs = [
             Customer data is isolated to your dedicated tenant. We do not use customer
             data for model training or share it across clients.
           </p>
-        </article>
-        <article class="card reveal reveal-up reveal-delay-2">
+          <span class="pillar-card__more" aria-hidden="true">Read more <span class="pillar-card__arrow">&rarr;</span></span>
+        </button>
+        <button type="button" class="card pillar-card reveal reveal-up reveal-delay-2" data-pillar-open="pillar-2" aria-haspopup="dialog">
           <span class="card-num">02</span>
           <h3>Targeted, high-leverage workflows</h3>
           <p>
@@ -169,8 +170,9 @@ const faqs = [
             your firm in the first 90 days. Documentation, intake, summarization,
             knowledge retrieval, client communication. We ship those first.
           </p>
-        </article>
-        <article class="card reveal reveal-up reveal-delay-3">
+          <span class="pillar-card__more" aria-hidden="true">Read more <span class="pillar-card__arrow">&rarr;</span></span>
+        </button>
+        <button type="button" class="card pillar-card reveal reveal-up reveal-delay-3" data-pillar-open="pillar-3" aria-haspopup="dialog">
           <span class="card-num">03</span>
           <h3>Managed operations</h3>
           <p>
@@ -178,7 +180,155 @@ const faqs = [
             policy enforcement, and quarterly compliance review are included. Your
             team uses the system. We run it.
           </p>
-        </article>
+          <span class="pillar-card__more" aria-hidden="true">Read more <span class="pillar-card__arrow">&rarr;</span></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Pillar detail modals -->
+    <div class="pillar-modal" data-pillar-modal="pillar-1" hidden role="dialog" aria-modal="true" aria-labelledby="pillar-1-title">
+      <div class="pillar-modal__backdrop" data-pillar-close></div>
+      <div class="pillar-modal__panel" role="document">
+        <header class="pillar-modal__head">
+          <span class="card-num">01</span>
+          <button class="pillar-modal__close" type="button" data-pillar-close aria-label="Close detail">
+            <svg viewBox="0 0 24 24" width="22" height="22" focusable="false" aria-hidden="true">
+              <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </header>
+        <div class="pillar-modal__body">
+          <div class="pillar-modal__icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="56" height="56" focusable="false">
+              <path d="M32 6 L52 14 V30 C52 44 32 58 32 58 C32 58 12 44 12 30 V14 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M22 32 L28 38 L42 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2 id="pillar-1-title">Compliance-first infrastructure</h2>
+          <p>
+            Every Fortify AI deployment starts with your regulatory environment, not
+            ours. We configure infrastructure to meet the specific compliance posture
+            of your industry: HIPAA for healthcare, SOC 2 and GLBA for financial
+            services, attorney-client privilege protections for legal firms, and
+            CCPA, GDPR, and PIPEDA for cross-border operations.
+          </p>
+          <p>
+            Customer data is isolated to your dedicated tenant. We do not use your
+            data for model training. We do not share data across clients. Your
+            compliance team reviews our deployment posture before go-live, with
+            documentation maintained for regulator audits.
+          </p>
+          <h3 class="pillar-modal__outcomes-head">Business outcomes</h3>
+          <ul class="pillar-modal__outcomes">
+            <li>Compliance review completed before deployment, not after an incident</li>
+            <li>Audit-ready documentation maintained continuously</li>
+            <li>Dedicated tenant architecture, no shared training data</li>
+            <li>Configured to your regulatory environment, not a generic compliance baseline</li>
+          </ul>
+          <div class="pillar-modal__cta">
+            <a href={SITE.bookingUrl} class="btn btn-accent btn-lg" target="_blank" rel="noopener">
+              Book a 30 minute consultation
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pillar-modal" data-pillar-modal="pillar-2" hidden role="dialog" aria-modal="true" aria-labelledby="pillar-2-title">
+      <div class="pillar-modal__backdrop" data-pillar-close></div>
+      <div class="pillar-modal__panel" role="document">
+        <header class="pillar-modal__head">
+          <span class="card-num">02</span>
+          <button class="pillar-modal__close" type="button" data-pillar-close aria-label="Close detail">
+            <svg viewBox="0 0 24 24" width="22" height="22" focusable="false" aria-hidden="true">
+              <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </header>
+        <div class="pillar-modal__body">
+          <div class="pillar-modal__icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="56" height="56" focusable="false">
+              <circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <path d="M32 16 V32 L42 38" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="3" fill="currentColor"/>
+            </svg>
+          </div>
+          <h2 id="pillar-2-title">Targeted, high-leverage workflows</h2>
+          <p>
+            AI deployment fails when firms try to implement everything at once. We
+            identify the two or three workflows where AI returns the most value to
+            your firm in the first 90 days: documentation, intake, summarization,
+            knowledge retrieval, client communication.
+          </p>
+          <p>
+            We ship those workflows first, measure the outcomes, then expand based on
+            what is actually working. No multi-year roadmap. No platform play. Just
+            measurable wins in the first quarter, with the next quarter informed by
+            what we learned in this one.
+          </p>
+          <h3 class="pillar-modal__outcomes-head">Business outcomes</h3>
+          <ul class="pillar-modal__outcomes">
+            <li>First production workflow live in under 30 days</li>
+            <li>Two to three high-value workflows operational within 90 days</li>
+            <li>Measurable hours saved per employee, documented per workflow</li>
+            <li>Expansion roadmap driven by measured outcomes, not promised features</li>
+          </ul>
+          <div class="pillar-modal__cta">
+            <a href={SITE.bookingUrl} class="btn btn-accent btn-lg" target="_blank" rel="noopener">
+              Book a 30 minute consultation
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pillar-modal" data-pillar-modal="pillar-3" hidden role="dialog" aria-modal="true" aria-labelledby="pillar-3-title">
+      <div class="pillar-modal__backdrop" data-pillar-close></div>
+      <div class="pillar-modal__panel" role="document">
+        <header class="pillar-modal__head">
+          <span class="card-num">03</span>
+          <button class="pillar-modal__close" type="button" data-pillar-close aria-label="Close detail">
+            <svg viewBox="0 0 24 24" width="22" height="22" focusable="false" aria-hidden="true">
+              <path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </header>
+        <div class="pillar-modal__body">
+          <div class="pillar-modal__icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" width="56" height="56" focusable="false">
+              <rect x="10" y="14" width="44" height="36" rx="4" fill="none" stroke="currentColor" stroke-width="2.5"/>
+              <path d="M10 24 H54" stroke="currentColor" stroke-width="2.5"/>
+              <circle cx="17" cy="19" r="1.4" fill="currentColor"/>
+              <circle cx="22" cy="19" r="1.4" fill="currentColor"/>
+              <path d="M20 36 L28 44 L44 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2 id="pillar-3-title">Managed operations</h2>
+          <p>
+            We do not hand your team a platform and walk away. Our team operates the
+            deployment: monitoring, model evaluation, prompt library maintenance,
+            policy enforcement, version updates, and quarterly compliance review.
+            Your team uses the system. We run it.
+          </p>
+          <p>
+            This is the difference between buying AI software and buying AI
+            operations. The former leaves you responsible for an entire new
+            technology stack. The latter lets your team focus on the work that
+            drives the business.
+          </p>
+          <h3 class="pillar-modal__outcomes-head">Business outcomes</h3>
+          <ul class="pillar-modal__outcomes">
+            <li>24/7 monitoring and incident response</li>
+            <li>Quarterly compliance review included</li>
+            <li>Model and prompt library updates handled by our team</li>
+            <li>Your team uses the system, we operate the infrastructure</li>
+          </ul>
+          <div class="pillar-modal__cta">
+            <a href={SITE.bookingUrl} class="btn btn-accent btn-lg" target="_blank" rel="noopener">
+              Book a 30 minute consultation
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -463,6 +613,65 @@ const faqs = [
       );
       io.observe(hero);
     }
+
+    // Pillar detail modals. Open on card click, close on backdrop / X / Esc,
+    // trap focus inside the panel, restore focus to the opener on close.
+    const pillarOpeners = document.querySelectorAll<HTMLElement>('[data-pillar-open]');
+    const pillarModals = document.querySelectorAll<HTMLElement>('[data-pillar-modal]');
+    let pillarLastFocus: HTMLElement | null = null;
+
+    const openPillar = (id: string, opener: HTMLElement) => {
+      const modal = document.querySelector<HTMLElement>(`[data-pillar-modal="${id}"]`);
+      if (!modal) return;
+      pillarLastFocus = opener;
+      modal.hidden = false;
+      document.documentElement.style.overflow = 'hidden';
+      const closeBtn = modal.querySelector<HTMLElement>('.pillar-modal__close');
+      closeBtn?.focus();
+    };
+
+    const closePillar = (modal: HTMLElement) => {
+      modal.hidden = true;
+      // Only restore scroll if no other modal is open.
+      const anyOpen = Array.from(pillarModals).some((m) => !m.hidden);
+      if (!anyOpen) document.documentElement.style.overflow = '';
+      pillarLastFocus?.focus();
+    };
+
+    pillarOpeners.forEach((opener) => {
+      opener.addEventListener('click', () => {
+        const id = opener.getAttribute('data-pillar-open');
+        if (id) openPillar(id, opener);
+      });
+    });
+
+    pillarModals.forEach((modal) => {
+      modal.querySelectorAll<HTMLElement>('[data-pillar-close]').forEach((c) =>
+        c.addEventListener('click', () => closePillar(modal))
+      );
+      modal.addEventListener('keydown', (e) => {
+        if (modal.hidden) return;
+        const ke = e as KeyboardEvent;
+        if (ke.key === 'Tab') {
+          const focusables = modal.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (!focusables.length) return;
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+          if (ke.shiftKey && document.activeElement === first) {
+            e.preventDefault(); last.focus();
+          } else if (!ke.shiftKey && document.activeElement === last) {
+            e.preventDefault(); first.focus();
+          }
+        }
+      });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      pillarModals.forEach((m) => { if (!m.hidden) closePillar(m); });
+    });
   </script>
 
   <CTASection
@@ -915,6 +1124,158 @@ const faqs = [
     transition: transform var(--dur-fast) var(--ease-out);
   }
   .industry-card:hover .arrow { transform: translateX(4px); }
+
+  /* Clickable pillar cards (button reset + reveal-on-hover affordance) */
+  .pillar-card {
+    text-align: left;
+    color: var(--color-text);
+    font: inherit;
+    cursor: pointer;
+    width: 100%;
+    background: var(--color-bg);
+    padding: var(--space-6);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+  }
+  .pillar-card:focus-visible {
+    outline: 2px solid var(--color-accent-500);
+    outline-offset: 3px;
+  }
+  .pillar-card__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    color: var(--color-accent-500);
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    margin-top: var(--space-4);
+  }
+  .pillar-card__arrow {
+    display: inline-block;
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+  .pillar-card:hover .pillar-card__arrow {
+    transform: translateX(4px);
+  }
+
+  /* Pillar detail modal */
+  .pillar-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    display: grid;
+    place-items: center;
+    padding: var(--space-4);
+  }
+  .pillar-modal[hidden] { display: none; }
+  .pillar-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(5, 11, 20, 0.72);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    animation: pillar-fade 220ms var(--ease-out);
+  }
+  .pillar-modal__panel {
+    position: relative;
+    width: 100%;
+    max-width: 760px;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    background: var(--color-bg);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 32px 80px rgba(5, 11, 20, 0.45);
+    animation: pillar-in 320ms var(--ease-out);
+  }
+  .pillar-modal__head {
+    position: sticky;
+    top: 0;
+    background: var(--color-bg);
+    z-index: 1;
+    padding: var(--space-4) var(--space-5) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .pillar-modal__head .card-num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--color-accent-500);
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    margin-bottom: 0;
+  }
+  .pillar-modal__close {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    color: var(--color-ink-800);
+    display: inline-grid;
+    place-items: center;
+    transition: background var(--dur-fast) var(--ease-out);
+  }
+  .pillar-modal__close:hover { background: var(--color-bg-muted); }
+  .pillar-modal__body {
+    padding: var(--space-4) var(--space-7) var(--space-7);
+  }
+  .pillar-modal__icon {
+    color: var(--color-accent-500);
+    margin-bottom: var(--space-4);
+  }
+  .pillar-modal__body h2 {
+    font-size: var(--fs-2xl);
+    margin-bottom: var(--space-4);
+  }
+  .pillar-modal__body p {
+    color: var(--color-text-soft);
+    margin-bottom: var(--space-4);
+  }
+  .pillar-modal__outcomes-head {
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-ink-800);
+    margin: var(--space-6) 0 var(--space-3);
+    font-weight: 600;
+  }
+  .pillar-modal__outcomes {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--space-6);
+    display: grid;
+    gap: var(--space-3);
+  }
+  .pillar-modal__outcomes li {
+    padding: var(--space-3) var(--space-4) var(--space-3) calc(var(--space-4) + 1.5em);
+    background: var(--color-bg-soft);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-accent-500);
+    position: relative;
+    color: var(--color-text);
+  }
+  .pillar-modal__outcomes li::before {
+    content: '';
+    position: absolute;
+    left: calc(var(--space-4) + 4px);
+    top: 1em;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--color-accent-500);
+  }
+  .pillar-modal__cta {
+    display: flex;
+    justify-content: center;
+    margin-top: var(--space-5);
+  }
+  @keyframes pillar-fade { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes pillar-in {
+    from { opacity: 0; transform: translateY(16px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pillar-modal__backdrop, .pillar-modal__panel { animation: none; }
+  }
 
   /* Three Things section */
   .section-three {
