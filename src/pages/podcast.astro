@@ -6,63 +6,430 @@ const breadcrumbs = [
   { name: 'Home', url: '/' },
   { name: 'Podcast', url: '/podcast' },
 ];
+
+// Apple Podcasts show ID parsed from SITE.podcastUrl
+// (https://podcasts.apple.com/us/podcast/the-digital-dilemma/id1764658911)
+const APPLE_SHOW_ID = '1764658911';
+const appleEmbedSrc = `https://embed.podcasts.apple.com/us/podcast/the-digital-dilemma/id${APPLE_SHOW_ID}`;
+
+// FEATURED LONG-FORM EPISODES (placeholder structure).
+// Nick: provide YouTube video URLs and episode-specific Apple links later
+// for richer per-episode embeds. The Apple show embed above auto-pulls the
+// real recent feed in the interim. Replace title, summary, and href below
+// when episode-level metadata is available.
+const featuredEpisodes = [
+  {
+    n: 'EP 01',
+    title: 'Featured episode title coming soon',
+    summary:
+      'Auto-pulled from the Apple Podcasts feed above. Nick will swap in curated episode metadata and YouTube embeds post-launch.',
+    apple: SITE.podcastUrl,
+    youtube: null, // Nick: drop YouTube URL here
+  },
+  {
+    n: 'EP 02',
+    title: 'Featured episode title coming soon',
+    summary:
+      'Auto-pulled from the Apple Podcasts feed above. Nick will swap in curated episode metadata and YouTube embeds post-launch.',
+    apple: SITE.podcastUrl,
+    youtube: null,
+  },
+  {
+    n: 'EP 03',
+    title: 'Featured episode title coming soon',
+    summary:
+      'Auto-pulled from the Apple Podcasts feed above. Nick will swap in curated episode metadata and YouTube embeds post-launch.',
+    apple: SITE.podcastUrl,
+    youtube: null,
+  },
+  {
+    n: 'EP 04',
+    title: 'Featured episode title coming soon',
+    summary:
+      'Auto-pulled from the Apple Podcasts feed above. Nick will swap in curated episode metadata and YouTube embeds post-launch.',
+    apple: SITE.podcastUrl,
+    youtube: null,
+  },
+  {
+    n: 'EP 05',
+    title: 'Featured episode title coming soon',
+    summary:
+      'Auto-pulled from the Apple Podcasts feed above. Nick will swap in curated episode metadata and YouTube embeds post-launch.',
+    apple: SITE.podcastUrl,
+    youtube: null,
+  },
+];
+
+// SHORTS placeholders. Nick: replace href and label with real short URLs
+// (YouTube Shorts, Instagram Reels, TikTok) and thumbnail backgrounds once
+// the assets are produced.
+const shorts = [
+  { id: 1, label: 'Short clip 1', href: SITE.podcastUrl, accent: 'from-cyan' },
+  { id: 2, label: 'Short clip 2', href: SITE.podcastUrl, accent: 'from-blue' },
+  { id: 3, label: 'Short clip 3', href: SITE.podcastUrl, accent: 'from-deep' },
+  { id: 4, label: 'Short clip 4', href: SITE.podcastUrl, accent: 'from-cyan' },
+  { id: 5, label: 'Short clip 5', href: SITE.podcastUrl, accent: 'from-blue' },
+  { id: 6, label: 'Short clip 6', href: SITE.podcastUrl, accent: 'from-deep' },
+];
 ---
 <PageLayout
-  title="The Digital Dilemma : Hosted by Nick Dreyfus"
-  description="The Digital Dilemma podcast. Nick Dreyfus interviews founders, technologists, and CEOs on AI, cybersecurity, and the operational realities of running a modern mid-market business."
+  title="The Digital Dilemma Podcast, hosted by Nick Dreyfus"
+  description="The Digital Dilemma is a podcast hosted by Nick Dreyfus, VP of Business Development at i-NETT. Conversations with founders, technologists, and CEOs on AI, cybersecurity, compliance, and the operational realities of running a modern mid-market business. Listen on Apple Podcasts, browse recent episodes, and subscribe."
   eyebrow="The Digital Dilemma"
   pageHeading="A podcast for the mid-market CEO making technology decisions in real time."
-  pageLead="Hosted by Nick Dreyfus, VP of Business Development at i-NETT. Conversations on AI, cybersecurity, compliance, and the operational realities of running a modern business. New episodes regularly."
+  pageLead="Hosted by Nick Dreyfus, VP of Business Development at i-NETT. Conversations on AI, cybersecurity, compliance, and the operational realities of running a modern business. Listen below or subscribe on Apple Podcasts."
   breadcrumbs={breadcrumbs}
   podcast={true}
+  hideFinalCta={true}
 >
-  <section class="section">
+  <!-- APPLE PODCASTS SHOW EMBED -->
+  <section class="section" aria-labelledby="listen-heading">
     <div class="container container-narrow">
-      <div class="podcast-hero">
-        <h2>Listen and subscribe</h2>
-        <p class="lead">
-          The Digital Dilemma is available on Apple Podcasts and through the i-NETT
-          parent site. Full episode archive and shownotes are syndicated through both.
-        </p>
-        <div class="podcast-ctas">
-          <a href={SITE.podcastUrl} class="btn btn-primary btn-lg" target="_blank" rel="noopener">
-            Listen on Apple Podcasts
-          </a>
-          <a href={SITE.parentUrl} class="btn btn-outline btn-lg" target="_blank" rel="noopener">
-            Visit i-nett.com
-          </a>
-        </div>
+      <span class="eyebrow reveal reveal-fade">Listen and subscribe</span>
+      <h2 id="listen-heading" class="reveal reveal-up">Recent episodes, straight from Apple Podcasts.</h2>
+      <p class="lead reveal reveal-up reveal-delay-1">
+        Hit play below to browse the latest episodes. Open in Apple Podcasts to
+        subscribe so new episodes arrive automatically.
+      </p>
+
+      <div class="apple-embed reveal reveal-up reveal-delay-2">
+        <iframe
+          title="The Digital Dilemma on Apple Podcasts"
+          src={appleEmbedSrc}
+          height="450"
+          loading="lazy"
+          allow="autoplay *; encrypted-media *; fullscreen *; clipboard-write"
+          sandbox="allow-forms allow-popups allow-same-origin allow-scripts allow-storage-access-by-user-activation allow-top-navigation-by-user-activation"
+        ></iframe>
       </div>
     </div>
   </section>
 
-  <section class="section section-soft">
+  <!-- SHORTS -->
+  {/*
+    Shorts placeholders. Nick: replace href and label with real short URLs
+    (YouTube Shorts, Instagram Reels, TikTok) and supply thumbnail images
+    once the assets are produced. The accent class controls the placeholder
+    gradient until real thumbnails land.
+  */}
+  <section class="section section-soft" aria-labelledby="shorts-heading">
+    <div class="container">
+      <div class="shorts-head reveal reveal-fade">
+        <div>
+          <span class="eyebrow">Shorts</span>
+          <h2 id="shorts-heading">Quick clips from recent episodes.</h2>
+        </div>
+        <a href={SITE.podcastUrl} class="btn btn-ghost" target="_blank" rel="noopener">
+          See all on Apple Podcasts <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
+
+      <div class="shorts-row" role="list">
+        {shorts.map((s, i) => (
+          <a
+            href={s.href}
+            class:list={['short-card', `short-card--${s.accent}`, 'reveal', 'reveal-up', `reveal-delay-${(i % 6) + 1}`]}
+            role="listitem"
+            target="_blank"
+            rel="noopener"
+            aria-label={`${s.label} (placeholder)`}
+          >
+            <div class="short-card__thumb" aria-hidden="true">
+              <span class="short-card__play">
+                <svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
+                  <path d="M8 5 L19 12 L8 19 Z" fill="currentColor"/>
+                </svg>
+              </span>
+            </div>
+            <p class="short-card__label">{s.label}</p>
+            <p class="short-card__note">Placeholder. URL pending.</p>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURED LONG-FORM EPISODES -->
+  {/*
+    Featured long-form episodes. Nick: as YouTube video URLs come in,
+    drop them into the youtube field on each entry above and the card
+    below will render the YouTube embed in place of the placeholder.
+  */}
+  <section class="section" aria-labelledby="featured-heading">
+    <div class="container">
+      <div class="featured-head reveal reveal-fade">
+        <span class="eyebrow">Featured episodes</span>
+        <h2 id="featured-heading">Five long-form conversations worth your commute.</h2>
+        <p class="lead">
+          The list refreshes as Nick curates standout episodes for first-time
+          listeners. Listen on Apple Podcasts today. YouTube video versions
+          land here as they are published.
+        </p>
+      </div>
+
+      <ol class="ep-list">
+        {featuredEpisodes.map((ep, i) => (
+          <li class:list={['ep-card', 'reveal', 'reveal-up', `reveal-delay-${(i % 6) + 1}`]}>
+            <div class="ep-card__meta">
+              <span class="ep-card__num">{ep.n}</span>
+              <h3 class="ep-card__title">{ep.title}</h3>
+              <p class="ep-card__summary">{ep.summary}</p>
+              <div class="ep-card__ctas">
+                <a href={ep.apple} class="btn btn-primary" target="_blank" rel="noopener">
+                  Listen on Apple
+                </a>
+                {ep.youtube ? (
+                  <a href={ep.youtube} class="btn btn-outline" target="_blank" rel="noopener">
+                    Watch on YouTube
+                  </a>
+                ) : (
+                  <span class="ep-card__youtube-pending" aria-label="YouTube version pending">
+                    YouTube version pending
+                  </span>
+                )}
+              </div>
+            </div>
+            <div class="ep-card__art" aria-hidden="true">
+              <span class="ep-card__art-num">{ep.n}</span>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- WHAT TO EXPECT -->
+  <section class="section section-soft" aria-labelledby="expect-heading">
     <div class="container container-narrow">
-      <span class="eyebrow">What to expect</span>
-      <h2>Conversations our buyer is already having.</h2>
+      <span class="eyebrow reveal reveal-fade">What to expect</span>
+      <h2 id="expect-heading" class="reveal reveal-up">Conversations our buyer is already having.</h2>
       <ul class="topic-list">
-        <li><strong>How AI changes the operating model</strong> of a mid-market practice, firm, or business.</li>
-        <li><strong>Compliance and AI</strong>: HIPAA, GDPR, SOC, CCPA, and what defensible deployment actually looks like.</li>
-        <li><strong>Cybersecurity for mid-market firms</strong>: posture, insurance, incident readiness.</li>
-        <li><strong>Operating discipline</strong>: how high-performing firms run technology decisions.</li>
-        <li><strong>Founder conversations</strong>: candid interviews with operators and technologists.</li>
+        <li class="reveal reveal-up reveal-delay-1"><strong>How AI changes the operating model</strong> of a mid-market practice, firm, or business.</li>
+        <li class="reveal reveal-up reveal-delay-2"><strong>Compliance and AI:</strong> HIPAA, GDPR, SOC, CCPA, and what defensible deployment actually looks like.</li>
+        <li class="reveal reveal-up reveal-delay-3"><strong>Cybersecurity for mid-market firms:</strong> posture, insurance, incident readiness.</li>
+        <li class="reveal reveal-up reveal-delay-4"><strong>Operating discipline:</strong> how high-performing firms run technology decisions.</li>
+        <li class="reveal reveal-up reveal-delay-5"><strong>Founder conversations:</strong> candid interviews with operators and technologists.</li>
       </ul>
+    </div>
+  </section>
+
+  <!-- STANDARD PODCAST CTA TRIO -->
+  <section class="section section-dark" aria-labelledby="trio-heading">
+    <div class="container container-narrow">
+      <div class="trio-head reveal reveal-fade">
+        <span class="eyebrow">Next step</span>
+        <h2 id="trio-heading">Pick your channel.</h2>
+        <p class="lead">
+          Three doors. Book a consultation, visit the parent organization, or subscribe
+          to the podcast. They all lead to the same conversation.
+        </p>
+      </div>
+      <div class="trio">
+        <a href={SITE.bookingUrl} class="trio-card reveal reveal-up reveal-delay-1" target="_blank" rel="noopener">
+          <span class="trio-card__label">Book a consultation</span>
+          <span class="trio-card__line">30 minute Fortify AI consultation via HubSpot.</span>
+          <span class="trio-card__url">meetings-na2.hubspot.com</span>
+          <span class="trio-card__arrow" aria-hidden="true">&rarr;</span>
+        </a>
+        <a href={SITE.parentUrl} class="trio-card reveal reveal-up reveal-delay-2" target="_blank" rel="noopener">
+          <span class="trio-card__label">Visit i-NETT</span>
+          <span class="trio-card__line">Parent organization: managed IT, cybersecurity, managed AI.</span>
+          <span class="trio-card__url">i-nett.com</span>
+          <span class="trio-card__arrow" aria-hidden="true">&rarr;</span>
+        </a>
+        <a href={SITE.podcastUrl} class="trio-card reveal reveal-up reveal-delay-3" target="_blank" rel="noopener">
+          <span class="trio-card__label">Subscribe on Apple</span>
+          <span class="trio-card__line">The Digital Dilemma, new episodes automatically.</span>
+          <span class="trio-card__url">podcasts.apple.com</span>
+          <span class="trio-card__arrow" aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
     </div>
   </section>
 </PageLayout>
 
 <style>
-  .podcast-hero { text-align: center; }
-  .podcast-ctas {
+  /* Apple embed */
+  .apple-embed {
+    margin-top: var(--space-6);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 20px 40px rgba(10, 37, 64, 0.08);
+  }
+  .apple-embed iframe {
+    width: 100%;
+    border: 0;
+    display: block;
+  }
+
+  /* Shorts row */
+  .shorts-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-7);
+  }
+  .shorts-head h2 { margin-top: var(--space-2); }
+  .shorts-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+  @media (min-width: 640px) {
+    .shorts-row { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (min-width: 960px) {
+    .shorts-row { grid-template-columns: repeat(6, 1fr); }
+  }
+  .short-card {
+    display: block;
+    color: var(--color-text);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-3);
+    transition: transform 240ms var(--ease-out), border-color 240ms var(--ease-out), box-shadow 240ms var(--ease-out);
+  }
+  .short-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-accent-500);
+    box-shadow: 0 14px 28px rgba(10, 37, 64, 0.08);
+    color: var(--color-text);
+  }
+  .short-card__thumb {
+    position: relative;
+    aspect-ratio: 9 / 16;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    margin-bottom: var(--space-2);
+  }
+  .short-card--from-cyan .short-card__thumb {
+    background: linear-gradient(160deg, #00B4FF 0%, #11355C 100%);
+  }
+  .short-card--from-blue .short-card__thumb {
+    background: linear-gradient(160deg, #11355C 0%, #050B14 100%);
+  }
+  .short-card--from-deep .short-card__thumb {
+    background: linear-gradient(160deg, #050B14 0%, #00B4FF 130%);
+  }
+  .short-card__play {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    display: inline-grid;
+    place-items: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 240ms var(--ease-out), background 240ms var(--ease-out);
+  }
+  .short-card:hover .short-card__play {
+    transform: scale(1.1);
+    background: rgba(255, 255, 255, 0.3);
+  }
+  .short-card__label {
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    color: var(--color-ink-800);
+    margin: 0;
+  }
+  .short-card__note {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    margin: 2px 0 0;
+  }
+
+  /* Featured episodes */
+  .featured-head {
+    margin-bottom: var(--space-7);
+    max-width: 64ch;
+  }
+  .featured-head h2 { margin-top: var(--space-2); }
+  .featured-head .lead { margin-top: var(--space-3); }
+  .ep-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-5);
+  }
+  .ep-card {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    padding: var(--space-6);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: transform 320ms var(--ease-out), border-color 320ms var(--ease-out), box-shadow 320ms var(--ease-out);
+  }
+  @media (min-width: 720px) {
+    .ep-card { grid-template-columns: 1fr 160px; align-items: center; }
+  }
+  .ep-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--color-accent-500);
+    box-shadow: 0 18px 36px rgba(10, 37, 64, 0.08);
+  }
+  .ep-card__num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--color-accent-500);
+    letter-spacing: 0.12em;
+    font-weight: 600;
+  }
+  .ep-card__title {
+    font-size: var(--fs-lg);
+    margin: var(--space-2) 0;
+  }
+  .ep-card__summary {
+    color: var(--color-text-soft);
+    margin-bottom: var(--space-4);
+  }
+  .ep-card__ctas {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    justify-content: center;
-    margin-top: var(--space-5);
+    align-items: flex-start;
   }
   @media (min-width: 480px) {
-    .podcast-ctas { flex-direction: row; }
+    .ep-card__ctas { flex-direction: row; align-items: center; }
   }
+  .ep-card__youtube-pending {
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.5em 0.85em;
+    background: var(--color-bg-soft);
+    border: 1px dashed var(--color-border-strong);
+    border-radius: var(--radius-md);
+  }
+  .ep-card__art {
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--color-ink-900) 0%, var(--color-accent-500) 130%);
+    display: grid;
+    place-items: center;
+    color: #fff;
+  }
+  .ep-card__art-num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: 0.08em;
+    opacity: 0.85;
+  }
+
+  /* Topic list */
   .topic-list {
     list-style: none;
     padding: 0;
@@ -76,4 +443,67 @@ const breadcrumbs = [
     border-radius: var(--radius-md);
     border-left: 3px solid var(--color-accent-500);
   }
+
+  /* Trio */
+  .trio-head { text-align: center; margin-bottom: var(--space-7); }
+  .trio-head h2 { color: #fff; margin-top: var(--space-2); }
+  .trio-head .lead {
+    color: var(--color-text-on-dark-soft);
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: var(--space-3);
+  }
+  .trio {
+    display: grid;
+    gap: var(--space-4);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) {
+    .trio { grid-template-columns: repeat(3, 1fr); }
+  }
+  .trio-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-6);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    color: var(--color-text-on-dark);
+    transition: transform 240ms var(--ease-out), border-color 240ms var(--ease-out), background 240ms var(--ease-out);
+  }
+  .trio-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-accent-500);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--color-text-on-dark);
+  }
+  .trio-card__label {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: var(--fs-lg);
+    color: #fff;
+  }
+  .trio-card__line {
+    color: var(--color-text-on-dark-soft);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-normal);
+  }
+  .trio-card__url {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--color-glow);
+    letter-spacing: 0.04em;
+    margin-top: var(--space-3);
+  }
+  .trio-card__arrow {
+    position: absolute;
+    top: var(--space-5);
+    right: var(--space-5);
+    color: var(--color-glow);
+    font-size: 1.25rem;
+    transition: transform 240ms var(--ease-out);
+  }
+  .trio-card:hover .trio-card__arrow { transform: translateX(4px); }
 </style>
