@@ -3,6 +3,7 @@ import BaseLayout from '@layouts/BaseLayout.astro';
 import ROIModal from '@components/ROIModal.astro';
 import FAQ from '@components/FAQ.astro';
 import CTASection from '@components/CTASection.astro';
+import DemoStream from '@components/DemoStream.astro';
 import { SITE } from '@lib/site';
 
 const faqs = [
@@ -113,31 +114,34 @@ const faqs = [
   <!-- LOGO ROW / SOCIAL PROOF -->
   <section class="proof-bar">
     <div class="container">
-      <p class="proof-bar__title">Trusted by mid-market firms across the regulated industries</p>
+      <p class="proof-bar__title reveal reveal-fade">Trusted by mid-market firms across the regulated industries</p>
       <div class="proof-bar__items">
-        <div class="proof-pill">
+        <div class="proof-pill reveal reveal-up reveal-delay-1">
           <img src="/assets/brand/hipaa-compliant.png" alt="HIPAA Compliant badge" width="36" height="36" loading="lazy" />
           <span>HIPAA Compliant</span>
         </div>
-        <div class="proof-pill">
+        <div class="proof-pill reveal reveal-up reveal-delay-2">
           <img src="/assets/brand/iso-27001.png" alt="ISO 27001 badge" width="36" height="36" loading="lazy" />
           <span>ISO 27001 aligned</span>
         </div>
-        <div class="proof-pill">
+        <div class="proof-pill reveal reveal-up reveal-delay-3">
           <img src="/assets/brand/chamber-ambassador-2025.png" alt="Chamber Ambassador 2025 badge" width="36" height="36" loading="lazy" />
           <span>Chamber Ambassador 2025</span>
         </div>
-        <div class="proof-pill proof-pill--text">
+        <div class="proof-pill proof-pill--text reveal reveal-up reveal-delay-4">
           <span class="proof-pill__lead">Lloyd&rsquo;s of London</span>
           <span>Cybersecurity insurance policy</span>
         </div>
-        <div class="proof-pill proof-pill--text">
+        <div class="proof-pill proof-pill--text reveal reveal-up reveal-delay-5">
           <span class="proof-pill__lead">TAG Network</span>
-          <span>148 service cities, US &amp; Canada</span>
+          <span><span data-countup="148" data-countup-suffix=" service cities, US &amp; Canada" class="countup">148 service cities, US &amp; Canada</span></span>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- WATCH FORTIFY AI IN ACTION (scripted demo) -->
+  <DemoStream />
 
   <!-- WHAT WE DO -->
   <section class="section" id="what-we-do" aria-labelledby="what-we-do-heading">
@@ -151,7 +155,7 @@ const faqs = [
         </p>
       </div>
       <div class="grid grid-3">
-        <article class="card reveal">
+        <article class="card reveal reveal-up reveal-delay-1">
           <span class="card-num">01</span>
           <h3>Compliance-first infrastructure</h3>
           <p>
@@ -160,7 +164,7 @@ const faqs = [
             data for model training or share it across clients.
           </p>
         </article>
-        <article class="card reveal">
+        <article class="card reveal reveal-up reveal-delay-2">
           <span class="card-num">02</span>
           <h3>Targeted, high-leverage workflows</h3>
           <p>
@@ -169,13 +173,77 @@ const faqs = [
             knowledge retrieval, client communication. We ship those first.
           </p>
         </article>
-        <article class="card reveal">
+        <article class="card reveal reveal-up reveal-delay-3">
           <span class="card-num">03</span>
           <h3>Managed operations</h3>
           <p>
             i-NETT operates the deployment. Monitoring, updates, model evaluation,
             policy enforcement, and quarterly compliance review are included. Your
             team uses the system. We run it.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- THREE THINGS YOU CANNOT BUY ANYWHERE ELSE -->
+  {/*
+    Specific efficacy figures pending HermanScience source documentation
+    and John Lehmkuhl review. Until then, copy uses directional language
+    only ("dramatically reduces", "measurably improves", "significantly
+    reduces"). Do not insert percentages here without sourced backing.
+  */}
+  <section class="section section-three" id="three-things" aria-labelledby="three-things-heading">
+    <div class="container">
+      <div class="section-intro reveal reveal-up">
+        <span class="eyebrow">Three things you cannot buy anywhere else</span>
+        <h2 id="three-things-heading">What separates Fortify AI from every other AI platform on the market.</h2>
+      </div>
+      <div class="three-grid">
+        <article class="three-card reveal reveal-up reveal-delay-1">
+          <div class="three-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="28" height="28" focusable="false">
+              <path d="M16 3 L26 7 V15 C26 22 16 28 16 28 C16 28 6 22 6 15 V7 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M11 16 L14 19 L21 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>Completely secure AI</h3>
+          <p>
+            No other LLM platform offers this isolation posture. Your data stays in
+            your tenant, with no shared training, no cross-client exposure, and
+            architecture configured to your regulatory environment.
+          </p>
+        </article>
+
+        <article class="three-card three-card--featured reveal reveal-up reveal-delay-2">
+          <div class="three-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="28" height="28" focusable="false">
+              <circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M16 9 V16 L21 19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="16" cy="16" r="2" fill="currentColor"/>
+            </svg>
+          </div>
+          <h3>Automations built for your team</h3>
+          <p>
+            Not self-serve tooling. Done-for-you operations that map to how your team
+            actually works, deployed and maintained by people who understand your
+            business.
+          </p>
+        </article>
+
+        <article class="three-card reveal reveal-up reveal-delay-3">
+          <div class="three-card__icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" width="28" height="28" focusable="false">
+              <circle cx="16" cy="11" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+              <path d="M7 27 C7 22 11 19 16 19 C21 19 25 22 25 27" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M22 8 L24 6 L27 6 L27 9 L25 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3>A full-time prompt coach</h3>
+          <p>
+            Behavioral science guidance built into every interaction. Dramatically
+            reduces bad answers and hallucinations. Gives employees back hours every
+            week. Powered by HermanScience behavioral science methodology.
           </p>
         </article>
       </div>
@@ -190,7 +258,7 @@ const faqs = [
         <h2 id="why-us-heading">Three things consumer AI cannot give you.</h2>
       </div>
       <div class="grid grid-3">
-        <div class="card card-dark reveal">
+        <div class="card card-dark reveal reveal-up reveal-delay-1">
           <h3>An underwritten security posture</h3>
           <p>
             Fortify AI deployments are operated inside an environment underwritten by
@@ -198,7 +266,7 @@ const faqs = [
             language. It is a financial backstop.
           </p>
         </div>
-        <div class="card card-dark reveal">
+        <div class="card card-dark reveal reveal-up reveal-delay-2">
           <h3>A regulatory blueprint, not a checkbox</h3>
           <p>
             HIPAA, GDPR, SOC, and CCPA are designed into deployment from day one,
@@ -206,7 +274,7 @@ const faqs = [
             defend, not a vendor questionnaire you have to chase.
           </p>
         </div>
-        <div class="card card-dark reveal">
+        <div class="card card-dark reveal reveal-up reveal-delay-3">
           <h3>A managed services team behind the model</h3>
           <p>
             AI without operations is a liability. We bring 20 plus years of managed
@@ -334,22 +402,22 @@ const faqs = [
         <h2 id="industries-heading">Built for regulated, relationship-driven firms.</h2>
       </div>
       <div class="grid grid-4">
-        <a href="/industries/healthcare" class="card reveal industry-card">
+        <a href="/industries/healthcare" class="card reveal reveal-up reveal-delay-1 industry-card">
           <h3>Healthcare</h3>
           <p>HIPAA-aligned AI for practices and provider groups.</p>
           <span class="arrow" aria-hidden="true">&rarr;</span>
         </a>
-        <a href="/industries/legal" class="card reveal industry-card">
+        <a href="/industries/legal" class="card reveal reveal-up reveal-delay-2 industry-card">
           <h3>Legal</h3>
           <p>Privileged-information-safe AI for law firms.</p>
           <span class="arrow" aria-hidden="true">&rarr;</span>
         </a>
-        <a href="/industries/financial-services" class="card reveal industry-card">
+        <a href="/industries/financial-services" class="card reveal reveal-up reveal-delay-3 industry-card">
           <h3>Financial Services</h3>
           <p>Regulator-ready AI for advisors and firms.</p>
           <span class="arrow" aria-hidden="true">&rarr;</span>
         </a>
-        <a href="/industries/professional-services" class="card reveal industry-card">
+        <a href="/industries/professional-services" class="card reveal reveal-up reveal-delay-4 industry-card">
           <h3>Professional Services</h3>
           <p>Confidentiality-first AI for consulting and accounting.</p>
           <span class="arrow" aria-hidden="true">&rarr;</span>
@@ -382,6 +450,23 @@ const faqs = [
   </section>
 
   <FAQ items={faqs} />
+
+  <script>
+    // Pause the hero gradient mesh once the hero scrolls out of view.
+    // Saves frames on long pages and respects user attention.
+    const hero = document.querySelector<HTMLElement>('.hero');
+    if (hero && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            hero.classList.toggle('is-paused', !entry.isIntersecting);
+          });
+        },
+        { threshold: 0 }
+      );
+      io.observe(hero);
+    }
+  </script>
 
   <CTASection
     heading="Ready to evaluate Fortify AI for your firm?"
@@ -419,17 +504,33 @@ const faqs = [
     border-radius: 50%;
     filter: blur(80px);
     opacity: 0.45;
+    will-change: transform;
   }
   .hero__orb--a {
     width: 520px; height: 520px;
     background: radial-gradient(circle, #00B4FF 0%, transparent 70%);
     top: -120px; left: -120px;
+    animation: orb-drift-a 18s var(--ease-in-out) infinite;
   }
   .hero__orb--b {
     width: 600px; height: 600px;
     background: radial-gradient(circle, #11355C 0%, transparent 70%);
     bottom: -200px; right: -150px;
     opacity: 0.6;
+    animation: orb-drift-b 24s var(--ease-in-out) infinite;
+  }
+  @keyframes orb-drift-a {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    33% { transform: translate3d(60px, 40px, 0) scale(1.08); }
+    66% { transform: translate3d(-30px, 60px, 0) scale(0.96); }
+  }
+  @keyframes orb-drift-b {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    50% { transform: translate3d(-80px, -50px, 0) scale(1.1); }
+  }
+  .hero.is-paused .hero__orb { animation-play-state: paused; }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__orb { animation: none; }
   }
 
   .hero__inner {
@@ -787,6 +888,64 @@ const faqs = [
     transition: transform var(--dur-fast) var(--ease-out);
   }
   .industry-card:hover .arrow { transform: translateX(4px); }
+
+  /* Three Things section */
+  .section-three {
+    background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-soft) 100%);
+  }
+  .three-grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+    margin-top: var(--space-7);
+  }
+  @media (min-width: 880px) {
+    .three-grid { grid-template-columns: repeat(3, 1fr); align-items: stretch; }
+  }
+  .three-card {
+    position: relative;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-7);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    transition: transform 360ms var(--ease-out), border-color 360ms var(--ease-out), box-shadow 360ms var(--ease-out);
+  }
+  .three-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-accent-500);
+    box-shadow: 0 24px 48px rgba(10, 37, 64, 0.10);
+  }
+  .three-card--featured {
+    background: linear-gradient(180deg, var(--color-ink-900) 0%, var(--color-ink-700) 100%);
+    color: var(--color-text-on-dark);
+    border-color: transparent;
+    box-shadow: 0 20px 40px rgba(10, 37, 64, 0.18);
+  }
+  .three-card--featured h3 { color: #fff; }
+  .three-card--featured p { color: var(--color-text-on-dark-soft); }
+  .three-card--featured:hover { border-color: var(--color-accent-500); }
+  .three-card__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    display: inline-grid;
+    place-items: center;
+    background: linear-gradient(135deg, rgba(0, 180, 255, 0.12) 0%, rgba(0, 180, 255, 0.04) 100%);
+    color: var(--color-accent-500);
+    border: 1px solid rgba(0, 180, 255, 0.2);
+  }
+  .three-card--featured .three-card__icon {
+    background: rgba(0, 224, 255, 0.16);
+    color: var(--color-glow);
+    border-color: rgba(0, 224, 255, 0.3);
+  }
+  .three-card h3 {
+    font-size: var(--fs-lg);
+    line-height: 1.2;
+  }
 
   /* Podcast promo */
   .podcast-promo {

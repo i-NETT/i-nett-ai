@@ -1,0 +1,461 @@
+---
+// Watch Fortify AI in action. Scripted, cycling demo of four exchanges.
+// Pure CSS + JS. No real AI calls. No specific efficacy claims.
+//
+// Exchanges show one at a time. The user message appears, then a brief
+// "thinking" pause, then the response streams in via typewriter. After a
+// hold, the next exchange takes over. Stops cycling when the viewer
+// scrolls past or when prefers-reduced-motion is set.
+
+const exchanges = [
+  {
+    industry: 'Healthcare',
+    persona: 'Practice Manager',
+    user: 'Draft a HIPAA-aligned reminder for tomorrow at 2pm cleaning.',
+    answer:
+      "Drafted. Patient ID used in place of name, appointment time stated, no PHI in the subject line. Ready for your review before send.",
+  },
+  {
+    industry: 'Legal',
+    persona: 'Associate',
+    user: 'Summarize exhibits 7, 12, and 19 from the Henderson deposition. Flag credibility issues.',
+    answer:
+      "Three credibility threads identified. Email timeline conflict in exhibit 7. Date discrepancy in exhibit 12 versus the deposition transcript. Account log gap in exhibit 19. Source cites attached.",
+  },
+  {
+    industry: 'Financial Services',
+    persona: 'Senior Advisor',
+    user: 'Meeting note for the Chen family, 529 plan adjustments. Include suitability rationale.',
+    answer:
+      "Drafted. Suitability rationale references the family stated time horizon and risk tolerance. Books-and-records compliant fields populated. Pending your sign-off.",
+  },
+  {
+    industry: 'Professional Services',
+    persona: 'Engagement Lead',
+    user: 'Find the three slides in our airline study that answer Sarah revenue management question.',
+    answer:
+      "Located. Slides 14, 22, and 31 from the 2025 airline benchmarking study. Citation block attached. Ready to share.",
+  },
+];
+---
+<section class="demo-section" aria-labelledby="demo-heading">
+  <div class="container container-narrow">
+    <div class="demo-intro reveal reveal-up">
+      <span class="eyebrow">Watch Fortify AI in action</span>
+      <h2 id="demo-heading">Four exchanges. Four industries. One operating standard.</h2>
+      <p class="lead">
+        A scripted look at how a configured Fortify AI deployment shows up inside
+        a working day. Compliance considerations, source citation, and your team
+        always in the review seat.
+      </p>
+    </div>
+
+    <div class="demo reveal reveal-up reveal-delay-2" data-demo-stream>
+      <header class="demo__chrome" aria-hidden="true">
+        <span class="demo__dot" style="--c: #ff5f57"></span>
+        <span class="demo__dot" style="--c: #febc2e"></span>
+        <span class="demo__dot" style="--c: #28c840"></span>
+        <span class="demo__title" data-demo-title>Healthcare, Practice Manager</span>
+        <span class="demo__live"><span class="demo__live-dot" aria-hidden="true"></span>Live demo</span>
+      </header>
+
+      <div class="demo__body" aria-live="polite" aria-label="Fortify AI exchange">
+        <div class="demo__row demo__row--user" data-demo-user-row>
+          <div class="demo__avatar demo__avatar--user" aria-hidden="true">YOU</div>
+          <p class="demo__bubble demo__bubble--user" data-demo-user></p>
+        </div>
+
+        <div class="demo__row demo__row--ai" data-demo-ai-row hidden>
+          <div class="demo__avatar demo__avatar--ai" aria-hidden="true">
+            <img src="/assets/brand/fortify-ai-logo-mark.png" alt="" width="20" height="20" />
+          </div>
+          <p class="demo__bubble demo__bubble--ai">
+            <span data-demo-ai></span><span class="demo__caret" aria-hidden="true"></span>
+          </p>
+        </div>
+
+        <div class="demo__row demo__row--ai" data-demo-thinking hidden aria-hidden="true">
+          <div class="demo__avatar demo__avatar--ai">
+            <img src="/assets/brand/fortify-ai-logo-mark.png" alt="" width="20" height="20" />
+          </div>
+          <p class="demo__bubble demo__bubble--ai demo__bubble--thinking">
+            <span class="demo__dots"><span></span><span></span><span></span></span>
+          </p>
+        </div>
+      </div>
+
+      <footer class="demo__footer">
+        <div class="demo__dots-nav" role="tablist" aria-label="Demo exchange">
+          {exchanges.map((_, i) => (
+            <button
+              type="button"
+              role="tab"
+              class="demo__nav-dot"
+              data-demo-nav-dot
+              data-index={i}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              aria-label={`Show exchange ${i + 1}`}
+            ></button>
+          ))}
+        </div>
+        <p class="demo__note">
+          Scripted demonstration. Real deployments are configured to your data and your team.
+        </p>
+      </footer>
+    </div>
+  </div>
+</section>
+
+<!-- Exchanges payload for the streaming script. Hidden, parsed on init. -->
+<script type="application/json" id="demo-stream-payload" set:html={JSON.stringify(exchanges)}></script>
+
+<style>
+  .demo-section {
+    padding: var(--space-10) 0 var(--space-12);
+    background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-soft) 100%);
+  }
+  .demo-intro {
+    text-align: center;
+    max-width: 64ch;
+    margin: 0 auto var(--space-8);
+  }
+  .demo-intro .lead { margin: var(--space-3) auto 0; }
+
+  .demo {
+    background: var(--color-ink-900);
+    color: var(--color-text-on-dark);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 30px 80px rgba(10, 37, 64, 0.18), 0 8px 20px rgba(10, 37, 64, 0.08);
+  }
+
+  .demo__chrome {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    background: rgba(255, 255, 255, 0.04);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  }
+  .demo__dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--c, #555);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  }
+  .demo__title {
+    flex: 1;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: rgba(255, 255, 255, 0.65);
+    letter-spacing: 0.06em;
+  }
+  .demo__live {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--color-glow);
+    font-weight: 600;
+  }
+  .demo__live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-glow);
+    box-shadow: 0 0 8px var(--color-glow);
+    animation: live-pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes live-pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .demo__body {
+    padding: var(--space-6);
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    justify-content: flex-start;
+  }
+
+  .demo__row {
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 240ms var(--ease-out), transform 240ms var(--ease-out);
+  }
+  .demo__row--user { justify-content: flex-end; }
+  .demo__row--user .demo__bubble { order: 0; }
+  .demo__row--user .demo__avatar { order: 1; }
+  .demo__row.is-shown { opacity: 1; transform: none; }
+
+  .demo__avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .demo__avatar--user {
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .demo__avatar--ai {
+    background: linear-gradient(135deg, var(--color-ink-700) 0%, var(--color-accent-500) 100%);
+    overflow: hidden;
+  }
+  .demo__avatar--ai img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+  }
+
+  .demo__bubble {
+    padding: var(--space-3) var(--space-4);
+    border-radius: 14px;
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+    max-width: 80%;
+    color: #fff;
+  }
+  .demo__bubble--user {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom-right-radius: 4px;
+  }
+  .demo__bubble--ai {
+    background: linear-gradient(135deg, rgba(0, 180, 255, 0.12) 0%, rgba(0, 180, 255, 0.04) 100%);
+    border: 1px solid rgba(0, 180, 255, 0.25);
+    border-bottom-left-radius: 4px;
+  }
+  .demo__bubble--thinking { display: inline-flex; align-items: center; gap: 4px; }
+  .demo__dots {
+    display: inline-flex;
+    gap: 4px;
+  }
+  .demo__dots span {
+    width: 6px;
+    height: 6px;
+    background: var(--color-glow);
+    border-radius: 50%;
+    animation: thinking 1.2s ease-in-out infinite;
+  }
+  .demo__dots span:nth-child(2) { animation-delay: 0.15s; }
+  .demo__dots span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes thinking {
+    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+
+  .demo__caret {
+    display: inline-block;
+    width: 8px;
+    height: 1em;
+    background: var(--color-glow);
+    margin-left: 2px;
+    vertical-align: text-bottom;
+    animation: blink 1s steps(2, start) infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .demo__footer {
+    padding: var(--space-3) var(--space-5) var(--space-4);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+  }
+  .demo__dots-nav {
+    display: flex;
+    gap: var(--space-2);
+  }
+  .demo__nav-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+    cursor: pointer;
+  }
+  .demo__nav-dot[aria-selected="true"] {
+    background: var(--color-glow);
+    transform: scale(1.25);
+  }
+  .demo__note {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-align: center;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .demo__row { opacity: 1; transform: none; transition: none; }
+    .demo__caret, .demo__dots span, .demo__live-dot { animation: none; }
+    .demo__caret { opacity: 0; }
+  }
+</style>
+
+<script>
+  // Fortify AI scripted demo stream.
+  // Cycles four exchanges. Pauses when off-screen. No real AI calls.
+
+  type Exchange = {
+    industry: string;
+    persona: string;
+    user: string;
+    answer: string;
+  };
+
+  const payloadEl = document.getElementById('demo-stream-payload');
+  if (payloadEl?.textContent) {
+    const exchanges: Exchange[] = JSON.parse(payloadEl.textContent);
+    const root = document.querySelector<HTMLElement>('[data-demo-stream]');
+    if (root) {
+      const title = root.querySelector<HTMLElement>('[data-demo-title]');
+      const userRow = root.querySelector<HTMLElement>('[data-demo-user-row]');
+      const userText = root.querySelector<HTMLElement>('[data-demo-user]');
+      const aiRow = root.querySelector<HTMLElement>('[data-demo-ai-row]');
+      const aiText = root.querySelector<HTMLElement>('[data-demo-ai]');
+      const thinking = root.querySelector<HTMLElement>('[data-demo-thinking]');
+      const navDots = root.querySelectorAll<HTMLButtonElement>('[data-demo-nav-dot]');
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const TYPE_MS = reduceMotion ? 0 : 22; // ms per character
+      const HOLD_MS = 3200;
+      const THINK_MS = reduceMotion ? 0 : 700;
+
+      let index = 0;
+      let activeTimers: number[] = [];
+      let isVisible = true;
+      let isRunning = false;
+
+      const wait = (ms: number) => new Promise<void>((resolve) => {
+        const t = window.setTimeout(() => resolve(), ms);
+        activeTimers.push(t);
+      });
+
+      const clearTimers = () => {
+        activeTimers.forEach((t) => clearTimeout(t));
+        activeTimers = [];
+      };
+
+      const setNav = (i: number) => {
+        navDots.forEach((d, di) =>
+          d.setAttribute('aria-selected', di === i ? 'true' : 'false')
+        );
+      };
+
+      const reset = () => {
+        if (userRow) {
+          userRow.classList.remove('is-shown');
+        }
+        if (aiRow) {
+          aiRow.classList.remove('is-shown');
+          aiRow.hidden = true;
+        }
+        if (thinking) {
+          thinking.classList.remove('is-shown');
+          thinking.hidden = true;
+        }
+        if (aiText) aiText.textContent = '';
+        if (userText) userText.textContent = '';
+      };
+
+      const typeText = async (el: HTMLElement, str: string) => {
+        for (let i = 0; i < str.length; i++) {
+          if (!isVisible) return;
+          el.textContent = str.slice(0, i + 1);
+          await wait(TYPE_MS);
+        }
+      };
+
+      const showExchange = async (i: number) => {
+        if (!isVisible) return;
+        reset();
+        const ex = exchanges[i];
+        if (title) title.textContent = `${ex.industry}, ${ex.persona}`;
+        setNav(i);
+
+        if (userRow && userText) {
+          userText.textContent = ex.user;
+          userRow.classList.add('is-shown');
+        }
+        await wait(reduceMotion ? 0 : 500);
+        if (!isVisible) return;
+
+        if (thinking) {
+          thinking.hidden = false;
+          requestAnimationFrame(() => thinking.classList.add('is-shown'));
+        }
+        await wait(THINK_MS);
+        if (!isVisible) return;
+        if (thinking) {
+          thinking.classList.remove('is-shown');
+          thinking.hidden = true;
+        }
+
+        if (aiRow && aiText) {
+          aiRow.hidden = false;
+          requestAnimationFrame(() => aiRow.classList.add('is-shown'));
+          await typeText(aiText, ex.answer);
+        }
+
+        await wait(HOLD_MS);
+      };
+
+      const loop = async () => {
+        if (isRunning) return;
+        isRunning = true;
+        while (isVisible) {
+          await showExchange(index);
+          if (!isVisible) break;
+          index = (index + 1) % exchanges.length;
+        }
+        isRunning = false;
+      };
+
+      navDots.forEach((d) => {
+        d.addEventListener('click', () => {
+          const i = Number(d.getAttribute('data-index'));
+          if (!Number.isNaN(i)) {
+            clearTimers();
+            index = i;
+            isRunning = false;
+            if (isVisible) loop();
+          }
+        });
+      });
+
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            isVisible = entry.isIntersecting;
+            if (isVisible) {
+              if (!isRunning) loop();
+            } else {
+              clearTimers();
+            }
+          });
+        },
+        { threshold: 0.25 }
+      );
+      io.observe(root);
+    }
+  }
+</script>

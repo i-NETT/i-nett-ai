@@ -102,9 +102,11 @@ const {
 
     <script>
       // Reveal-on-scroll. Add hidden class then remove via IntersectionObserver.
+      // Supports variants .reveal-up .reveal-fade .reveal-left .reveal-right .reveal-scale.
       // No-JS fallback: elements stay visible (default).
       const reveals = document.querySelectorAll<HTMLElement>('.reveal');
-      if (reveals.length && 'IntersectionObserver' in window) {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reveals.length && 'IntersectionObserver' in window && !reduceMotion) {
         reveals.forEach((el) => el.classList.add('reveal--hidden'));
         const io = new IntersectionObserver(
           (entries) => {
@@ -115,10 +117,47 @@ const {
               }
             });
           },
-          { rootMargin: '0px 0px -10% 0px', threshold: 0.05 }
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
         );
         reveals.forEach((el) => io.observe(el));
       }
+
+      // Count-up animation for [data-countup] elements (final value attr).
+      // Runs once when the element scrolls into view.
+      const countups = document.querySelectorAll<HTMLElement>('[data-countup]');
+      if (countups.length && 'IntersectionObserver' in window) {
+        const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
+        const cio = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target as HTMLElement;
+            const end = Number(el.getAttribute('data-countup') ?? '0');
+            const prefix = el.getAttribute('data-countup-prefix') ?? '';
+            const suffix = el.getAttribute('data-countup-suffix') ?? '';
+            const dur = Number(el.getAttribute('data-countup-duration') ?? '1400');
+            if (reduceMotion) { el.textContent = `${prefix}${fmt(end)}${suffix}`; cio.unobserve(el); return; }
+            const start = performance.now();
+            const tick = (now: number) => {
+              const t = Math.min(1, (now - start) / dur);
+              const eased = 1 - Math.pow(1 - t, 3);
+              el.textContent = `${prefix}${fmt(end * eased)}${suffix}`;
+              if (t < 1) requestAnimationFrame(tick);
+            };
+            requestAnimationFrame(tick);
+            cio.unobserve(el);
+          });
+        }, { threshold: 0.4 });
+        countups.forEach((el) => cio.observe(el));
+      }
+
+      // Button radial highlight follows the pointer (subtle hover sheen).
+      document.addEventListener('pointermove', (e) => {
+        const btn = (e.target as HTMLElement)?.closest('.btn') as HTMLElement | null;
+        if (!btn) return;
+        const r = btn.getBoundingClientRect();
+        btn.style.setProperty('--mx', `${e.clientX - r.left}px`);
+        btn.style.setProperty('--my', `${e.clientY - r.top}px`);
+      });
     </script>
   </body>
 </html>
