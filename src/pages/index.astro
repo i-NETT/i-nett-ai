@@ -55,10 +55,11 @@ const faqs = [
     </div>
     <div class="container hero__inner">
       <div class="hero__copy reveal">
-        <span class="pill pill-accent hero__pill">
+        <a href="/insurance-policy" class="pill pill-accent hero__pill hero__pill--link">
           <span class="hero__pulse" aria-hidden="true"></span>
           Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy
-        </span>
+          <span class="hero__pill-arrow" aria-hidden="true">&rarr;</span>
+        </a>
         <h1 id="hero-heading" class="hero__title">
           Managed AI, <span class="hero__title-accent">built for the firms</span> regulators trust.
         </h1>
@@ -548,6 +549,24 @@ const faqs = [
     background: rgba(0,180,255,0.12);
     border-color: rgba(0,180,255,0.35);
     color: var(--color-text-on-dark);
+  }
+  .hero__pill--link {
+    cursor: pointer;
+    transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+  }
+  .hero__pill--link:hover {
+    background: rgba(0, 180, 255, 0.22);
+    border-color: rgba(0, 224, 255, 0.6);
+    color: var(--color-text-on-dark);
+    transform: translateY(-1px);
+  }
+  .hero__pill-arrow {
+    color: var(--color-glow);
+    margin-left: 0.25em;
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+  .hero__pill--link:hover .hero__pill-arrow {
+    transform: translateX(3px);
   }
   .hero__pulse {
     width: 8px; height: 8px;

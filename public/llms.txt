@@ -34,6 +34,7 @@ extension nationally and into Canada.
 - Legal AI: https://i-nett.ai/industries/legal
 - Financial Services AI: https://i-nett.ai/industries/financial-services
 - Professional Services AI: https://i-nett.ai/industries/professional-services
+- Insurance Policy (Lloyd's of London): https://i-nett.ai/insurance-policy
 - Coverage and Service Area: https://i-nett.ai/coverage
 - Southern California: https://i-nett.ai/locations/southern-california
 - San Diego: https://i-nett.ai/locations/san-diego
