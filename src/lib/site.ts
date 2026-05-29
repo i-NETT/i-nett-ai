@@ -12,8 +12,8 @@ export const SITE = {
   shortDescription:
     'Managed AI for mid-market firms. HIPAA, GDPR, SOC, and CCPA ready. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
   email: 'hello@i-nett.com',
-  phone: '+1-805-918-6160',
-  phoneDisplay: '(805) 918-6160',
+  phone: '+1-805-642-3558',
+  phoneDisplay: '(805) 642-3558',
   bookingUrl: 'https://meetings-na2.hubspot.com/ndreyfus/initial_call',
   podcastUrl:
     'https://podcasts.apple.com/us/podcast/the-digital-dilemma/id1764658911',
@@ -24,11 +24,12 @@ export const SITE = {
     parentSite: 'https://i-nett.com',
   },
   address: {
-    locality: 'Ventura',
+    streetAddress: '9655 Granite Ridge Drive, Suite 200',
+    locality: 'San Diego',
     region: 'CA',
+    postalCode: '92123',
     country: 'US',
-    // Pending verification with Nick before launch. Replace with verified street + postal code.
-    addressNote: 'Mailing address available on request.',
+    formatted: '9655 Granite Ridge Drive, Suite 200, San Diego, CA 92123',
   },
   geo: {
     primaryLat: 32.7157,

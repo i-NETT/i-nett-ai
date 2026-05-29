@@ -278,14 +278,19 @@ button:focus-visible, a:focus-visible {
   background: var(--color-bg-soft);
   color: var(--color-ink-800);
 }
-.section-dark .btn-outline {
-  color: var(--color-text-on-dark);
-  border-color: rgba(255,255,255,0.25);
+.section-dark .btn-outline,
+.btn-outline.on-dark {
+  background: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.30);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
 }
-.section-dark .btn-outline:hover {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.5);
-  color: var(--color-text-on-dark);
+.section-dark .btn-outline:hover,
+.btn-outline.on-dark:hover {
+  background: rgba(255, 255, 255, 0.20);
+  border-color: rgba(255, 255, 255, 0.55);
+  color: #ffffff;
 }
 .btn-ghost {
   background: transparent;

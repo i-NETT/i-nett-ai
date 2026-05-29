@@ -69,12 +69,22 @@ if (includeOrganization) {
     },
     description:
       'i-NETT is a managed IT, cybersecurity, and managed AI provider serving mid-market firms in Southern California, the United States, and Canada.',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: SITE.address.streetAddress,
+      addressLocality: SITE.address.locality,
+      addressRegion: SITE.address.region,
+      postalCode: SITE.address.postalCode,
+      addressCountry: SITE.address.country,
+    },
     foundingLocation: {
       '@type': 'Place',
       address: {
         '@type': 'PostalAddress',
+        streetAddress: SITE.address.streetAddress,
         addressLocality: SITE.address.locality,
         addressRegion: SITE.address.region,
+        postalCode: SITE.address.postalCode,
         addressCountry: SITE.address.country,
       },
     },
