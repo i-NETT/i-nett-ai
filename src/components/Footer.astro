@@ -6,9 +6,20 @@ const year = new Date().getFullYear();
   <div class="container">
     <div class="footer-grid">
       <div class="footer-col footer-col--brand">
-        <a href="/" class="footer-brand">
-          <span class="footer-brand__product">Fortify AI</span>
-          <span class="footer-brand__parent">by i-NETT</span>
+        <a href="/" class="footer-brand" aria-label="Fortify AI by i-NETT, home">
+          <img
+            src="/assets/brand/fortify-ai-logo-mark.png"
+            alt=""
+            class="footer-brand__mark"
+            width="32"
+            height="32"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="footer-brand__words">
+            <span class="footer-brand__parent">i-NETT</span>
+            <span class="footer-brand__product">Fortify AI</span>
+          </span>
         </a>
         <p class="footer-tagline">
           Managed AI for mid-market firms. HIPAA, GDPR, SOC, and CCPA ready.
@@ -106,22 +117,34 @@ const year = new Date().getFullYear();
   .footer-col--brand { max-width: 36ch; }
   .footer-brand {
     display: inline-flex;
-    flex-direction: column;
-    line-height: 1.1;
+    align-items: center;
+    gap: var(--space-3);
     color: #fff;
     margin-bottom: var(--space-4);
+  }
+  .footer-brand__mark {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    display: block;
+  }
+  .footer-brand__words {
+    display: inline-flex;
+    flex-direction: column;
+    line-height: 1.1;
+  }
+  .footer-brand__parent {
+    font-size: 0.6875rem;
+    color: var(--color-text-on-dark-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
   }
   .footer-brand__product {
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 1.25rem;
     color: #fff;
-  }
-  .footer-brand__parent {
-    font-size: 0.6875rem;
-    color: var(--color-text-on-dark-soft);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
   }
   .footer-tagline {
     font-size: var(--fs-sm);

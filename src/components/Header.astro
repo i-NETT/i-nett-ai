@@ -5,22 +5,18 @@ const path = Astro.url.pathname;
 <header class="site-header" role="banner">
   <div class="container site-header__inner">
     <a href="/" class="brand" aria-label={`${SITE.name} by ${SITE.parent}, home`}>
-      <span class="brand__mark" aria-hidden="true">
-        <svg viewBox="0 0 32 32" width="28" height="28" focusable="false">
-          <defs>
-            <linearGradient id="brand-g" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="#0A2540"/>
-              <stop offset="100%" stop-color="#00B4FF"/>
-            </linearGradient>
-          </defs>
-          <rect width="32" height="32" rx="7" fill="url(#brand-g)"/>
-          <circle cx="23" cy="9" r="3" fill="#00E0FF"/>
-          <path d="M10 22 V11" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
-        </svg>
-      </span>
+      <img
+        src="/assets/brand/fortify-ai-logo-mark.png"
+        alt=""
+        class="brand__mark"
+        width="36"
+        height="36"
+        loading="eager"
+        decoding="sync"
+      />
       <span class="brand__words">
+        <span class="brand__parent">i-NETT</span>
         <span class="brand__product">Fortify AI</span>
-        <span class="brand__parent">by i-NETT</span>
       </span>
     </a>
 
@@ -93,20 +89,31 @@ const path = Astro.url.pathname;
     flex-shrink: 0;
   }
   .brand:hover { color: var(--color-ink-800); }
-  .brand__mark { display: inline-flex; }
+  .brand__mark {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+    display: block;
+    transition: transform var(--dur-base) var(--ease-out), filter var(--dur-base) var(--ease-out);
+  }
+  .brand:hover .brand__mark {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 8px rgba(0, 224, 255, 0.45));
+  }
   .brand__words { display: inline-flex; flex-direction: column; line-height: 1.1; }
+  .brand__parent {
+    font-size: 0.6875rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-weight: 600;
+  }
   .brand__product {
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 1.0625rem;
     letter-spacing: -0.01em;
-  }
-  .brand__parent {
-    font-size: 0.6875rem;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-weight: 500;
+    color: var(--color-ink-800);
   }
 
   .site-nav { display: none; flex: 1; justify-content: center; }
