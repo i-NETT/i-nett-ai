@@ -1,8 +1,13 @@
 ---
 import ROICalculator from './ROICalculator.astro';
+
+interface Props {
+  label?: string;
+}
+const { label = 'Calculate your savings' } = Astro.props;
 ---
 <button class="btn btn-accent btn-lg roi-modal-trigger" type="button" data-roi-open>
-  Try the ROI calculator
+  {label}
   <span aria-hidden="true">&rarr;</span>
 </button>
 

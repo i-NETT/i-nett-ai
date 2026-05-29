@@ -492,15 +492,43 @@ const faqs = [
 
   <!-- ROI CALCULATOR TRIGGER -->
   <section class="section section-roi" id="roi" aria-labelledby="roi-heading">
-    <div class="container container-narrow reveal">
-      <span class="eyebrow">Your number</span>
-      <h2 id="roi-heading">What is a five-hour-per-week productivity uplift worth to your firm?</h2>
-      <p class="lead">
-        Pick your industry. Drag the sliders. The number is yours to take to your board.
-      </p>
-      <div class="roi-trigger-wrap">
-        <ROIModal />
-        <a href="/roi-calculator" class="btn btn-ghost">Or open the full calculator page &rarr;</a>
+    <div class="container">
+      <div class="roi-grid">
+        <div class="roi-grid__copy reveal reveal-up">
+          <span class="eyebrow">Your number</span>
+          <h2 id="roi-heading">What is a five-hour-per-week productivity uplift worth to your firm?</h2>
+          <p class="lead">
+            Pick your industry. Drag the sliders. Type an exact employee count if you
+            prefer. The number is yours to take to your board.
+          </p>
+          <div class="roi-grid__ctas">
+            <ROIModal label="Calculate your savings" />
+            <a href="/roi-calculator" class="btn btn-ghost">See full methodology &rarr;</a>
+          </div>
+        </div>
+
+        <aside class="roi-grid__visual reveal reveal-right reveal-delay-2" aria-hidden="true">
+          <div class="roi-illustration">
+            <div class="roi-illustration__chip">
+              <span class="roi-illustration__chip-label">Annual potential</span>
+              <span class="roi-illustration__chip-value">$1.95M</span>
+            </div>
+            <div class="roi-illustration__bars">
+              <div style="--h: 28%"></div>
+              <div style="--h: 46%"></div>
+              <div style="--h: 62%"></div>
+              <div style="--h: 78%"></div>
+              <div style="--h: 92%"></div>
+            </div>
+            <div class="roi-illustration__slider">
+              <div class="roi-illustration__track">
+                <div class="roi-illustration__fill"></div>
+                <div class="roi-illustration__thumb"></div>
+              </div>
+              <p class="roi-illustration__caption">Adjustable: 1 to 50,000 employees</p>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   </section>
@@ -1067,17 +1095,136 @@ const faqs = [
   .how-step h3 { margin-bottom: var(--space-2); }
   .how-cta { text-align: center; margin-top: var(--space-7); }
 
-  /* ROI section */
+  /* ROI section, two-column with stylized calculator illustration */
   .section-roi {
     background: linear-gradient(180deg, var(--color-bg-soft) 0%, var(--color-bg) 100%);
-    text-align: center;
   }
-  .roi-trigger-wrap {
+  .roi-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    align-items: center;
+  }
+  /* Mobile: visual first, copy second */
+  .roi-grid__visual { order: -1; }
+  @media (min-width: 880px) {
+    .roi-grid { grid-template-columns: 6fr 4fr; gap: var(--space-9); }
+    .roi-grid__visual { order: 0; }
+  }
+  .roi-grid__copy h2 { margin-top: var(--space-2); }
+  .roi-grid__copy .lead { margin: var(--space-4) 0 var(--space-6); }
+  .roi-grid__ctas {
     display: flex;
     flex-direction: column;
-    align-items: center;
     gap: var(--space-3);
-    margin-top: var(--space-6);
+    align-items: stretch;
+  }
+  @media (min-width: 480px) {
+    .roi-grid__ctas { flex-direction: row; align-items: center; }
+  }
+
+  /* Stylized calculator illustration */
+  .roi-illustration {
+    background: linear-gradient(160deg, var(--color-ink-900) 0%, var(--color-ink-700) 100%);
+    border-radius: var(--radius-xl);
+    padding: var(--space-6);
+    color: #fff;
+    box-shadow: 0 30px 60px rgba(10, 37, 64, 0.18);
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    max-width: 460px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    isolation: isolate;
+  }
+  .roi-illustration::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -30%;
+    width: 80%;
+    height: 80%;
+    background: radial-gradient(circle, rgba(0, 224, 255, 0.25) 0%, transparent 70%);
+    filter: blur(40px);
+    z-index: -1;
+  }
+  .roi-illustration__chip {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-md);
+    padding: var(--space-3) var(--space-4);
+    width: fit-content;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .roi-illustration__chip-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-glow);
+    font-weight: 600;
+  }
+  .roi-illustration__chip-value {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+    letter-spacing: -0.03em;
+    color: #fff;
+    line-height: 1;
+  }
+  .roi-illustration__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    height: 110px;
+    margin: var(--space-5) 0;
+  }
+  .roi-illustration__bars div {
+    flex: 1;
+    height: var(--h);
+    background: linear-gradient(180deg, var(--color-glow) 0%, var(--color-accent-500) 100%);
+    border-radius: 6px 6px 0 0;
+    opacity: 0.85;
+  }
+  .roi-illustration__slider {
+    margin-top: auto;
+  }
+  .roi-illustration__track {
+    position: relative;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-pill);
+    margin-bottom: var(--space-3);
+  }
+  .roi-illustration__fill {
+    position: absolute;
+    inset: 0 35% 0 0;
+    background: linear-gradient(90deg, var(--color-accent-500) 0%, var(--color-glow) 100%);
+    border-radius: var(--radius-pill);
+  }
+  .roi-illustration__thumb {
+    position: absolute;
+    top: 50%;
+    left: 65%;
+    transform: translate(-50%, -50%);
+    width: 22px;
+    height: 22px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 0 4px rgba(0, 224, 255, 0.35), 0 4px 12px rgba(0, 0, 0, 0.25);
+  }
+  .roi-illustration__caption {
+    font-size: var(--fs-xs);
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
   }
 
   /* People grid */
