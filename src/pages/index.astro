@@ -36,6 +36,58 @@ const faqs = [
     a: 'The first step is a 30 minute consultation. From signed engagement, most firms see their first production AI workflow live within four to six weeks. Pilot length scales with the number of workflows in scope.'
   }
 ];
+
+// Person schema for the four leaders. Rendered as a supplemental JSON-LD
+// block alongside the BaseLayout schema graph.
+const leadersSchema = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': `${SITE.url}/#dale-stein`,
+      name: 'Dale Stein',
+      jobTitle: 'CEO & Partner',
+      image: `${SITE.url}/assets/brand/dale-stein-headshot.jpg`,
+      worksFor: { '@id': `${SITE.url}/#organization` },
+      sameAs: ['https://www.linkedin.com/in/steindale/'],
+      knowsAbout: ['Managed services', 'Telecommunications', 'Mid-market technology leadership'],
+    },
+    {
+      '@type': 'Person',
+      '@id': `${SITE.url}/#nick-dreyfus`,
+      name: 'Nick Dreyfus',
+      jobTitle: 'Vice President of Business Development',
+      image: `${SITE.url}/assets/brand/nick-headshot.jpg`,
+      worksFor: { '@id': `${SITE.url}/#organization` },
+      sameAs: [
+        'https://www.linkedin.com/in/nicholas-dreyfus/',
+        SITE.podcastUrl,
+        'https://www.tiktok.com/@nick.dreyfus.inett',
+        'https://www.instagram.com/nick.dreyfus.inett/',
+      ],
+      knowsAbout: ['Managed AI', 'Cybersecurity', 'HIPAA compliance', 'Mid-market IT strategy'],
+      award: 'East County Chamber of Commerce Ambassador of the Year 2025',
+    },
+    {
+      '@type': 'Person',
+      '@id': `${SITE.url}/#john-lehmkuhl`,
+      name: 'John Lehmkuhl',
+      jobTitle: 'Vice President of Operations',
+      worksFor: { '@id': `${SITE.url}/#organization` },
+      sameAs: ['https://www.linkedin.com/in/john-lehmkuhl/'],
+      knowsAbout: ['Microsoft Azure', 'Amazon Web Services', 'Network security', 'IT operations'],
+    },
+    {
+      '@type': 'Person',
+      '@id': `${SITE.url}/#oscar-salazar`,
+      name: 'Oscar Salazar',
+      jobTitle: 'Telecom Services Manager',
+      worksFor: { '@id': `${SITE.url}/#organization` },
+      sameAs: ['https://www.linkedin.com/in/oscar-salazar-94488311/'],
+      knowsAbout: ['Converged communications', 'Telecommunications engineering', 'Project deployment'],
+    },
+  ],
+};
 ---
 <BaseLayout
   title="Fortify AI by i-NETT : Managed AI for mid-market firms"
@@ -533,6 +585,9 @@ const faqs = [
     </div>
   </section>
 
+  <!-- Supplemental Person schema for the four leaders -->
+  <script type="application/ld+json" set:html={JSON.stringify(leadersSchema)} />
+
   <!-- PROOF / PEOPLE -->
   <section class="section section-soft" aria-labelledby="people-heading">
     <div class="container">
@@ -540,30 +595,147 @@ const faqs = [
         <span class="eyebrow">Built by operators</span>
         <h2 id="people-heading">The team behind Fortify AI.</h2>
       </div>
-      <div class="grid grid-2 people-grid">
-        <article class="person-card reveal">
-          <img src="/assets/brand/nick-headshot.jpg" alt="Nick Dreyfus, VP of Business Development at i-NETT" width="120" height="120" loading="lazy" />
-          <div>
-            <h3>Nick Dreyfus</h3>
-            <p class="person-card__role">VP of Business Development, i-NETT</p>
-            <p>
-              Host of The Digital Dilemma podcast. Chamber Ambassador of the Year 2025.
-              Twenty years working with mid-market CEOs on the operational realities of
-              technology, compliance, and growth.
-            </p>
-          </div>
+      {/*
+        Team grid 2x2. John and Oscar headshots pending download from i-nett.com.
+        Until then, placeholder circles with initials in i-NETT blue render.
+        Replace the .leader-card__placeholder div with an <img> when assets land.
+      */}
+      <div class="leaders-grid">
+        <article class="leader-card reveal reveal-up reveal-delay-1">
+          <img src="/assets/brand/dale-stein-headshot.jpg" alt="Dale Stein, CEO and Partner at i-NETT" width="140" height="140" loading="lazy" class="leader-card__photo" />
+          <h3>Dale Stein</h3>
+          <p class="leader-card__role">CEO &amp; Partner, i-NETT</p>
+          <p>
+            Dale leads i-NETT and co-founded Technology Assurance Group (TAG), a network
+            of leading Managed Technology Services Providers representing over $1 billion
+            in combined annual products and services across North America. His strategic
+            vision guides both organizations.
+          </p>
+          <p>
+            Prior to i-NETT, Dale served as CEO of INET, Inc., growing it into the #1
+            distributor of Mitel products in North America. He founded Westec Security
+            Corporation and built it to more than $30 million in annual revenues. He
+            holds a Bachelor&rsquo;s degree from DeVry and completed Harvard&rsquo;s Small
+            Company Management Program. He serves on the Chairmen&rsquo;s Roundtable in
+            San Diego.
+          </p>
+          <ul class="leader-card__social" aria-label="Dale Stein social links">
+            <li>
+              <a href="https://www.linkedin.com/in/steindale/" target="_blank" rel="noopener" aria-label="Dale Stein on LinkedIn">
+                <svg viewBox="0 0 24 24" width="20" height="20" focusable="false" aria-hidden="true"><path fill="currentColor" d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8 17H5.5v-7H8v7zM6.75 8.75A1.5 1.5 0 1 1 6.75 5.75a1.5 1.5 0 0 1 0 3zM18 17h-2.5v-3.5c0-2-2.5-1.86-2.5 0V17H10.5v-7H13v1.2c1.16-2.16 5-2.32 5 2.06V17z"/></svg>
+                <span>LinkedIn</span>
+              </a>
+            </li>
+          </ul>
         </article>
-        <article class="person-card reveal">
-          <img src="/assets/brand/dale-stein-headshot.jpg" alt="Dale Stein, co-founder of Technology Assurance Group" width="120" height="120" loading="lazy" />
-          <div>
-            <h3>Dale Stein</h3>
-            <p class="person-card__role">Co-founder, Technology Assurance Group (TAG)</p>
-            <p>
-              TAG is the national managed services network behind i-NETT&rsquo;s coverage
-              footprint across 148 cities in the United States and Canada. ISO 27001
-              aligned. Built for the firms regulators trust.
-            </p>
-          </div>
+
+        <article class="leader-card reveal reveal-up reveal-delay-2">
+          <img src="/assets/brand/nick-headshot.jpg" alt="Nick Dreyfus, VP of Business Development at i-NETT" width="140" height="140" loading="lazy" class="leader-card__photo" />
+          <h3>
+            Nick Dreyfus
+            <span class="leader-card__badge" title="East County Chamber of Commerce Ambassador of the Year 2025">Chamber Ambassador 2025</span>
+          </h3>
+          <p class="leader-card__role">Vice President of Business Development, i-NETT</p>
+          <p>
+            Nick brings over 12 years as a systems administrator plus a decade of consulting
+            and network architecture experience to his role. He focuses on understanding each
+            client&rsquo;s unique culture and operational needs before developing customized
+            technology strategies in managed services, cloud, AI, and cybersecurity.
+          </p>
+          <p>
+            Nick hosts The Digital Dilemma podcast, where he interviews founders, technologists,
+            and CEOs on the operational realities of running a modern business. He was named
+            East County Chamber of Commerce Ambassador of the Year for 2025. He holds a
+            Bachelor of Science in Network Engineering from Coleman University.
+          </p>
+          <ul class="leader-card__social" aria-label="Nick Dreyfus links">
+            <li>
+              <a href="https://www.linkedin.com/in/nicholas-dreyfus/" target="_blank" rel="noopener" aria-label="Nick Dreyfus on LinkedIn">
+                <svg viewBox="0 0 24 24" width="20" height="20" focusable="false" aria-hidden="true"><path fill="currentColor" d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8 17H5.5v-7H8v7zM6.75 8.75A1.5 1.5 0 1 1 6.75 5.75a1.5 1.5 0 0 1 0 3zM18 17h-2.5v-3.5c0-2-2.5-1.86-2.5 0V17H10.5v-7H13v1.2c1.16-2.16 5-2.32 5 2.06V17z"/></svg>
+                <span>LinkedIn</span>
+              </a>
+            </li>
+            <li>
+              <a href={SITE.bookingUrl} target="_blank" rel="noopener" aria-label="Book a meeting with Nick Dreyfus">
+                <svg viewBox="0 0 24 24" width="20" height="20" focusable="false" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 5 H19 V19 H5 Z M5 9 H19 M8 3 V7 M16 3 V7"/></svg>
+                <span>Book a meeting</span>
+              </a>
+            </li>
+            <li>
+              <a href={SITE.podcastUrl} target="_blank" rel="noopener" aria-label="The Digital Dilemma podcast">
+                <svg viewBox="0 0 24 24" width="20" height="20" focusable="false" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3 a4 4 0 0 1 4 4 V12 a4 4 0 0 1 -8 0 V7 a4 4 0 0 1 4 -4z M6 11 V13 A6 6 0 0 0 18 13 V11 M12 19 V22 M9 22 H15"/></svg>
+                <span>Podcast</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.tiktok.com/@nick.dreyfus.inett" target="_blank" rel="noopener" aria-label="Nick Dreyfus on TikTok">
+                <svg viewBox="0 0 24 24" width="20" height="20" focusable="false" aria-hidden="true"><path fill="currentColor" d="M19.5 6.7a5.6 5.6 0 0 1-3.4-1.2 5.6 5.6 0 0 1-2-3.5h-3.4v12.3a2.7 2.7 0 1 1-2.7-2.7c.3 0 .6 0 .9.1V8.2c-.3 0-.6-.1-.9-.1A6.3 6.3 0 1 0 14 14.3V8.6a8.9 8.9 0 0 0 5.5 1.9V6.7z"/></svg>
+                <span>TikTok</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://www.instagram.com/nick.dreyfus.inett/" target="_blank" rel="noopener" aria-label="Nick Dreyfus on Instagram">
+                <svg viewBox="0 0 24 24" width="20" height="20" focusable="false" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor"/></svg>
+                <span>Instagram</span>
+              </a>
+            </li>
+          </ul>
+        </article>
+
+        <article class="leader-card reveal reveal-up reveal-delay-3">
+          {/* Replace placeholder with John's headshot once Nick provides it. */}
+          <div class="leader-card__placeholder" aria-hidden="true">JL</div>
+          <h3>John Lehmkuhl</h3>
+          <p class="leader-card__role">Vice President of Operations, i-NETT</p>
+          <p>
+            John brings over 20 years of IT management experience to his role overseeing
+            i-NETT&rsquo;s day-to-day operations, technical engineers, and 24/7/365
+            multi-state service group. His technical skill set spans Microsoft Azure,
+            Amazon Web Services, network security, virtualization, and database management,
+            with high-level coding in multiple languages.
+          </p>
+          <p>
+            John mentors the technical team through certifications and ongoing training.
+            He has worked with nearly all verticals and a vast array of software and
+            hardware platforms. He actively participates in TAG initiatives, industry
+            conferences, and technology partner ecosystems.
+          </p>
+          <ul class="leader-card__social" aria-label="John Lehmkuhl social links">
+            <li>
+              <a href="https://www.linkedin.com/in/john-lehmkuhl/" target="_blank" rel="noopener" aria-label="John Lehmkuhl on LinkedIn">
+                <svg viewBox="0 0 24 24" width="20" height="20" focusable="false" aria-hidden="true"><path fill="currentColor" d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8 17H5.5v-7H8v7zM6.75 8.75A1.5 1.5 0 1 1 6.75 5.75a1.5 1.5 0 0 1 0 3zM18 17h-2.5v-3.5c0-2-2.5-1.86-2.5 0V17H10.5v-7H13v1.2c1.16-2.16 5-2.32 5 2.06V17z"/></svg>
+                <span>LinkedIn</span>
+              </a>
+            </li>
+          </ul>
+        </article>
+
+        <article class="leader-card reveal reveal-up reveal-delay-4">
+          {/* Replace placeholder with Oscar's headshot once Nick provides it. */}
+          <div class="leader-card__placeholder" aria-hidden="true">OS</div>
+          <h3>Oscar Salazar</h3>
+          <p class="leader-card__role">Telecom Services Manager, i-NETT</p>
+          <p>
+            Oscar brings over four decades of progressive experience in telecommunications
+            and IT industries. Since joining i-NETT in 2003, he has held multiple concurrent
+            roles, currently serving as Telecom Services Manager where he oversees a broad
+            range of technical and managerial responsibilities.
+          </p>
+          <p>
+            With expert-level knowledge in converged communication systems, Oscar manages
+            both in-house and field engineering teams, spearheading project development
+            from initial design through successful deployment. He has developed and
+            implemented comprehensive policies and procedures that optimize operations and
+            improve service delivery.
+          </p>
+          <ul class="leader-card__social" aria-label="Oscar Salazar social links">
+            <li>
+              <a href="https://www.linkedin.com/in/oscar-salazar-94488311/" target="_blank" rel="noopener" aria-label="Oscar Salazar on LinkedIn">
+                <svg viewBox="0 0 24 24" width="20" height="20" focusable="false" aria-hidden="true"><path fill="currentColor" d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8 17H5.5v-7H8v7zM6.75 8.75A1.5 1.5 0 1 1 6.75 5.75a1.5 1.5 0 0 1 0 3zM18 17h-2.5v-3.5c0-2-2.5-1.86-2.5 0V17H10.5v-7H13v1.2c1.16-2.16 5-2.32 5 2.06V17z"/></svg>
+                <span>LinkedIn</span>
+              </a>
+            </li>
+          </ul>
         </article>
       </div>
     </div>
@@ -1227,32 +1399,112 @@ const faqs = [
     letter-spacing: 0.04em;
   }
 
-  /* People grid */
-  .people-grid { gap: var(--space-6); }
-  .person-card {
+  /* Leaders 2x2 grid */
+  .leaders-grid {
     display: grid;
-    grid-template-columns: 96px 1fr;
-    gap: var(--space-5);
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    margin-top: var(--space-7);
+  }
+  @media (min-width: 720px) {
+    .leaders-grid { grid-template-columns: 1fr 1fr; gap: var(--space-7); }
+  }
+  .leader-card {
     background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
-    padding: var(--space-6);
-    align-items: start;
+    padding: var(--space-7);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    transition: transform 320ms var(--ease-out), border-color 320ms var(--ease-out), box-shadow 320ms var(--ease-out);
   }
-  .person-card img {
+  .leader-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--color-accent-500);
+    box-shadow: 0 20px 40px rgba(10, 37, 64, 0.10);
+  }
+  .leader-card__photo,
+  .leader-card__placeholder {
     width: 96px;
     height: 96px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--color-border);
+    margin-bottom: var(--space-3);
   }
-  .person-card h3 { margin-bottom: 4px; }
-  .person-card__role {
+  .leader-card__placeholder {
+    display: inline-grid;
+    place-items: center;
+    background: linear-gradient(135deg, var(--color-ink-800) 0%, var(--color-accent-500) 130%);
+    color: #fff;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.75rem;
+    letter-spacing: 0.06em;
+    border-color: transparent;
+  }
+  .leader-card h3 {
+    font-size: var(--fs-lg);
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: 4px;
+  }
+  .leader-card__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35em;
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.3em 0.7em;
+    background: rgba(0, 180, 255, 0.12);
+    color: var(--color-ink-800);
+    border: 1px solid rgba(0, 180, 255, 0.3);
+    border-radius: var(--radius-pill);
+    white-space: nowrap;
+  }
+  .leader-card__role {
     color: var(--color-accent-500);
     font-weight: 600;
     font-size: var(--fs-sm);
     margin-bottom: var(--space-3);
   }
+  .leader-card p { color: var(--color-text-soft); font-size: var(--fs-sm); }
+  .leader-card__social {
+    list-style: none;
+    padding: 0;
+    margin: auto 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+  }
+  .leader-card__social a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    padding: 0.4em 0.85em;
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    color: var(--color-ink-700);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  }
+  .leader-card__social a:hover {
+    background: rgba(0, 180, 255, 0.08);
+    border-color: var(--color-accent-500);
+    color: var(--color-ink-800);
+  }
+  .leader-card__social svg { color: var(--color-ink-700); }
+  .leader-card__social a:hover svg { color: var(--color-accent-500); }
 
   /* Industry cards */
   .industry-card {
