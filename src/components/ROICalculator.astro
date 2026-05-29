@@ -36,14 +36,32 @@ const calcId = id;
       <input
         id={`${calcId}-employees`}
         type="range"
-        min="10"
-        max="1000"
-        step="10"
+        min="1"
+        max="50000"
+        step="1"
         value="150"
         data-roi-employees
-        aria-label="Number of employees"
+        aria-label="Number of employees, from 1 to 50,000"
       />
-      <div class="roi-field__scale"><span>10</span><span>1,000</span></div>
+      <div class="roi-field__row">
+        <div class="roi-field__scale roi-field__scale--grow">
+          <span>1</span><span>50,000</span>
+        </div>
+        <div class="roi-field__numeric">
+          <label for={`${calcId}-employees-num`} class="sr-only">Type exact employee count</label>
+          <input
+            id={`${calcId}-employees-num`}
+            type="number"
+            min="1"
+            max="50000"
+            step="1"
+            value="150"
+            inputmode="numeric"
+            data-roi-employees-num
+            aria-label="Type exact employee count"
+          />
+        </div>
+      </div>
     </div>
 
     <div class="roi-field">
@@ -181,6 +199,34 @@ const calcId = id;
     font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
+  .roi-field__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .roi-field__scale--grow { flex: 1 1 auto; }
+  .roi-field__numeric input {
+    width: 96px;
+    padding: 0.45em 0.6em;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-border-strong);
+    background: var(--color-bg);
+    font-size: var(--fs-sm);
+    font-family: var(--font-mono);
+    text-align: right;
+    -moz-appearance: textfield;
+  }
+  .roi-field__numeric input::-webkit-outer-spin-button,
+  .roi-field__numeric input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .roi-field__numeric input:focus {
+    border-color: var(--color-accent-500);
+    outline: none;
+  }
 
   /* Range track */
   input[type="range"] {
@@ -297,6 +343,7 @@ const calcId = id;
     el: HTMLElement;
     industry: HTMLSelectElement;
     employees: HTMLInputElement;
+    employeesNum: HTMLInputElement;
     hourly: HTMLInputElement;
     hours: HTMLInputElement;
     out: {
@@ -314,10 +361,27 @@ const calcId = id;
     n.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
   const fmtNum = (n: number) => n.toLocaleString('en-US');
 
+  // Variable step snap for the employee count.
+  // 1-150: step 1. 150-1000: step 50. 1000-50000: step 250.
+  function snapEmployees(raw: number): number {
+    const clamped = Math.max(1, Math.min(50000, Math.round(raw)));
+    if (clamped <= 150) return clamped;
+    if (clamped <= 1000) return Math.round(clamped / 50) * 50;
+    return Math.round(clamped / 250) * 250;
+  }
+
   function calc(ctx: Ctx) {
-    const employees = Number(ctx.employees.value);
+    const employees = snapEmployees(Number(ctx.employees.value));
     const hourly = Number(ctx.hourly.value);
     const hours = Number(ctx.hours.value);
+
+    // Keep slider + number input synced to the snapped value.
+    if (Number(ctx.employees.value) !== employees) {
+      ctx.employees.value = String(employees);
+    }
+    if (Number(ctx.employeesNum.value) !== employees && document.activeElement !== ctx.employeesNum) {
+      ctx.employeesNum.value = String(employees);
+    }
 
     const weekly = employees * hourly * hours;
     const monthly = weekly * 4.33;
@@ -341,6 +405,7 @@ const calcId = id;
       el,
       industry: el.querySelector('[data-roi-industry]') as HTMLSelectElement,
       employees: el.querySelector('[data-roi-employees]') as HTMLInputElement,
+      employeesNum: el.querySelector('[data-roi-employees-num]') as HTMLInputElement,
       hourly: el.querySelector('[data-roi-hourly]') as HTMLInputElement,
       hours: el.querySelector('[data-roi-hours]') as HTMLInputElement,
       out: {
@@ -358,11 +423,43 @@ const calcId = id;
       const opt = ctx.industry.options[ctx.industry.selectedIndex];
       const emp = opt.getAttribute('data-employees');
       const hr = opt.getAttribute('data-hourly');
-      if (emp) ctx.employees.value = emp;
+      if (emp) {
+        ctx.employees.value = emp;
+        ctx.employeesNum.value = emp;
+      }
       if (hr) ctx.hourly.value = hr;
       calc(ctx);
     });
-    [ctx.employees, ctx.hourly, ctx.hours].forEach((input) =>
+
+    // Slider drives calc and syncs the number input
+    ctx.employees.addEventListener('input', () => calc(ctx));
+
+    // Number input drives calc and syncs the slider. Snap on blur or Enter,
+    // allow free typing in between (but cap at max during input).
+    ctx.employeesNum.addEventListener('input', () => {
+      const raw = Number(ctx.employeesNum.value);
+      if (Number.isFinite(raw)) {
+        const capped = Math.max(1, Math.min(50000, raw));
+        ctx.employees.value = String(capped);
+        calc(ctx);
+      }
+    });
+    const snapNum = () => {
+      const snapped = snapEmployees(Number(ctx.employeesNum.value));
+      ctx.employeesNum.value = String(snapped);
+      ctx.employees.value = String(snapped);
+      calc(ctx);
+    };
+    ctx.employeesNum.addEventListener('blur', snapNum);
+    ctx.employeesNum.addEventListener('keydown', (e) => {
+      if ((e as KeyboardEvent).key === 'Enter') {
+        e.preventDefault();
+        snapNum();
+        (ctx.employeesNum as HTMLInputElement).blur();
+      }
+    });
+
+    [ctx.hourly, ctx.hours].forEach((input) =>
       input.addEventListener('input', () => calc(ctx))
     );
     calc(ctx);
