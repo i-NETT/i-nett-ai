@@ -774,24 +774,53 @@ const leadersSchema = {
   </section>
 
   <!-- PODCAST -->
-  <section class="section section-soft" aria-labelledby="podcast-heading">
+  {/*
+    Digital Dilemma logo upgrade pending official asset from Nick.
+    Until then, use the typographic treatment below alongside a
+    microphone glyph.
+  */}
+  <section class="section section-dark dd-section" aria-labelledby="podcast-heading">
     <div class="container">
-      <div class="podcast-promo reveal">
-        <div>
-          <span class="eyebrow">From the podcast</span>
-          <h2 id="podcast-heading">The Digital Dilemma</h2>
-          <p class="lead">
-            Nick Dreyfus interviews founders, technologists, and CEOs on the operational
-            realities of running a modern business. AI, cybersecurity, and what actually
-            ships.
-          </p>
-          <div class="podcast-promo__ctas">
-            <a href={SITE.podcastUrl} class="btn btn-primary" target="_blank" rel="noopener">
-              Listen on Apple Podcasts
-            </a>
-            <a href="/podcast" class="btn btn-outline on-dark">All episodes</a>
-          </div>
+      <div class="dd-head reveal reveal-up">
+        <span class="eyebrow">From the podcast</span>
+        <h2 id="podcast-heading">The Digital Dilemma</h2>
+        <p class="lead">
+          Nick Dreyfus interviews founders, technologists, and CEOs on the operational
+          realities of running a modern business. AI, cybersecurity, and what actually
+          ships.
+        </p>
+
+        <div class="dd-logotype reveal reveal-fade reveal-delay-1" aria-hidden="true">
+          <svg class="dd-logotype__mic" viewBox="0 0 24 24" width="22" height="22" focusable="false">
+            <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3 a4 4 0 0 1 4 4 V12 a4 4 0 0 1 -8 0 V7 a4 4 0 0 1 4 -4z M6 11 V13 A6 6 0 0 0 18 13 V11 M12 19 V22 M9 22 H15"/>
+          </svg>
+          <span class="dd-logotype__words">The Digital Dilemma</span>
         </div>
+      </div>
+
+      <div class="dd-video-wrap reveal reveal-up reveal-delay-2">
+        <div class="dd-video">
+          <iframe
+            title="Latest Digital Dilemma Podcast Episode"
+            src="https://www.youtube.com/embed/videoseries?list=UUWcdscFXqBjRG838BAFGsUw"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        </div>
+      </div>
+
+      <div class="dd-ctas reveal reveal-up reveal-delay-3">
+        <a href={SITE.podcastUrl} class="btn btn-accent btn-lg" target="_blank" rel="noopener">
+          Listen on Apple Podcasts
+        </a>
+        <a href={SITE.bookingUrl} class="btn btn-outline on-dark btn-lg" target="_blank" rel="noopener">
+          Book a 30 min consultation
+        </a>
+        <a href={SITE.parentUrl} class="btn btn-ghost on-dark" target="_blank" rel="noopener">
+          Visit i-nett.com <span aria-hidden="true">&rarr;</span>
+        </a>
       </div>
     </div>
   </section>
@@ -1734,31 +1763,80 @@ const leadersSchema = {
     line-height: 1.2;
   }
 
-  /* Podcast promo */
-  .podcast-promo {
-    background: var(--color-ink-800);
-    color: var(--color-text-on-dark);
-    border-radius: var(--radius-xl);
-    padding: clamp(2rem, 4vw, 4rem);
+  /* Podcast section with YouTube embed */
+  .dd-section {
     background-image:
-      radial-gradient(circle at 100% 0%, rgba(0,224,255,0.18) 0%, transparent 50%),
-      radial-gradient(circle at 0% 100%, rgba(0,180,255,0.12) 0%, transparent 50%),
-      var(--color-ink-800);
+      radial-gradient(circle at 80% 10%, rgba(0, 224, 255, 0.12) 0%, transparent 50%),
+      radial-gradient(circle at 10% 90%, rgba(0, 180, 255, 0.10) 0%, transparent 55%),
+      var(--color-ink-900);
   }
-  .podcast-promo h2 {
+  .dd-head {
+    text-align: center;
+    max-width: 60ch;
+    margin: 0 auto var(--space-7);
+  }
+  .dd-head h2 {
     color: #fff;
     margin-top: var(--space-2);
   }
-  .podcast-promo .lead {
+  .dd-head .lead {
     color: var(--color-text-on-dark-soft);
-    margin: var(--space-4) 0 var(--space-6);
+    margin: var(--space-4) auto var(--space-5);
   }
-  .podcast-promo__ctas {
+  .dd-logotype {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.45em 1.1em;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-pill);
+    color: var(--color-glow);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--fs-md);
+    letter-spacing: -0.01em;
+  }
+  .dd-logotype__words { color: #fff; }
+  .dd-video-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto var(--space-7);
+  }
+  .dd-video {
+    position: relative;
+    width: 100%;
+    max-width: 960px;
+    padding-bottom: 56.25%;
+    height: 0;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    background: #000;
+  }
+  .dd-video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .dd-ctas {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    justify-content: center;
+    align-items: stretch;
+    max-width: 760px;
+    margin: 0 auto;
   }
-  @media (min-width: 480px) {
-    .podcast-promo__ctas { flex-direction: row; }
+  @media (min-width: 640px) {
+    .dd-ctas { flex-direction: row; align-items: center; }
+  }
+  .btn-ghost.on-dark {
+    color: var(--color-glow);
+  }
+  .btn-ghost.on-dark:hover {
+    color: #fff;
   }
 </style>
