@@ -29,6 +29,8 @@ interface Props {
   podcast?: boolean;
   person?: boolean;
   bodyClass?: string;
+  speakable?: string[];
+  article?: any;
 }
 
 const {
@@ -46,6 +48,8 @@ const {
   podcast = false,
   person = false,
   bodyClass,
+  speakable,
+  article,
 } = Astro.props;
 ---
 <!doctype html>
@@ -91,6 +95,8 @@ const {
       service={service}
       podcast={podcast}
       person={person}
+      speakable={speakable}
+      article={article}
     />
     <Analytics />
   </head>

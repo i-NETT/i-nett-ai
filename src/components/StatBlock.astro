@@ -1,0 +1,46 @@
+---
+// Citable stat block. Every statistic carries an inline source so AI engines
+// can verify it. Never render a stat without a source.
+interface Props {
+  value: string;
+  label: string;
+  source?: string;
+  sourceUrl?: string;
+}
+const { value, label, source, sourceUrl } = Astro.props;
+---
+<figure class="stat-block">
+  <div class="stat-block__value">{value}</div>
+  <figcaption class="stat-block__label">{label}</figcaption>
+  {source && (
+    <p class="stat-block__source">
+      Source: {sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener">{source}</a> : source}
+    </p>
+  )}
+</figure>
+
+<style>
+  .stat-block {
+    padding: var(--space-5);
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+  .stat-block__value {
+    font-size: var(--fs-2xl);
+    font-weight: 800;
+    color: var(--color-ink-800);
+    line-height: var(--lh-tight);
+  }
+  .stat-block__label {
+    margin-top: var(--space-2);
+    color: var(--color-text-soft);
+    font-size: var(--fs-sm);
+  }
+  .stat-block__source {
+    margin-top: var(--space-3);
+    font-size: var(--fs-xs);
+    color: var(--color-text-muted);
+  }
+  .stat-block__source a { color: var(--color-text-muted); text-decoration: underline; }
+</style>

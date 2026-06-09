@@ -34,6 +34,14 @@ interface Props {
   podcast?: boolean;
   person?: boolean;
   includeOrganization?: boolean;
+  speakable?: string[];
+  article?: {
+    headline: string;
+    description: string;
+    url: string;
+    datePublished?: string;
+    citations?: { claim: string; source: string; url?: string }[];
+  };
 }
 
 const {
@@ -47,6 +55,8 @@ const {
   podcast = false,
   person = false,
   includeOrganization = true,
+  speakable,
+  article,
 } = Astro.props;
 
 const canonicalUrl = new URL(Astro.url.pathname, SITE.url).toString();
@@ -177,6 +187,9 @@ graph.push({
   inLanguage: 'en-US',
   isPartOf: { '@id': `${SITE.url}/#website` },
   about: { '@id': `${SITE.url}/#brand-fortify-ai` },
+  ...(speakable && speakable.length
+    ? { speakable: { '@type': 'SpeakableSpecification', cssSelector: speakable } }
+    : {}),
 });
 
 if (breadcrumbs && breadcrumbs.length) {
@@ -280,6 +293,36 @@ if (person) {
       'Mid-market IT strategy',
       'AI deployment for regulated industries',
     ],
+  });
+}
+
+if (article) {
+  graph.push({
+    '@type': 'Article',
+    '@id': `${article.url}#article`,
+    headline: article.headline,
+    description: article.description,
+    url: article.url,
+    ...(article.datePublished
+      ? { datePublished: article.datePublished, dateModified: article.datePublished }
+      : {}),
+    author: { '@id': `${SITE.url}/#organization` },
+    publisher: { '@id': `${SITE.url}/#organization` },
+    mainEntityOfPage: article.url,
+    inLanguage: 'en-US',
+    isPartOf: { '@id': `${SITE.url}/#website` },
+    ...(speakable && speakable.length
+      ? { speakable: { '@type': 'SpeakableSpecification', cssSelector: speakable } }
+      : {}),
+    ...(article.citations && article.citations.length
+      ? {
+          citation: article.citations.map((c) => ({
+            '@type': 'CreativeWork',
+            name: c.source,
+            ...(c.url ? { url: c.url } : {}),
+          })),
+        }
+      : {}),
   });
 }
 
