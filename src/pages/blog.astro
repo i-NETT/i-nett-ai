@@ -1,58 +1,69 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
+import { getEpisodes, stripHtml } from '@lib/podcast';
+import { getCollection } from 'astro:content';
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
   { name: 'Blog', url: '/blog' },
 ];
 
-const upcoming = [
-  {
-    cat: 'Healthcare',
-    title: 'What a HIPAA-aligned AI deployment actually looks like inside a 100-employee practice',
-  },
-  {
-    cat: 'Legal',
-    title: 'ABA Model Rule 1.6 and AI: the configuration decisions that matter for mid-market firms',
-  },
-  {
-    cat: 'Financial Services',
-    title: 'Books-and-records, supervision, and AI tooling: what your compliance team needs to see',
-  },
-  {
-    cat: 'Operations',
-    title: 'The two workflows that return AI value fastest in a mid-market firm',
-  },
-  {
-    cat: 'Compliance',
-    title: 'What "underwritten by Lloyd&rsquo;s of London" really means for your AI deployment',
-  },
-  {
-    cat: 'Leadership',
-    title: 'What a CEO actually needs to know before signing an AI deployment engagement',
-  },
-];
+const episodes = await getEpisodes();
+const articles = (await getCollection('blog')).filter((a) => !a.data.draft);
+
+type FeedItem = {
+  kind: 'episode' | 'article';
+  title: string;
+  description: string;
+  href: string;
+  date: Date;
+  tag: string;
+  image?: string;
+};
+
+const feed: FeedItem[] = [
+  ...episodes.map((e) => ({
+    kind: 'episode' as const,
+    title: e.title,
+    description: stripHtml(e.descriptionHtml).slice(0, 180),
+    href: `/podcast/${e.slug}`,
+    date: e.pubDate,
+    tag: e.code ? `Podcast · ${e.code}` : 'Podcast',
+    image: e.image,
+  })),
+  ...articles.map((a) => ({
+    kind: 'article' as const,
+    title: a.data.title,
+    description: a.data.description,
+    href: `/blog/${a.id}`,
+    date: a.data.datePublished,
+    tag: 'Article',
+  })),
+].sort((a, b) => b.date.valueOf() - a.date.valueOf());
 ---
 <PageLayout
-  title="Blog : Fortify AI by i-NETT"
-  description="Insights on managed AI, compliance, and the operational realities of deploying AI inside mid-market firms. From the team at i-NETT and the Fortify AI deployment practice."
-  eyebrow="Blog"
-  pageHeading="Insights from the deployment front line."
-  pageLead="The Fortify AI blog publishes on managed AI, compliance configuration, and the operational realities of running AI inside a mid-market firm. Initial articles publish in the weeks following launch."
+  title="Blog and Podcast | Fortify AI by i-NETT"
+  description="Every episode of The Digital Dilemma plus written guidance on managed AI, compliance, and the operational realities of deploying AI inside mid-market firms."
+  eyebrow="Insights"
+  pageHeading="The Digital Dilemma, and what we are writing about."
+  pageLead="Every podcast episode, plus articles on managed AI, compliance configuration, and the decisions that matter for mid-market leaders."
   breadcrumbs={breadcrumbs}
   pageType="CollectionPage"
 >
   <section class="section">
     <div class="container">
-      <span class="eyebrow">Upcoming</span>
-      <h2>The first set of articles.</h2>
-      <div class="grid grid-2 article-grid">
-        {upcoming.map((a) => (
-          <article class="article-card">
-            <span class="pill">{a.cat}</span>
-            <h3 set:html={a.title} />
-            <p class="article-card__status">Publishing post-launch</p>
-          </article>
+      <div class="feed-grid">
+        {feed.map((it) => (
+          <a class="feed-card" href={it.href}>
+            {it.image && (
+              <img class="feed-card__img" src={it.image} alt="" loading="lazy" width="320" height="320" />
+            )}
+            <div class="feed-card__body">
+              <span class="feed-card__tag">{it.tag}</span>
+              <h2 class="feed-card__title">{it.title}</h2>
+              <p class="feed-card__desc">{it.description}</p>
+            </div>
+          </a>
         ))}
       </div>
     </div>
@@ -60,25 +71,36 @@ const upcoming = [
 </PageLayout>
 
 <style>
-  .article-grid { gap: var(--space-5); }
-  .article-card {
-    padding: var(--space-6);
-    background: var(--color-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
+  .feed-grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) { .feed-grid { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1040px) { .feed-grid { grid-template-columns: 1fr 1fr 1fr; } }
+  .feed-card {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg);
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color var(--dur-base) var(--ease-out),
+      box-shadow var(--dur-base) var(--ease-out),
+      transform var(--dur-base) var(--ease-out);
   }
-  .article-card h3 { font-size: var(--fs-lg); margin-top: var(--space-2); }
-  .article-card__status {
-    margin-top: auto;
-    padding-top: var(--space-4);
+  .feed-card:hover { border-color: var(--color-accent-500); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+  .feed-card__img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; background: var(--color-bg-muted); }
+  .feed-card__body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
+  .feed-card__tag {
     font-size: var(--fs-xs);
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-accent-500);
+    letter-spacing: 0.08em;
     font-weight: 600;
-    border-top: 1px solid var(--color-border);
+    color: var(--color-accent-500);
   }
+  .feed-card__title { font-size: var(--fs-md); line-height: var(--lh-snug); }
+  .feed-card__desc { color: var(--color-text-soft); font-size: var(--fs-sm); }
 </style>

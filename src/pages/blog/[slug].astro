@@ -1,0 +1,65 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/Breadcrumbs.astro';
+import CTASection from '@components/CTASection.astro';
+import { SITE } from '@lib/site';
+
+export async function getStaticPaths() {
+  const articles = await getCollection('blog');
+  return articles.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const d = entry.data;
+const path = `/blog/${entry.id}`;
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Blog', url: '/blog' },
+  { name: d.title, url: path },
+];
+---
+<BaseLayout
+  title={`${d.title} | i-NETT`}
+  description={d.description}
+  type="article"
+  breadcrumbs={breadcrumbs}
+  article={{
+    headline: d.title,
+    description: d.description,
+    url: `${SITE.url}${path}`,
+    datePublished: new Date(d.datePublished).toISOString(),
+  }}
+>
+  <article class="article">
+    <div class="container">
+      <div class="article-wrap">
+        <Breadcrumbs items={breadcrumbs} />
+        <span class="eyebrow">Article</span>
+        <h1>{d.title}</h1>
+        <p class="article-meta">
+          {new Date(d.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          {d.author ? ` · ${d.author}` : ''}
+        </p>
+        <div class="article-body">
+          <Content />
+        </div>
+      </div>
+    </div>
+  </article>
+  <CTASection />
+</BaseLayout>
+
+<style>
+  .article { padding: var(--space-9) 0; }
+  .article-wrap { max-width: var(--container-narrow); margin: 0 auto; }
+  .article-wrap h1 { margin: var(--space-3) 0 var(--space-2); font-size: var(--fs-2xl); line-height: var(--lh-snug); }
+  .article-meta { color: var(--color-text-muted); font-size: var(--fs-sm); margin-bottom: var(--space-6); }
+  .article-body :global(h2) { margin: var(--space-7) 0 var(--space-3); font-size: var(--fs-xl); }
+  .article-body :global(h3) { margin: var(--space-5) 0 var(--space-2); font-size: var(--fs-lg); }
+  .article-body :global(p) { margin-bottom: var(--space-4); }
+  .article-body :global(ul), .article-body :global(ol) { margin: 0 0 var(--space-4) var(--space-5); }
+  .article-body :global(li) { margin-bottom: var(--space-2); }
+  .article-body :global(a) { color: var(--color-ink-600); text-decoration: underline; }
+</style>

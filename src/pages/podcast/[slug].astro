@@ -1,0 +1,124 @@
+---
+import { getEpisodes } from '@lib/podcast';
+import BaseLayout from '@layouts/BaseLayout.astro';
+import Breadcrumbs from '@components/Breadcrumbs.astro';
+import CTASection from '@components/CTASection.astro';
+import { SITE } from '@lib/site';
+
+export async function getStaticPaths() {
+  const episodes = await getEpisodes();
+  return episodes.map((ep) => ({ params: { slug: ep.slug }, props: { ep } }));
+}
+
+const { ep } = Astro.props;
+const path = `/podcast/${ep.slug}`;
+const url = `${SITE.url}${path}`;
+const iso = ep.pubDate.toISOString();
+const dateLabel = ep.pubDate.valueOf()
+  ? new Date(ep.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+  : '';
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Podcast', url: '/podcast' },
+  { name: ep.title, url: path },
+];
+
+const episodeSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'PodcastEpisode',
+  url,
+  name: ep.title,
+  datePublished: iso,
+  ...(ep.episode ? { episodeNumber: ep.episode } : {}),
+  ...(ep.season ? { partOfSeason: { '@type': 'PodcastSeason', seasonNumber: ep.season } } : {}),
+  ...(ep.image ? { image: ep.image } : {}),
+  ...(ep.audioUrl
+    ? { associatedMedia: { '@type': 'MediaObject', contentUrl: ep.audioUrl, encodingFormat: 'audio/mpeg' } }
+    : {}),
+  partOfSeries: {
+    '@type': 'PodcastSeries',
+    name: SITE.podcastTitle,
+    url: `${SITE.url}/podcast`,
+  },
+  ...(ep.youtubeId
+    ? {
+        video: {
+          '@type': 'VideoObject',
+          name: ep.title,
+          description: ep.title,
+          uploadDate: iso,
+          embedUrl: `https://www.youtube.com/embed/${ep.youtubeId}`,
+          thumbnailUrl: `https://i.ytimg.com/vi/${ep.youtubeId}/hqdefault.jpg`,
+        },
+      }
+    : {}),
+};
+---
+<BaseLayout
+  title={`${ep.title} | The Digital Dilemma`}
+  description={`The Digital Dilemma${ep.code ? `, ${ep.code}` : ''}: ${ep.title}. Hosted by Nick Dreyfus.`}
+  type="article"
+  breadcrumbs={breadcrumbs}
+>
+  <article class="episode">
+    <div class="container">
+      <div class="episode-wrap">
+        <Breadcrumbs items={breadcrumbs} />
+        <span class="eyebrow">The Digital Dilemma{ep.code ? ` · ${ep.code}` : ''}</span>
+        <h1>{ep.title}</h1>
+        <p class="episode-meta">{dateLabel}{ep.durationText ? ` · ${ep.durationText}` : ''}</p>
+
+        <div class="episode-player">
+          {ep.youtubeId ? (
+            <div class="episode-video">
+              <iframe
+                src={`https://www.youtube.com/embed/${ep.youtubeId}?rel=0`}
+                title={ep.title}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                referrerpolicy="strict-origin-when-cross-origin"
+              ></iframe>
+            </div>
+          ) : ep.audioUrl ? (
+            <audio class="episode-audio" controls preload="none" src={ep.audioUrl}></audio>
+          ) : null}
+        </div>
+
+        <div class="episode-notes" set:html={ep.descriptionHtml}></div>
+
+        <div class="episode-actions">
+          <a class="btn btn-accent" href={SITE.podcastUrl} target="_blank" rel="noopener">Listen on Apple Podcasts</a>
+          <a class="episode-back" href="/blog">All episodes and articles</a>
+        </div>
+      </div>
+    </div>
+  </article>
+  <script type="application/ld+json" set:html={JSON.stringify(episodeSchema)} />
+  <CTASection />
+</BaseLayout>
+
+<style>
+  .episode { padding: var(--space-9) 0; }
+  .episode-wrap { max-width: var(--container-narrow); margin: 0 auto; }
+  .episode-wrap h1 { margin: var(--space-3) 0 var(--space-2); font-size: var(--fs-2xl); line-height: var(--lh-snug); }
+  .episode-meta { color: var(--color-text-muted); font-size: var(--fs-sm); margin-bottom: var(--space-6); }
+  .episode-video {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-ink-900);
+    margin-bottom: var(--space-6);
+  }
+  .episode-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .episode-audio { width: 100%; margin-bottom: var(--space-6); }
+  .episode-notes { font-size: var(--fs-base); line-height: var(--lh-normal); }
+  .episode-notes :global(p) { margin-bottom: var(--space-4); }
+  .episode-notes :global(ul), .episode-notes :global(ol) { margin: 0 0 var(--space-4) var(--space-5); }
+  .episode-notes :global(li) { margin-bottom: var(--space-2); }
+  .episode-notes :global(h2), .episode-notes :global(h3) { margin: var(--space-6) 0 var(--space-2); }
+  .episode-notes :global(a) { color: var(--color-ink-600); text-decoration: underline; }
+  .episode-actions { margin-top: var(--space-7); display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center; }
+  .episode-back { color: var(--color-ink-600); font-weight: 600; }
+</style>

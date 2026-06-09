@@ -27,4 +27,16 @@ const aiGovernance = defineCollection({
   }),
 });
 
-export const collections = { 'ai-governance': aiGovernance };
+const blog = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    datePublished: z.coerce.date(),
+    author: z.string().default('i-NETT'),
+    draft: z.boolean().default(false),
+    answerFirst: z.string().optional(),
+  }),
+});
+
+export const collections = { 'ai-governance': aiGovernance, blog };
