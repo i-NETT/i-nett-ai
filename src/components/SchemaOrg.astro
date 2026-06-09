@@ -34,6 +34,14 @@ interface Props {
   podcast?: boolean;
   person?: boolean;
   includeOrganization?: boolean;
+  speakable?: string[];
+  article?: {
+    headline: string;
+    description: string;
+    url: string;
+    datePublished?: string;
+    citations?: { claim: string; source: string; url?: string }[];
+  };
 }
 
 const {
@@ -47,6 +55,8 @@ const {
   podcast = false,
   person = false,
   includeOrganization = true,
+  speakable,
+  article,
 } = Astro.props;
 
 const canonicalUrl = new URL(Astro.url.pathname, SITE.url).toString();
@@ -68,7 +78,7 @@ if (includeOrganization) {
       height: 800,
     },
     description:
-      'i-NETT is a managed IT, cybersecurity, and managed AI provider serving mid-market firms in Southern California, the United States, and Canada.',
+      'i-NETT is a managed IT, cybersecurity, and managed AI provider serving mid-market firms in Southern California, the United States, and Canada. Service is month-to-month with no long-term contracts.',
     address: {
       '@type': 'PostalAddress',
       streetAddress: SITE.address.streetAddress,
@@ -95,6 +105,31 @@ if (includeOrganization) {
       areaServed: ['US', 'CA'],
       availableLanguage: ['English'],
     },
+    knowsAbout: [
+      { '@type': 'Thing', name: 'Artificial intelligence', sameAs: ['https://www.wikidata.org/wiki/Q11660', 'https://en.wikipedia.org/wiki/Artificial_intelligence'] },
+      { '@type': 'Thing', name: 'Computer security', sameAs: ['https://www.wikidata.org/wiki/Q3510521', 'https://en.wikipedia.org/wiki/Computer_security'] },
+      { '@type': 'Thing', name: 'Cloud computing', sameAs: ['https://www.wikidata.org/wiki/Q483639', 'https://en.wikipedia.org/wiki/Cloud_computing'] },
+      { '@type': 'Thing', name: 'Regulatory compliance', sameAs: ['https://en.wikipedia.org/wiki/Regulatory_compliance'] },
+      { '@type': 'Thing', name: 'Information privacy', sameAs: ['https://en.wikipedia.org/wiki/Information_privacy'] },
+    ],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'i-NETT Services',
+      itemListElement: [
+        'Managed IT Services',
+        'Cyber Security',
+        'AI Policy and Protection',
+        'Cloud Solutions',
+        'Unified Communications',
+      ].map((s) => ({
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: s,
+          provider: { '@id': `${SITE.url}/#organization` },
+        },
+      })),
+    },
   });
 
   graph.push({
@@ -115,6 +150,32 @@ if (includeOrganization) {
     publisher: { '@id': `${SITE.url}/#organization` },
     inLanguage: 'en-US',
   });
+
+  graph.push({
+    '@type': 'LocalBusiness',
+    '@id': `${SITE.url}/#localbusiness-hq`,
+    name: SITE.parent,
+    image: `${SITE.url}/assets/brand/inett-logo.png`,
+    url: SITE.parentUrl,
+    telephone: SITE.phone,
+    email: SITE.email,
+    priceRange: '$$$',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: SITE.address.streetAddress,
+      addressLocality: SITE.address.locality,
+      addressRegion: SITE.address.region,
+      postalCode: SITE.address.postalCode,
+      addressCountry: SITE.address.country,
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: SITE.geo.primaryLat,
+      longitude: SITE.geo.primaryLng,
+    },
+    areaServed: SERVICE_AREAS.map((a) => ({ '@type': 'Place', name: a })),
+    parentOrganization: { '@id': `${SITE.url}/#organization` },
+  });
 }
 
 graph.push({
@@ -126,6 +187,9 @@ graph.push({
   inLanguage: 'en-US',
   isPartOf: { '@id': `${SITE.url}/#website` },
   about: { '@id': `${SITE.url}/#brand-fortify-ai` },
+  ...(speakable && speakable.length
+    ? { speakable: { '@type': 'SpeakableSpecification', cssSelector: speakable } }
+    : {}),
 });
 
 if (breadcrumbs && breadcrumbs.length) {
@@ -229,6 +293,36 @@ if (person) {
       'Mid-market IT strategy',
       'AI deployment for regulated industries',
     ],
+  });
+}
+
+if (article) {
+  graph.push({
+    '@type': 'Article',
+    '@id': `${article.url}#article`,
+    headline: article.headline,
+    description: article.description,
+    url: article.url,
+    ...(article.datePublished
+      ? { datePublished: article.datePublished, dateModified: article.datePublished }
+      : {}),
+    author: { '@id': `${SITE.url}/#organization` },
+    publisher: { '@id': `${SITE.url}/#organization` },
+    mainEntityOfPage: article.url,
+    inLanguage: 'en-US',
+    isPartOf: { '@id': `${SITE.url}/#website` },
+    ...(speakable && speakable.length
+      ? { speakable: { '@type': 'SpeakableSpecification', cssSelector: speakable } }
+      : {}),
+    ...(article.citations && article.citations.length
+      ? {
+          citation: article.citations.map((c) => ({
+            '@type': 'CreativeWork',
+            name: c.source,
+            ...(c.url ? { url: c.url } : {}),
+          })),
+        }
+      : {}),
   });
 }
 

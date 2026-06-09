@@ -1,6 +1,7 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
 import FAQ from '@components/FAQ.astro';
+import AnswerBlock from '@components/AnswerBlock.astro';
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
@@ -34,7 +35,16 @@ const faqs = [
   pageLead="Fortify AI follows a defined four-stage process designed for firms that need AI capability fast, configured to their compliance environment, and operated by a team they trust."
   breadcrumbs={breadcrumbs}
   faqs={faqs}
+  speakable={['.answer-block__a']}
 >
+  <section class="section">
+    <div class="container">
+      <AnswerBlock>
+        <p>i-NETT deploys Fortify AI as a fully managed service: we configure the AI infrastructure to your specific regulatory environment, isolate it to a dedicated tenant so your data stays separate from every other client, and our managed services team operates and monitors it on an ongoing basis. Deployments are designed to meet HIPAA, GDPR, SOC, and CCPA requirements and are reviewed alongside your compliance team before going live. Your data is never used to train models and is never shared across clients, and the deployment is underwritten by a Lloyd's of London cybersecurity insurance policy.</p>
+      </AnswerBlock>
+    </div>
+  </section>
+
   <!-- STAGES -->
   <section class="section">
     <div class="container">

@@ -1,6 +1,7 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
 import FAQ from '@components/FAQ.astro';
+import AnswerBlock from '@components/AnswerBlock.astro';
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
@@ -35,11 +36,20 @@ const faqs = [
   pageLead="Fortify AI deploys deliverable drafting, engagement summarization, knowledge retrieval, and proposal workflows into the firms that sell knowledge work delivered by named experts. Confidentiality-first configuration, dedicated tenant, and a managed services team operating it for you."
   breadcrumbs={breadcrumbs}
   faqs={faqs}
+  speakable={['.answer-block__a']}
   service={{
     name: 'Fortify AI for Professional Services',
     description: 'Managed AI deployment for professional services firms including consulting, accounting, agencies, and advisory practices. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
   }}
 >
+  <section class="section">
+    <div class="container container-narrow">
+      <AnswerBlock>
+        <p>A professional-services firm can use AI securely by deploying it on managed, compliance-ready infrastructure that isolates client work in a dedicated tenant, keeps data out of model training, and never shares it across clients. With Fortify AI, i-NETT configures each deployment to your compliance requirements, operates it as a managed service, and maintains the security controls so your team gets AI capability without building an in-house data science or security function. The deployment is underwritten by a Lloyd's of London cybersecurity insurance policy.</p>
+      </AnswerBlock>
+    </div>
+  </section>
+
   <section class="section">
     <div class="container container-narrow">
       <span class="eyebrow">Confidentiality posture</span>

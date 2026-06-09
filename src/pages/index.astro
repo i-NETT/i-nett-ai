@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@layouts/BaseLayout.astro';
 import ROIModal from '@components/ROIModal.astro';
+import ROICalculator from '@components/ROICalculator.astro';
 import FAQ from '@components/FAQ.astro';
 import CTASection from '@components/CTASection.astro';
 import DemoStream from '@components/DemoStream.astro';
@@ -143,6 +144,16 @@ const leadersSchema = {
           <li>Customer data isolated to your tenant</li>
           <li>148 service cities across US and Canada</li>
         </ul>
+        <div class="hero__offers" aria-label="Free resources">
+          <a class="hero__offer" href="/ai-usage-policy">
+            <span class="hero__offer-tag">Free template</span>
+            <span class="hero__offer-title">An AI usage policy your team can deploy today.</span>
+          </a>
+          <a class="hero__offer" href="/master-prompt">
+            <span class="hero__offer-tag">Free, with a 30 minute call</span>
+            <span class="hero__offer-title">Get a custom AI master prompt for your business.</span>
+          </a>
+        </div>
       </div>
 
       <aside class="hero__panel" aria-label="Fortify AI brand mark">
@@ -542,45 +553,19 @@ const leadersSchema = {
     </div>
   </section>
 
-  <!-- ROI CALCULATOR TRIGGER -->
+  <!-- ROI CALCULATOR (live, inline) -->
   <section class="section section-roi" id="roi" aria-labelledby="roi-heading">
     <div class="container">
-      <div class="roi-grid">
-        <div class="roi-grid__copy reveal reveal-up">
-          <span class="eyebrow">Your number</span>
-          <h2 id="roi-heading">What is a five-hour-per-week productivity uplift worth to your firm?</h2>
-          <p class="lead">
-            Pick your industry. Drag the sliders. Type an exact employee count if you
-            prefer. The number is yours to take to your board.
-          </p>
-          <div class="roi-grid__ctas">
-            <ROIModal label="Calculate your savings" />
-            <a href="/roi-calculator" class="btn btn-ghost">See full methodology &rarr;</a>
-          </div>
-        </div>
-
-        <aside class="roi-grid__visual reveal reveal-right reveal-delay-2" aria-hidden="true">
-          <div class="roi-illustration">
-            <div class="roi-illustration__chip">
-              <span class="roi-illustration__chip-label">Annual potential</span>
-              <span class="roi-illustration__chip-value">$1.95M</span>
-            </div>
-            <div class="roi-illustration__bars">
-              <div style="--h: 28%"></div>
-              <div style="--h: 46%"></div>
-              <div style="--h: 62%"></div>
-              <div style="--h: 78%"></div>
-              <div style="--h: 92%"></div>
-            </div>
-            <div class="roi-illustration__slider">
-              <div class="roi-illustration__track">
-                <div class="roi-illustration__fill"></div>
-                <div class="roi-illustration__thumb"></div>
-              </div>
-              <p class="roi-illustration__caption">Adjustable: 1 to 50,000 employees</p>
-            </div>
-          </div>
-        </aside>
+      <div class="roi-home-intro reveal reveal-up">
+        <span class="eyebrow">Your number</span>
+        <h2 id="roi-heading">What is a five-hour-per-week productivity uplift worth to your firm?</h2>
+        <p class="lead">
+          Pick your industry. Drag the sliders. Type an exact employee count if you
+          prefer. The number is yours to take to your board.
+        </p>
+      </div>
+      <div class="roi-home-calc reveal reveal-up reveal-delay-1">
+        <ROICalculator variant="inline" id="home-roi" showMethodologyLink={true} />
       </div>
     </div>
   </section>
@@ -1074,6 +1059,34 @@ const leadersSchema = {
     max-width: 56ch;
     margin-bottom: var(--space-6);
   }
+  .hero__offers {
+    margin-top: var(--space-6);
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) { .hero__offers { grid-template-columns: 1fr 1fr; } }
+  .hero__offer {
+    display: block;
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.04);
+    color: var(--color-text-on-dark);
+    text-decoration: none;
+    transition: border-color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+  }
+  .hero__offer:hover { border-color: var(--color-accent-500); background: rgba(0,180,255,0.08); }
+  .hero__offer-tag {
+    display: block;
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    color: var(--color-accent-400);
+    margin-bottom: var(--space-1);
+  }
+  .hero__offer-title { display: block; font-weight: 600; font-size: var(--fs-sm); }
   .hero__ctas {
     display: flex;
     flex-direction: column;
@@ -1296,7 +1309,11 @@ const leadersSchema = {
   .how-step h3 { margin-bottom: var(--space-2); }
   .how-cta { text-align: center; margin-top: var(--space-7); }
 
-  /* ROI section, two-column with stylized calculator illustration */
+  /* ROI section: full-width inline calculator */
+  .roi-home-intro { max-width: 760px; margin: 0 auto var(--space-7); text-align: center; }
+  .roi-home-intro h2 { margin-top: var(--space-2); }
+  .roi-home-intro .lead { margin-top: var(--space-4); }
+  .roi-home-calc { max-width: 1000px; margin: 0 auto; }
   .section-roi {
     background: linear-gradient(180deg, var(--color-bg-soft) 0%, var(--color-bg) 100%);
   }

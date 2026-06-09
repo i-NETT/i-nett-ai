@@ -1,0 +1,129 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumbs from '@components/Breadcrumbs.astro';
+import AnswerBlock from '@components/AnswerBlock.astro';
+import CTASection from '@components/CTASection.astro';
+import { SITE } from '@lib/site';
+
+const { entry } = Astro.props;
+const d = entry.data;
+const path = `/ai-governance/${entry.id}`;
+const url = `${SITE.url}${path}`;
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'AI Governance', url: '/ai-governance' },
+  { name: d.title, url: path },
+];
+const datePublished = d.datePublished
+  ? new Date(d.datePublished).toISOString()
+  : undefined;
+---
+<BaseLayout
+  title={`${d.title} | Fortify AI by i-NETT`}
+  description={d.description}
+  type="article"
+  breadcrumbs={breadcrumbs}
+  faqs={d.faqs}
+  speakable={['.answer-block__a']}
+  article={{
+    headline: d.title,
+    description: d.description,
+    url,
+    datePublished,
+    citations: d.citations,
+  }}
+>
+  <article class="article">
+    <div class="container">
+      <div class="article-wrap">
+        <Breadcrumbs items={breadcrumbs} />
+        <span class="eyebrow">AI Governance</span>
+        <h1>{d.title}</h1>
+
+        <AnswerBlock>
+          <p>{d.answerFirst}</p>
+        </AnswerBlock>
+
+        {d.definitions.length > 0 && (
+          <div class="definitions">
+            {d.definitions.map((def) => (
+              <p><strong>{def.term}.</strong> {def.definition}</p>
+            ))}
+          </div>
+        )}
+
+        <div class="article-body">
+          <slot />
+        </div>
+
+        {d.faqs.length > 0 && (
+          <section class="article-faq" aria-label="Frequently asked questions">
+            <h2>Frequently asked questions</h2>
+            {d.faqs.map((f) => (
+              <details class="faq-item">
+                <summary>{f.q}</summary>
+                <p>{f.a}</p>
+              </details>
+            ))}
+          </section>
+        )}
+
+        {d.citations.length > 0 && (
+          <section class="article-sources" aria-label="Sources">
+            <h2>Sources</h2>
+            <ul>
+              {d.citations.map((c) => (
+                <li>
+                  {c.url ? <a href={c.url} target="_blank" rel="noopener">{c.source}</a> : c.source}
+                  {!c.confident && <span class="unverified"> (pending verification)</span>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
+    </div>
+  </article>
+  <CTASection />
+</BaseLayout>
+
+<style>
+  .article { padding: var(--space-9) 0; }
+  .article-wrap { max-width: var(--container-narrow); margin: 0 auto; }
+  .article-wrap h1 {
+    margin: var(--space-3) 0 var(--space-5);
+    font-size: var(--fs-3xl);
+    line-height: var(--lh-snug);
+  }
+  .definitions {
+    margin: 0 0 var(--space-6);
+    padding: var(--space-4) var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-bg);
+  }
+  .definitions p { margin-bottom: var(--space-3); }
+  .definitions p:last-child { margin-bottom: 0; }
+  .article-body :global(h2) { margin: var(--space-7) 0 var(--space-3); font-size: var(--fs-xl); }
+  .article-body :global(h3) { margin: var(--space-5) 0 var(--space-2); font-size: var(--fs-lg); }
+  .article-body :global(p) { margin-bottom: var(--space-4); }
+  .article-body :global(ul),
+  .article-body :global(ol) { margin: 0 0 var(--space-4) var(--space-5); }
+  .article-body :global(li) { margin-bottom: var(--space-2); }
+  .article-body :global(a) { color: var(--color-ink-600); text-decoration: underline; }
+  .article-body :global(strong) { color: var(--color-text); }
+  .article-faq,
+  .article-sources {
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+  .article-faq h2,
+  .article-sources h2 { font-size: var(--fs-xl); margin-bottom: var(--space-4); }
+  .faq-item { padding: var(--space-3) 0; border-bottom: 1px solid var(--color-border); }
+  .faq-item summary { font-weight: 600; cursor: pointer; }
+  .faq-item p { margin-top: var(--space-2); color: var(--color-text-soft); }
+  .article-sources ul { margin-left: var(--space-5); }
+  .article-sources a { color: var(--color-ink-600); }
+  .unverified { color: var(--color-warning); font-size: var(--fs-xs); }
+</style>

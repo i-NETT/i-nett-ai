@@ -5,15 +5,15 @@ export const SITE = {
   parent: 'i-NETT',
   domain: 'i-nett.ai',
   url: 'https://i-nett.ai',
-  parentUrl: 'https://i-nett.com',
+  parentUrl: 'https://www.i-nett.com',
   tagline: 'Managed AI for mid-market business.',
   description:
     'Fortify AI is the managed AI offering from i-NETT. We deploy secure, compliance-ready AI for mid-market firms across Southern California, the United States, and Canada. Built for HIPAA, GDPR, SOC, and CCPA. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
   shortDescription:
     'Managed AI for mid-market firms. HIPAA, GDPR, SOC, and CCPA ready. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
   email: 'hello@i-nett.com',
-  phone: '+1-805-642-3558',
-  phoneDisplay: '(805) 642-3558',
+  phone: '+1-858-337-2866',
+  phoneDisplay: '(858) 337-2866',
   bookingUrl: 'https://meetings-na2.hubspot.com/ndreyfus/initial_call',
   podcastUrl:
     'https://podcasts.apple.com/us/podcast/the-digital-dilemma/id1764658911',
@@ -21,7 +21,7 @@ export const SITE = {
   podcastHost: 'Nick Dreyfus',
   social: {
     linkedinPerson: 'https://www.linkedin.com/in/nicholasdreyfus/',
-    parentSite: 'https://i-nett.com',
+    parentSite: 'https://www.i-nett.com',
   },
   address: {
     streetAddress: '9655 Granite Ridge Drive, Suite 200',
@@ -45,9 +45,10 @@ export const SITE = {
 export const NAV_PRIMARY = [
   { label: 'Fortify AI', href: '/fortify-ai' },
   { label: 'How It Works', href: '/how-it-works' },
+  { label: 'AI Governance', href: '/ai-governance' },
   { label: 'Industries', href: '/industries/healthcare' },
+  { label: 'Blog', href: '/blog' },
   { label: 'ROI Calculator', href: '/roi-calculator' },
-  { label: 'Coverage', href: '/coverage' },
   { label: 'About', href: '/about' },
 ] as const;
 

@@ -1,0 +1,113 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import AnswerBlock from '@components/AnswerBlock.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'AI Usage Policy Template', url: '/ai-usage-policy' },
+];
+
+const DOWNLOAD = '/downloads/ai-usage-policy-template.docx';
+
+const faqs = [
+  {
+    q: 'What is an AI usage policy?',
+    a: 'An AI usage policy is a written document that defines how employees may use AI tools at work, which tools are approved, what data may and may not be entered into them, and who is accountable for compliant use.',
+  },
+  {
+    q: 'Is this template free?',
+    a: 'Yes. You can read it in full on this page and download an editable copy. There is no paywall and no required form.',
+  },
+  {
+    q: 'Can we use this as-is?',
+    a: 'It is a strong starting point built for a mid-sized business. Review it with qualified counsel and adapt the specifics, such as your approved tools and data tiers, before you adopt it.',
+  },
+];
+
+const sections = [
+  { h: '1. Purpose and scope', b: 'This policy governs the use of artificial intelligence tools by all employees, contractors, and anyone acting on behalf of the company. It applies to any AI tool used for company work, whether company-provided or publicly available.' },
+  { h: '2. Acceptable use', b: 'Employees may use approved AI tools to draft, summarize, research, analyze, and assist with properly classified information. AI output must be reviewed by a qualified person before it is sent to a client, filed, billed, or used in a decision. AI assists. People remain accountable.' },
+  { h: '3. Approved tools', b: 'Only tools on the company approved-tools list may be used for company work. Tools cleared for confidential or regulated data are listed separately from tools acceptable only for public, non-sensitive content. If a tool is not on the list, it is not approved. Request additions through the defined process.' },
+  { h: '4. Data classification', b: 'Public information may be used with any approved tool. Internal information may be used with approved tools only. Confidential information is restricted to tools cleared for confidential data. Regulated information, including protected health information and personal data under GDPR or CCPA, is never entered into a public or personal AI tool. The bright line: never paste client, patient, financial, or personally identifiable information into a public or personal AI account.' },
+  { h: '5. Human review and accountability', b: 'A qualified person must review AI-generated output before it is used externally or in any decision about a person. The individual who signs, sends, or acts on the output owns the result.' },
+  { h: '6. Vendor and data-residency requirements', b: 'Any AI tool that handles company data must not train its models on your inputs, must isolate your data from other customers, and must operate under contractual terms the company has reviewed. New AI vendors must be approved before they handle company data.' },
+  { h: '7. Incident handling', b: 'If sensitive data is exposed to an unapproved tool, report it promptly through the defined channel. The goal is fast containment, not blame. Early reporting limits exposure.' },
+  { h: '8. Ownership and review', b: 'A named owner maintains this policy and the approved-tools list. The policy is reviewed on a set cadence, at least twice per year, and updated as tools and regulations change.' },
+];
+---
+<PageLayout
+  title="Free AI Usage Policy Template for Business | Fortify AI by i-NETT"
+  description="A free, deployable AI usage policy template for mid-sized businesses. Read it in full and download an editable copy. Acceptable use, data rules, vendor terms, and more."
+  eyebrow="Free template"
+  pageHeading="An AI usage policy your team can deploy today."
+  pageLead="A practical, deployable AI usage policy template for a mid-sized business. Read it in full below, then download an editable copy to adapt for your organization."
+  breadcrumbs={breadcrumbs}
+  faqs={faqs}
+  speakable={['.answer-block__a']}
+>
+  <section class="section">
+    <div class="container">
+      <div class="pol-wrap">
+        <AnswerBlock label="What this is">
+          <p>
+            This is a free, ready-to-adapt AI usage policy for a mid-sized business. It defines
+            acceptable use, an approved-tools list, a data classification standard for what may never
+            be pasted into public AI tools, a human-review rule, vendor and data-residency
+            requirements, incident handling, and ownership. Read it in full below or download an
+            editable copy.
+          </p>
+        </AnswerBlock>
+
+        <div class="pol-download">
+          <a class="btn btn-accent btn-lg" href={DOWNLOAD} download>Download the editable template</a>
+          <a class="pol-related" href="/ai-governance/corporate-ai-usage-policy">Read the full guide to what belongs in an AI usage policy</a>
+        </div>
+
+        <div class="pol-doc">
+          <h2>AI Usage Policy Template</h2>
+          {sections.map((s) => (
+            <section class="pol-section">
+              <h3>{s.h}</h3>
+              <p>{s.b}</p>
+            </section>
+          ))}
+
+          <p class="pol-footer">
+            This template is a starting point, not legal advice. Review with qualified counsel before
+            adoption in your organization.
+          </p>
+        </div>
+
+        <div class="pol-cta">
+          <p>Want help configuring AI safely, not just writing the policy?</p>
+          <a class="btn btn-accent" href={SITE.bookingUrl} target="_blank" rel="noopener">Book a 30 minute consultation</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .pol-wrap { max-width: var(--container-narrow); margin: 0 auto; }
+  .pol-download { margin: var(--space-5) 0 var(--space-8); display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }
+  .pol-related { color: var(--color-ink-600); text-decoration: underline; font-size: var(--fs-sm); }
+  .pol-doc {
+    padding: var(--space-7);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-bg-soft);
+  }
+  .pol-doc h2 { font-size: var(--fs-xl); margin-bottom: var(--space-5); }
+  .pol-section { margin-bottom: var(--space-5); }
+  .pol-section h3 { font-size: var(--fs-md); margin-bottom: var(--space-2); }
+  .pol-footer {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+  .pol-cta { margin-top: var(--space-8); display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }
+</style>

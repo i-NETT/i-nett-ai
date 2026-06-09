@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    # Daily rebuild (~6am PT) so new Digital Dilemma episodes auto-publish to /blog.
+    - cron: '0 13 * * *'
 
 permissions:
   contents: read

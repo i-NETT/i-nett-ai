@@ -1,0 +1,71 @@
+---
+import PageLayout from '@layouts/PageLayout.astro';
+import AnswerBlock from '@components/AnswerBlock.astro';
+import { SITE } from '@lib/site';
+
+const breadcrumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Custom Master Prompt', url: '/master-prompt' },
+];
+
+const faqs = [
+  {
+    q: 'What is the custom master prompt?',
+    a: 'It is a tailored AI instruction set engineered for your business and role, so your team gets consistent, on-brand, accurate output from AI tools instead of generic results. We build it from a short discovery conversation about your work.',
+  },
+  {
+    q: 'How do I get it?',
+    a: 'Book a 30-minute strategy call. Your custom master prompt will be engineered based on our discovery and delivered via email within 24 hours following your completed call.',
+  },
+  {
+    q: 'Is the call a sales pitch?',
+    a: 'No. It is a working session. We spend the time understanding how your team works so we can build something useful. Thirty minutes is the qualifier, and the prompt is yours to keep.',
+  },
+];
+---
+<PageLayout
+  title="Get a Free Custom AI Master Prompt | Fortify AI by i-NETT"
+  description="Book a 30-minute strategy call and we engineer a custom AI master prompt for your business, delivered by email within 24 hours of your completed call."
+  eyebrow="Working session"
+  pageHeading="A custom AI master prompt, engineered for your business."
+  pageLead="Most teams get generic results from AI because they use generic prompts. We build you a tailored master prompt from a focused 30-minute working session."
+  breadcrumbs={breadcrumbs}
+  faqs={faqs}
+  speakable={['.answer-block__a']}
+>
+  <section class="section">
+    <div class="container">
+      <div class="mp-wrap">
+        <AnswerBlock label="The offer">
+          <p>
+            Book a 30-minute strategy call with our team. Your custom master prompt will be
+            engineered based on our discovery and delivered via email within 24 hours following your
+            completed 30-minute strategy call. It is a working session, not a sales pitch, and the
+            prompt is yours to keep.
+          </p>
+        </AnswerBlock>
+
+        <h2>How it works</h2>
+        <ol class="mp-steps">
+          <li><strong>Book the call.</strong> Pick a 30-minute slot that works for you.</li>
+          <li><strong>We run a short discovery.</strong> We learn how your team actually uses AI and where it falls short.</li>
+          <li><strong>You receive your master prompt.</strong> Engineered for your business and delivered by email within 24 hours of the completed call.</li>
+        </ol>
+
+        <div class="mp-cta">
+          <a class="btn btn-accent btn-lg" href={SITE.bookingUrl} target="_blank" rel="noopener">
+            Book your 30 minute strategy call
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .mp-wrap { max-width: var(--container-narrow); margin: 0 auto; }
+  .mp-wrap h2 { font-size: var(--fs-xl); margin: var(--space-7) 0 var(--space-4); }
+  .mp-steps { margin: 0 0 var(--space-6) var(--space-5); }
+  .mp-steps li { margin-bottom: var(--space-3); }
+  .mp-cta { margin-top: var(--space-6); }
+</style>
