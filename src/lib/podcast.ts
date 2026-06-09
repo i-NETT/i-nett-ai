@@ -1,4 +1,4 @@
-import { PODCAST_VIDEOS } from '@lib/podcastVideos';
+import { buildVideoMap } from '@lib/youtubeMap';
 
 const FEED_URL = 'https://api.riverside.fm/hosting/QL16ouQn.rss';
 
@@ -44,6 +44,7 @@ export async function getEpisodes(): Promise<Episode[]> {
     return [];
   }
 
+  const videoMap = await buildVideoMap();
   const blocks = xml.split('<item>').slice(1).map((s) => s.split('</item>')[0]);
   const episodes: Episode[] = [];
   const seen = new Set<string>();
@@ -85,7 +86,7 @@ export async function getEpisodes(): Promise<Episode[]> {
       image,
       audioUrl,
       descriptionHtml,
-      youtubeId: code ? PODCAST_VIDEOS[code] : undefined,
+      youtubeId: code ? videoMap[code] : undefined,
     });
   }
 

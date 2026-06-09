@@ -1,10 +1,15 @@
-// Map of "S{season}E{episode}" -> YouTube video ID for The Digital Dilemma.
-// When an episode has an entry here, its post embeds the YouTube video;
-// otherwise it falls back to the audio player from the RSS feed.
+// Auto-built episode -> YouTube video map.
 //
-// To auto-populate every episode (including future ones), add a YouTube Data
-// API key and we can match by the "S# E#" title pattern at build time. Until
-// then, add IDs here as episodes are published to YouTube.
-export const PODCAST_VIDEOS: Record<string, string> = {
+// At build time, src/lib/youtubeMap.ts queries the YouTube Data API v3 for
+// every "uploads" video on the Digital Dilemma channel, matches them to
+// episodes by the "S{season}E{episode}" pattern in their titles, and produces
+// this map. When the YOUTUBE_API_KEY env var is set in the build environment
+// (GitHub Actions secret in CI), the map is built dynamically. Without it,
+// the fallback below is used so the build never fails.
+//
+// Maintained manually as a safety net for episodes that were available before
+// the API key was wired up, or any episode whose title does not include the
+// canonical "S# E#" prefix.
+export const PODCAST_VIDEOS_FALLBACK: Record<string, string> = {
   S3E14: 'IstQKqxCRQY',
 };
