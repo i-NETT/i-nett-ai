@@ -1,6 +1,7 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
 import FAQ from '@components/FAQ.astro';
+import AnswerBlock from '@components/AnswerBlock.astro';
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
@@ -35,11 +36,20 @@ const faqs = [
   pageLead="Fortify AI deploys client communication, meeting documentation, policy retrieval, and operational reporting workflows into financial services firms that need defensible configuration, audit-ready operations, and supervisory review built in."
   breadcrumbs={breadcrumbs}
   faqs={faqs}
+  speakable={['.answer-block__a']}
   service={{
     name: 'Fortify AI for Financial Services',
     description: 'Managed AI deployment for financial services firms. Configured for SEC, FINRA, and state regulatory frameworks. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
   }}
 >
+  <section class="section">
+    <div class="container container-narrow">
+      <AnswerBlock>
+        <p>A financial-services firm can adopt AI within regulatory limits by deploying it on infrastructure built for SOC, GDPR, and CCPA requirements, isolated to a dedicated tenant so client financial data is never shared across clients or used to train models. With Fortify AI, i-NETT configures each deployment to the firm's regulatory environment, reviews it with the firm's compliance team, and runs it as a managed service so controls hold up to scrutiny over time. The deployment is underwritten by a Lloyd's of London cybersecurity insurance policy, strengthening the firm's risk posture.</p>
+      </AnswerBlock>
+    </div>
+  </section>
+
   <section class="section">
     <div class="container container-narrow">
       <span class="eyebrow">Regulatory posture</span>

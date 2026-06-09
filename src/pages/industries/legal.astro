@@ -1,6 +1,7 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
 import FAQ from '@components/FAQ.astro';
+import AnswerBlock from '@components/AnswerBlock.astro';
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
@@ -39,11 +40,20 @@ const faqs = [
   pageLead="Fortify AI deploys document review, matter intake, knowledge retrieval, and contract workflows into law firms that need defensible configuration and audit-ready operations. Built for the firms that take ABA Model Rule 1.6 seriously and operate under bar oversight."
   breadcrumbs={breadcrumbs}
   faqs={faqs}
+  speakable={['.answer-block__a']}
   service={{
     name: 'Fortify AI for Law Firms',
     description: 'Privilege-aware managed AI deployment for law firms. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
   }}
 >
+  <section class="section">
+    <div class="container container-narrow">
+      <AnswerBlock>
+        <p>A law firm can use AI without breaching client confidentiality by running it on isolated infrastructure where matter data stays in a dedicated tenant, is never used to train shared models, and is never exposed to other clients. With Fortify AI, i-NETT configures each deployment to the firm's compliance obligations, operates it as a managed service, and keeps privileged information segregated so confidentiality is preserved by design rather than by policy alone. The deployment is underwritten by a Lloyd's of London cybersecurity insurance policy, supporting the firm's duty to protect client information.</p>
+      </AnswerBlock>
+    </div>
+  </section>
+
   <!-- POSTURE -->
   <section class="section">
     <div class="container container-narrow">

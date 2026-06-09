@@ -143,6 +143,16 @@ const leadersSchema = {
           <li>Customer data isolated to your tenant</li>
           <li>148 service cities across US and Canada</li>
         </ul>
+        <div class="hero__offers" aria-label="Free resources">
+          <a class="hero__offer" href="/ai-usage-policy">
+            <span class="hero__offer-tag">Free template</span>
+            <span class="hero__offer-title">An AI usage policy your team can deploy today.</span>
+          </a>
+          <a class="hero__offer" href="/master-prompt">
+            <span class="hero__offer-tag">Free, with a 30 minute call</span>
+            <span class="hero__offer-title">Get a custom AI master prompt for your business.</span>
+          </a>
+        </div>
       </div>
 
       <aside class="hero__panel" aria-label="Fortify AI brand mark">
@@ -1074,6 +1084,34 @@ const leadersSchema = {
     max-width: 56ch;
     margin-bottom: var(--space-6);
   }
+  .hero__offers {
+    margin-top: var(--space-6);
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 720px) { .hero__offers { grid-template-columns: 1fr 1fr; } }
+  .hero__offer {
+    display: block;
+    padding: var(--space-4) var(--space-5);
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.04);
+    color: var(--color-text-on-dark);
+    text-decoration: none;
+    transition: border-color var(--dur-base) var(--ease-out), background var(--dur-base) var(--ease-out);
+  }
+  .hero__offer:hover { border-color: var(--color-accent-500); background: rgba(0,180,255,0.08); }
+  .hero__offer-tag {
+    display: block;
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+    color: var(--color-accent-400);
+    margin-bottom: var(--space-1);
+  }
+  .hero__offer-title { display: block; font-weight: 600; font-size: var(--fs-sm); }
   .hero__ctas {
     display: flex;
     flex-direction: column;

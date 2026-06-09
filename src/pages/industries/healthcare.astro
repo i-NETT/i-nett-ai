@@ -1,6 +1,7 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
 import FAQ from '@components/FAQ.astro';
+import AnswerBlock from '@components/AnswerBlock.astro';
 import { SITE } from '@lib/site';
 
 const breadcrumbs = [
@@ -40,11 +41,20 @@ const faqs = [
   pageLead="Fortify AI deploys clinical documentation, intake, knowledge retrieval, and operational workflows into healthcare practices that need to stay defensible at every step. HIPAA-aligned configuration, dedicated tenant, full audit logging, and a managed services team behind every deployment."
   breadcrumbs={breadcrumbs}
   faqs={faqs}
+  speakable={['.answer-block__a']}
   service={{
     name: 'Fortify AI for Healthcare',
     description: 'HIPAA-aligned managed AI deployment for healthcare practices and provider groups. Underwritten by Lloyd’s of London cybersecurity insurance policy.',
   }}
 >
+  <section class="section">
+    <div class="container container-narrow">
+      <AnswerBlock>
+        <p>A healthcare organization can adopt AI safely under HIPAA by deploying it on infrastructure configured for HIPAA from the start, isolated to a dedicated tenant so protected health information is never commingled with other clients' data or used to train models. With Fortify AI, i-NETT configures each deployment to your regulatory environment, reviews it alongside your compliance team, and operates it as a managed service so safeguards are maintained over time rather than left to chance. The deployment is underwritten by a Lloyd's of London cybersecurity insurance policy, giving practices a defensible position on patient data.</p>
+      </AnswerBlock>
+    </div>
+  </section>
+
   <!-- COMPLIANCE FIRST -->
   <section class="section">
     <div class="container container-narrow">

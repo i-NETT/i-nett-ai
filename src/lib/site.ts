@@ -45,9 +45,10 @@ export const SITE = {
 export const NAV_PRIMARY = [
   { label: 'Fortify AI', href: '/fortify-ai' },
   { label: 'How It Works', href: '/how-it-works' },
+  { label: 'AI Governance', href: '/ai-governance' },
   { label: 'Industries', href: '/industries/healthcare' },
+  { label: 'Blog', href: '/blog' },
   { label: 'ROI Calculator', href: '/roi-calculator' },
-  { label: 'Coverage', href: '/coverage' },
   { label: 'About', href: '/about' },
 ] as const;
 
