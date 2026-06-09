@@ -68,7 +68,7 @@ if (includeOrganization) {
       height: 800,
     },
     description:
-      'i-NETT is a managed IT, cybersecurity, and managed AI provider serving mid-market firms in Southern California, the United States, and Canada.',
+      'i-NETT is a managed IT, cybersecurity, and managed AI provider serving mid-market firms in Southern California, the United States, and Canada. Service is month-to-month with no long-term contracts.',
     address: {
       '@type': 'PostalAddress',
       streetAddress: SITE.address.streetAddress,
@@ -95,6 +95,31 @@ if (includeOrganization) {
       areaServed: ['US', 'CA'],
       availableLanguage: ['English'],
     },
+    knowsAbout: [
+      { '@type': 'Thing', name: 'Artificial intelligence', sameAs: ['https://www.wikidata.org/wiki/Q11660', 'https://en.wikipedia.org/wiki/Artificial_intelligence'] },
+      { '@type': 'Thing', name: 'Computer security', sameAs: ['https://www.wikidata.org/wiki/Q3510521', 'https://en.wikipedia.org/wiki/Computer_security'] },
+      { '@type': 'Thing', name: 'Cloud computing', sameAs: ['https://www.wikidata.org/wiki/Q483639', 'https://en.wikipedia.org/wiki/Cloud_computing'] },
+      { '@type': 'Thing', name: 'Regulatory compliance', sameAs: ['https://en.wikipedia.org/wiki/Regulatory_compliance'] },
+      { '@type': 'Thing', name: 'Information privacy', sameAs: ['https://en.wikipedia.org/wiki/Information_privacy'] },
+    ],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'i-NETT Services',
+      itemListElement: [
+        'Managed IT Services',
+        'Cyber Security',
+        'AI Policy and Protection',
+        'Cloud Solutions',
+        'Unified Communications',
+      ].map((s) => ({
+        '@type': 'Offer',
+        itemOffered: {
+          '@type': 'Service',
+          name: s,
+          provider: { '@id': `${SITE.url}/#organization` },
+        },
+      })),
+    },
   });
 
   graph.push({
@@ -114,6 +139,32 @@ if (includeOrganization) {
     name: `${SITE.name} by ${SITE.parent}`,
     publisher: { '@id': `${SITE.url}/#organization` },
     inLanguage: 'en-US',
+  });
+
+  graph.push({
+    '@type': 'LocalBusiness',
+    '@id': `${SITE.url}/#localbusiness-hq`,
+    name: SITE.parent,
+    image: `${SITE.url}/assets/brand/inett-logo.png`,
+    url: SITE.parentUrl,
+    telephone: SITE.phone,
+    email: SITE.email,
+    priceRange: '$$$',
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: SITE.address.streetAddress,
+      addressLocality: SITE.address.locality,
+      addressRegion: SITE.address.region,
+      postalCode: SITE.address.postalCode,
+      addressCountry: SITE.address.country,
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: SITE.geo.primaryLat,
+      longitude: SITE.geo.primaryLng,
+    },
+    areaServed: SERVICE_AREAS.map((a) => ({ '@type': 'Place', name: a })),
+    parentOrganization: { '@id': `${SITE.url}/#organization` },
   });
 }
 
