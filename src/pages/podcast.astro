@@ -1,76 +1,18 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
 import { SITE } from '@lib/site';
+import { getEpisodes } from '@lib/podcast';
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
   { name: 'Podcast', url: '/podcast' },
 ];
 
-// Apple Podcasts show ID parsed from SITE.podcastUrl
-// (https://podcasts.apple.com/us/podcast/the-digital-dilemma/id1764658911)
 const APPLE_SHOW_ID = '1764658911';
 const appleEmbedSrc = `https://embed.podcasts.apple.com/us/podcast/the-digital-dilemma/id${APPLE_SHOW_ID}`;
 
-// FEATURED LONG-FORM EPISODES (placeholder structure).
-// Nick: provide YouTube video URLs and episode-specific Apple links later
-// for richer per-episode embeds. The Apple show embed above auto-pulls the
-// real recent feed in the interim. Replace title, summary, and href below
-// when episode-level metadata is available.
-const featuredEpisodes = [
-  {
-    n: 'EP 01',
-    title: 'Featured episode title coming soon',
-    summary:
-      'Auto-pulled from the Apple Podcasts feed above. Nick will swap in curated episode metadata and YouTube embeds post-launch.',
-    apple: SITE.podcastUrl,
-    youtube: null, // Nick: drop YouTube URL here
-  },
-  {
-    n: 'EP 02',
-    title: 'Featured episode title coming soon',
-    summary:
-      'Auto-pulled from the Apple Podcasts feed above. Nick will swap in curated episode metadata and YouTube embeds post-launch.',
-    apple: SITE.podcastUrl,
-    youtube: null,
-  },
-  {
-    n: 'EP 03',
-    title: 'Featured episode title coming soon',
-    summary:
-      'Auto-pulled from the Apple Podcasts feed above. Nick will swap in curated episode metadata and YouTube embeds post-launch.',
-    apple: SITE.podcastUrl,
-    youtube: null,
-  },
-  {
-    n: 'EP 04',
-    title: 'Featured episode title coming soon',
-    summary:
-      'Auto-pulled from the Apple Podcasts feed above. Nick will swap in curated episode metadata and YouTube embeds post-launch.',
-    apple: SITE.podcastUrl,
-    youtube: null,
-  },
-  {
-    n: 'EP 05',
-    title: 'Featured episode title coming soon',
-    summary:
-      'Auto-pulled from the Apple Podcasts feed above. Nick will swap in curated episode metadata and YouTube embeds post-launch.',
-    apple: SITE.podcastUrl,
-    youtube: null,
-  },
-];
-
-// SHORTS placeholders. Nick: replace href and label with real short URLs
-// (YouTube Shorts, Instagram Reels, TikTok) and thumbnail backgrounds once
-// the assets are produced.
-const shorts = [
-  { id: 1, label: 'Short clip 1', href: SITE.podcastUrl, accent: 'from-cyan' },
-  { id: 2, label: 'Short clip 2', href: SITE.podcastUrl, accent: 'from-blue' },
-  { id: 3, label: 'Short clip 3', href: SITE.podcastUrl, accent: 'from-deep' },
-  { id: 4, label: 'Short clip 4', href: SITE.podcastUrl, accent: 'from-cyan' },
-  { id: 5, label: 'Short clip 5', href: SITE.podcastUrl, accent: 'from-blue' },
-  { id: 6, label: 'Short clip 6', href: SITE.podcastUrl, accent: 'from-deep' },
-];
+const episodes = await getEpisodes();
+const featuredEpisodes = episodes.slice(0, 5);
 ---
 <PageLayout
   title="The Digital Dilemma Podcast, hosted by Nick Dreyfus"
@@ -105,65 +47,32 @@ const shorts = [
     </div>
   </section>
 
-  <!-- SHORTS -->
-  {/*
-    Shorts placeholders. Nick: replace href and label with real short URLs
-    (YouTube Shorts, Instagram Reels, TikTok) and supply thumbnail images
-    once the assets are produced. The accent class controls the placeholder
-    gradient until real thumbnails land.
-  */}
-  <section class="section section-soft" aria-labelledby="shorts-heading">
-    <div class="container">
-      <div class="shorts-head reveal reveal-fade">
-        <div>
-          <span class="eyebrow">Shorts</span>
-          <h2 id="shorts-heading">Quick clips from recent episodes.</h2>
-        </div>
-        <a href={SITE.podcastUrl} class="btn btn-ghost" target="_blank" rel="noopener">
-          See all on Apple Podcasts <span aria-hidden="true">&rarr;</span>
+  <!-- NEWSLETTER CALLOUT -->
+  <section class="section section-soft" aria-labelledby="newsletter-heading">
+    <div class="container container-narrow">
+      <div class="newsletter-callout reveal reveal-up">
+        <span class="eyebrow">From the newsletter</span>
+        <h2 id="newsletter-heading">The Digital Dilemma newsletter, on the blog.</h2>
+        <p class="lead">
+          Read the latest editorial drop from The Digital Dilemma newsletter,
+          cross-posted to the i-NETT blog.
+        </p>
+        <a href="/blog/navigating-ai-tools-risks-and-solutions-for-leaders" class="btn btn-accent">
+          Read: Navigating AI, Tools, Risks, and Solutions for Leaders
         </a>
-      </div>
-
-      <div class="shorts-row" role="list">
-        {shorts.map((s, i) => (
-          <a
-            href={s.href}
-            class:list={['short-card', `short-card--${s.accent}`, 'reveal', 'reveal-up', `reveal-delay-${(i % 6) + 1}`]}
-            role="listitem"
-            target="_blank"
-            rel="noopener"
-            aria-label={`${s.label} (placeholder)`}
-          >
-            <div class="short-card__thumb" aria-hidden="true">
-              <span class="short-card__play">
-                <svg viewBox="0 0 24 24" width="22" height="22" focusable="false">
-                  <path d="M8 5 L19 12 L8 19 Z" fill="currentColor"/>
-                </svg>
-              </span>
-            </div>
-            <p class="short-card__label">{s.label}</p>
-            <p class="short-card__note">Placeholder. URL pending.</p>
-          </a>
-        ))}
       </div>
     </div>
   </section>
 
   <!-- FEATURED LONG-FORM EPISODES -->
-  {/*
-    Featured long-form episodes. Nick: as YouTube video URLs come in,
-    drop them into the youtube field on each entry above and the card
-    below will render the YouTube embed in place of the placeholder.
-  */}
   <section class="section" aria-labelledby="featured-heading">
     <div class="container">
       <div class="featured-head reveal reveal-fade">
         <span class="eyebrow">Featured episodes</span>
-        <h2 id="featured-heading">Five long-form conversations worth your commute.</h2>
+        <h2 id="featured-heading">Five recent conversations worth your commute.</h2>
         <p class="lead">
-          The list refreshes as Nick curates standout episodes for first-time
-          listeners. Listen on Apple Podcasts today. YouTube video versions
-          land here as they are published.
+          The most recent episodes from The Digital Dilemma. Tap any episode for show
+          notes, the audio player, and the YouTube video when available.
         </p>
       </div>
 
@@ -171,30 +80,57 @@ const shorts = [
         {featuredEpisodes.map((ep, i) => (
           <li class:list={['ep-card', 'reveal', 'reveal-up', `reveal-delay-${(i % 6) + 1}`]}>
             <div class="ep-card__meta">
-              <span class="ep-card__num">{ep.n}</span>
-              <h3 class="ep-card__title">{ep.title}</h3>
-              <p class="ep-card__summary">{ep.summary}</p>
+              <span class="ep-card__num">{ep.code ?? `EP ${i + 1}`}</span>
+              <h3 class="ep-card__title">
+                <a href={`/podcast/${ep.slug}`}>{ep.title}</a>
+              </h3>
+              <p class="ep-card__date">{ep.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
               <div class="ep-card__ctas">
-                <a href={ep.apple} class="btn btn-primary" target="_blank" rel="noopener">
-                  Listen on Apple
+                <a href={`/podcast/${ep.slug}`} class="btn btn-primary">
+                  Open episode
                 </a>
-                {ep.youtube ? (
-                  <a href={ep.youtube} class="btn btn-outline" target="_blank" rel="noopener">
+                {ep.youtubeId && (
+                  <a href={`https://www.youtube.com/watch?v=${ep.youtubeId}`} class="btn btn-outline" target="_blank" rel="noopener">
                     Watch on YouTube
                   </a>
-                ) : (
-                  <span class="ep-card__youtube-pending" aria-label="YouTube version pending">
-                    YouTube version pending
-                  </span>
                 )}
               </div>
             </div>
             <div class="ep-card__art" aria-hidden="true">
-              <span class="ep-card__art-num">{ep.n}</span>
+              {ep.image ? (
+                <img src={ep.image} alt="" loading="lazy" />
+              ) : (
+                <span class="ep-card__art-num">{ep.code ?? `EP ${i + 1}`}</span>
+              )}
             </div>
           </li>
         ))}
       </ol>
+    </div>
+  </section>
+
+  <!-- ALL EPISODES (full crawlable list) -->
+  <section class="section section-soft" aria-labelledby="all-eps-heading">
+    <div class="container">
+      <div class="all-eps-head reveal reveal-fade">
+        <span class="eyebrow">All episodes</span>
+        <h2 id="all-eps-heading">Every episode of The Digital Dilemma.</h2>
+        <p class="lead">
+          Browse the full archive. Each episode has its own page with show notes,
+          the audio player, and the YouTube video when available.
+        </p>
+      </div>
+      <ul class="all-eps-list" role="list">
+        {episodes.map((ep) => (
+          <li class="all-eps-item">
+            <a class="all-eps-link" href={`/podcast/${ep.slug}`}>
+              <span class="all-eps-code">{ep.code ?? '—'}</span>
+              <span class="all-eps-title">{ep.title}</span>
+              <span class="all-eps-date">{ep.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
     </div>
   </section>
 
@@ -420,6 +356,64 @@ const shorts = [
     display: grid;
     place-items: center;
     color: #fff;
+  }
+  .newsletter-callout {
+    text-align: center;
+    padding: var(--space-7) var(--space-5);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+  }
+  .newsletter-callout h2 { margin: var(--space-3) 0 var(--space-4); }
+  .newsletter-callout .lead { margin-bottom: var(--space-5); }
+  .ep-card__date {
+    color: var(--color-text-muted);
+    font-size: var(--fs-sm);
+    margin-bottom: var(--space-3);
+  }
+  .ep-card__title a { color: inherit; text-decoration: none; }
+  .ep-card__title a:hover { color: var(--color-accent-500); }
+  .ep-card__art img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+  .all-eps-head { text-align: center; max-width: 760px; margin: 0 auto var(--space-7); }
+  .all-eps-head h2 { margin-top: var(--space-2); }
+  .all-eps-head .lead { margin-top: var(--space-3); }
+  .all-eps-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: var(--space-2);
+  }
+  .all-eps-link {
+    display: grid;
+    grid-template-columns: 80px 1fr auto;
+    gap: var(--space-4);
+    align-items: center;
+    padding: var(--space-4) var(--space-5);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--color-ink-800);
+    transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+  }
+  .all-eps-link:hover { border-color: var(--color-accent-500); background: var(--color-bg-soft); }
+  .all-eps-code {
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    color: var(--color-accent-500);
+    font-weight: 700;
+  }
+  .all-eps-title { font-weight: 600; }
+  .all-eps-date { color: var(--color-text-muted); font-size: var(--fs-xs); white-space: nowrap; }
+  @media (max-width: 640px) {
+    .all-eps-link { grid-template-columns: 60px 1fr; }
+    .all-eps-date { grid-column: 2; font-size: var(--fs-xs); }
   }
   .ep-card__art-num {
     font-family: var(--font-display);

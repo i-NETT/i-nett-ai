@@ -22,9 +22,16 @@ const year = new Date().getFullYear();
           </span>
         </a>
         <p class="footer-tagline">
-          Managed AI for mid-market firms. HIPAA, GDPR, SOC, and CCPA ready.
-          Underwritten by Lloyd&rsquo;s of London cybersecurity insurance policy.
+          Managed AI for mid-market firms. HIPAA, GDPR, and CCPA ready, aligned
+          with SOC 2 controls. Underwritten by Lloyd&rsquo;s of London cybersecurity
+          insurance policy.
         </p>
+        <address class="footer-nap" aria-label="i-NETT headquarters">
+          <span class="footer-nap__line"><strong>i-NETT</strong></span>
+          <span class="footer-nap__line">9655 Granite Ridge Drive, Suite 200</span>
+          <span class="footer-nap__line">San Diego, CA 92123</span>
+          <a class="footer-nap__phone" href="tel:+18583372866">(858) 337-2866</a>
+        </address>
         <div class="footer-badges">
           <img src="/assets/brand/hipaa-compliant.png" alt="HIPAA Compliant" width="80" height="80" loading="lazy" />
           <img src="/assets/brand/iso-27001.png" alt="ISO 27001 Compliant via TAG" width="80" height="80" loading="lazy" />
@@ -151,6 +158,24 @@ const year = new Date().getFullYear();
     line-height: var(--lh-normal);
     margin-bottom: var(--space-5);
   }
+  .footer-nap {
+    font-style: normal;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: var(--fs-sm);
+    color: var(--color-text-on-dark-soft);
+    line-height: 1.5;
+    margin-bottom: var(--space-5);
+  }
+  .footer-nap__line strong { color: #fff; }
+  .footer-nap__phone {
+    color: var(--color-glow);
+    margin-top: var(--space-2);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .footer-nap__phone:hover { text-decoration: underline; }
   .footer-badges {
     display: flex;
     gap: var(--space-3);

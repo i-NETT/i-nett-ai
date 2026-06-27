@@ -52,8 +52,12 @@ const ogImageUrl = ogImage.startsWith('http')
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={ogImageUrl} />
 
-<meta name="google-site-verification" content={SITE.verification.google} />
-<meta name="msvalidate.01" content={SITE.verification.bing} />
+{!SITE.verification.google.startsWith('REPLACE_WITH') && (
+  <meta name="google-site-verification" content={SITE.verification.google} />
+)}
+{!SITE.verification.bing.startsWith('REPLACE_WITH') && (
+  <meta name="msvalidate.01" content={SITE.verification.bing} />
+)}
 
 <meta name="author" content={SITE.parent} />
 <meta name="theme-color" content="#0A2540" media="(prefers-color-scheme: light)" />

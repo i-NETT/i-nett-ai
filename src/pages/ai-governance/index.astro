@@ -1,5 +1,6 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
+import AnswerBlock from '@components/AnswerBlock.astro';
 import { getCollection } from 'astro:content';
 
 const breadcrumbs = [
@@ -31,7 +32,21 @@ const faqs = [
   breadcrumbs={breadcrumbs}
   faqs={faqs}
   pageType="CollectionPage"
+  speakable={['.answer-block__a']}
 >
+  <section class="section">
+    <div class="container container-narrow">
+      <AnswerBlock label="What this hub is">
+        <p>
+          The i-NETT AI Governance hub is a working library of practical guidance for
+          mid-market executives adopting AI. Every guide opens with a direct, quotable
+          answer, then a definitional block, then a deployable framework or checklist,
+          followed by frequently asked questions. Use it to set policy, evaluate tools,
+          and brief your board.
+        </p>
+      </AnswerBlock>
+    </div>
+  </section>
   <section class="section">
     <div class="container">
       <div class="gov-grid">

@@ -76,6 +76,27 @@ const breadcrumbs = [
     </div>
   </section>
 
+  <!-- SAN DIEGO CITIES -->
+  <section class="section">
+    <div class="container">
+      <span class="eyebrow">San Diego County, by city</span>
+      <h2>Local AI deployments across San Diego.</h2>
+      <p class="lead">
+        Direct, on-site Fortify AI engagement across the San Diego County corridor.
+        Each city has a dedicated location page with the local context our team
+        works in.
+      </p>
+      <ul class="city-grid">
+        <li><a href="/locations/san-diego/carlsbad">Carlsbad</a></li>
+        <li><a href="/locations/san-diego/chula-vista">Chula Vista</a></li>
+        <li><a href="/locations/san-diego/del-mar">Del Mar</a></li>
+        <li><a href="/locations/san-diego/la-mesa">La Mesa</a></li>
+        <li><a href="/locations/san-diego/oceanside">Oceanside</a></li>
+        <li><a href="/locations/san-diego/poway">Poway</a></li>
+      </ul>
+    </div>
+  </section>
+
   <!-- SERVICE MODEL -->
   <section class="section">
     <div class="container container-narrow">
@@ -130,6 +151,28 @@ const breadcrumbs = [
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
   }
+  .city-grid {
+    list-style: none; padding: 0; margin: var(--space-6) 0 0;
+    display: grid;
+    gap: var(--space-3);
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (min-width: 720px) { .city-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 960px) { .city-grid { grid-template-columns: repeat(6, 1fr); } }
+  .city-grid li {
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+  .city-grid a {
+    color: var(--color-ink-800);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: var(--fs-sm);
+  }
+  .city-grid a:hover { color: var(--color-accent-500); }
   .check-list {
     list-style: none; padding: 0; margin: var(--space-6) 0;
     display: grid; gap: var(--space-3);
