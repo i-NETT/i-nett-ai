@@ -1,0 +1,152 @@
+---
+/**
+ * AmbientBackground
+ * ------------------------------------------------------------------
+ * Three stacked background zones, top to bottom:
+ *   1. Black + checker .... the hero (its own dark grid, untouched)
+ *   2. White + checker .... band right below the hero, grid visible on white
+ *   3. Regular white ...... checker dissolves away
+ * Slow, baby-blue clouds drift behind the light zones throughout.
+ *
+ * Two CSS-only layers, no JS, no images, no network:
+ *   .ambient-checker  absolute, scrolls with the page, occupies the upper
+ *                     band under the hero, vertically masked so it fades in
+ *                     below the hero and out into plain white.
+ *   .ambient-clouds   fixed, baby-blue orbs drifting on a 60-100s loop,
+ *                     always behind the light content.
+ *
+ * Activated by `has-ambient` on <body> (BaseLayout sets this when
+ * `ambient` is true). Fully removable: delete this file, the BaseLayout
+ * prop, and the preview page.
+ */
+---
+<div class="ambient-checker" aria-hidden="true"></div>
+<div class="ambient-clouds" aria-hidden="true">
+  <span class="ambient-orb ambient-orb--a"></span>
+  <span class="ambient-orb ambient-orb--b"></span>
+  <span class="ambient-orb ambient-orb--c"></span>
+  <span class="ambient-orb ambient-orb--d"></span>
+</div>
+
+<style>
+  /* ZONE 2 — white with checker.
+     Absolute (scrolls with the page), pinned to the top of the document.
+     The hero (opaque dark) covers its top portion; the vertical mask fades
+     the grid in just below the hero, holds it, then dissolves it to plain
+     white, which is ZONE 3. Heights are tuned to the homepage hero. */
+  .ambient-checker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4800px;
+    z-index: -2;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(10, 37, 64, 0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(10, 37, 64, 0.07) 1px, transparent 1px);
+    background-size: 56px 56px;
+    /* Hidden behind the dark hero (ends ~1560), fades in over the white
+       band (proof bar, demo, what-we-do, three-things), dissolves to plain
+       white before the dark why-us section (~4790). */
+    -webkit-mask-image: linear-gradient(to bottom,
+      transparent 0,
+      transparent 1480px,
+      #000 1680px,
+      #000 4100px,
+      transparent 4700px);
+    mask-image: linear-gradient(to bottom,
+      transparent 0,
+      transparent 1480px,
+      #000 1680px,
+      #000 4100px,
+      transparent 4700px);
+  }
+
+  /* Baby-blue clouds. Fixed so they hang behind the whole light area and
+     drift slowly as you read. Heavy blur keeps them soft, not blobby. */
+  .ambient-clouds {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    contain: strict;
+  }
+  .ambient-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(90px);
+    will-change: transform;
+  }
+  .ambient-orb--a {
+    width: 58vw; height: 58vw;
+    top: -6vw; left: -12vw;
+    background: radial-gradient(circle, rgba(125, 185, 255, 0.40) 0%, rgba(125, 185, 255, 0) 70%);
+    animation: ambient-drift-a 66s ease-in-out infinite alternate;
+  }
+  .ambient-orb--b {
+    width: 50vw; height: 50vw;
+    top: 24vh; right: -14vw;
+    background: radial-gradient(circle, rgba(160, 210, 255, 0.36) 0%, rgba(160, 210, 255, 0) 70%);
+    animation: ambient-drift-b 84s ease-in-out infinite alternate;
+  }
+  .ambient-orb--c {
+    width: 60vw; height: 60vw;
+    bottom: -16vw; left: 14vw;
+    background: radial-gradient(circle, rgba(96, 165, 250, 0.28) 0%, rgba(96, 165, 250, 0) 72%);
+    animation: ambient-drift-c 98s ease-in-out infinite alternate;
+  }
+  /* Center cloud so the middle of the view is never empty in the plain
+     white zone. Slow, soft, baby blue. */
+  .ambient-orb--d {
+    width: 46vw; height: 46vw;
+    top: 42vh; left: 28vw;
+    background: radial-gradient(circle, rgba(140, 198, 255, 0.26) 0%, rgba(140, 198, 255, 0) 72%);
+    animation: ambient-drift-d 76s ease-in-out infinite alternate;
+  }
+
+  @keyframes ambient-drift-a {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to   { transform: translate3d(8vw, 5vh, 0) scale(1.14); }
+  }
+  @keyframes ambient-drift-b {
+    from { transform: translate3d(0, 0, 0) scale(1.08); }
+    to   { transform: translate3d(-7vw, 6vh, 0) scale(1); }
+  }
+  @keyframes ambient-drift-c {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to   { transform: translate3d(6vw, -5vh, 0) scale(1.12); }
+  }
+  @keyframes ambient-drift-d {
+    from { transform: translate3d(0, 0, 0) scale(1.05); }
+    to   { transform: translate3d(-5vw, 4vh, 0) scale(1.16); }
+  }
+
+  @media (max-width: 768px) {
+    .ambient-orb { filter: blur(60px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ambient-orb { animation: none; }
+  }
+
+  /* --- Reveal the zones through the page ------------------------------ */
+  /* Light base with a baby-blue wash up top so the clouds sit in sky. */
+  :global(body.has-ambient) {
+    background:
+      radial-gradient(1200px 700px at 70% -8%, #E7F1FF 0%, rgba(231, 241, 255, 0) 60%),
+      linear-gradient(180deg, #EEF6FF 0%, #F6FBFF 42%, #FFFFFF 100%);
+  }
+  /* Proof bar sits in ZONE 2 — let the checker + clouds read through it. */
+  :global(body.has-ambient .proof-bar) {
+    background: rgba(255, 255, 255, 0.45);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+  }
+  /* Cards stay near-opaque so text never fights the clouds. */
+  :global(body.has-ambient .card:not(.card-dark)) {
+    background: rgba(255, 255, 255, 0.88);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+</style>

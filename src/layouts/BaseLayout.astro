@@ -5,6 +5,7 @@ import SchemaOrg from '@components/SchemaOrg.astro';
 import Analytics from '@components/Analytics.astro';
 import Header from '@components/Header.astro';
 import Footer from '@components/Footer.astro';
+import AmbientBackground from '@components/AmbientBackground.astro';
 import { SITE } from '@lib/site';
 
 interface BreadcrumbItem { name: string; url: string; }
@@ -31,6 +32,7 @@ interface Props {
   bodyClass?: string;
   speakable?: string[];
   article?: any;
+  ambient?: boolean;
 }
 
 const {
@@ -50,7 +52,12 @@ const {
   bodyClass,
   speakable,
   article,
+  ambient = false,
 } = Astro.props;
+
+const bodyClassList = [bodyClass, ambient ? 'has-ambient' : null]
+  .filter(Boolean)
+  .join(' ') || undefined;
 ---
 <!doctype html>
 <html lang="en">
@@ -100,7 +107,8 @@ const {
     />
     <Analytics />
   </head>
-  <body class={bodyClass}>
+  <body class={bodyClassList}>
+    {ambient && <AmbientBackground />}
     <a href="#main" class="skip-link">Skip to main content</a>
     <Header />
     <main id="main">
