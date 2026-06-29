@@ -1168,10 +1168,13 @@ const leadersSchema = {
     background: linear-gradient(110deg, transparent 38%, rgba(0, 224, 255, 0.42) 50%, transparent 62%);
     mix-blend-mode: screen;
     transform: translateX(-120%);
-    animation: hero-scan 1400ms var(--ease-out) 1200ms forwards;
+    /* Sweep takes ~1.25s, then idles, repeating every 5s to catch the eye
+       of anyone lingering at the top. First sweep keeps the 1.2s entrance delay. */
+    animation: hero-scan 5s linear 1.2s infinite;
     mask-image: radial-gradient(circle at 50% 50%, #000 30%, transparent 75%);
     -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 30%, transparent 75%);
   }
+  .hero.is-paused .hero-logo__scan { animation-play-state: paused; }
   @keyframes hero-logo-in {
     to { opacity: 1; transform: scale(1); }
   }
@@ -1183,9 +1186,10 @@ const leadersSchema = {
     50% { transform: scale(1.06); opacity: 1; }
   }
   @keyframes hero-scan {
-    0% { transform: translateX(-120%); opacity: 0; }
-    20% { opacity: 1; }
-    80% { opacity: 1; }
+    0%   { transform: translateX(-120%); opacity: 0; }
+    3%   { opacity: 1; }
+    25%  { transform: translateX(120%); opacity: 1; }
+    28%  { transform: translateX(120%); opacity: 0; }
     100% { transform: translateX(120%); opacity: 0; }
   }
   @media (prefers-reduced-motion: reduce) {
