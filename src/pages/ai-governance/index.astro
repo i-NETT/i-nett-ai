@@ -80,7 +80,8 @@ const faqs = [
   .gov-card:hover {
     border-color: var(--color-accent-500);
     box-shadow: var(--shadow-md);
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(var(--hover-scale-card));
+    z-index: 3;
   }
   .gov-card h2 { font-size: var(--fs-lg); margin-bottom: var(--space-3); color: var(--color-ink-800); }
   .gov-card p { color: var(--color-text-soft); font-size: var(--fs-sm); margin-bottom: var(--space-4); }

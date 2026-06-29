@@ -409,8 +409,9 @@ const faqs = [
     transition: transform 280ms var(--ease-out), border-color 280ms var(--ease-out), box-shadow 280ms var(--ease-out);
   }
   .feature-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(var(--hover-scale-card));
     box-shadow: var(--shadow-md);
+    z-index: 3;
   }
   .feature-card h4 {
     font-size: var(--fs-md);

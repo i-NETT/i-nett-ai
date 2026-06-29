@@ -84,6 +84,10 @@
   --dur-base: 280ms;
   --dur-slow: 520ms;
 
+  /* Hover grow (tunable in one place). 1.05 = 5% larger, 1.10 = 10%, 1.15 = 15%. */
+  --hover-scale-card: 1.10;
+  --hover-scale-btn: 1.10;
+
   /* Layout */
   --container-max: 1200px;
   --container-narrow: 760px;
@@ -237,7 +241,7 @@ button:focus-visible, a:focus-visible {
   transition: opacity 240ms var(--ease-out);
   pointer-events: none;
 }
-.btn:hover { transform: translateY(-2px); }
+.btn:hover { transform: translateY(-2px) scale(var(--hover-scale-btn)); }
 .btn:hover::after { opacity: 1; }
 .btn:active { transform: translateY(0); transition-duration: 80ms; }
 .btn > span[aria-hidden] {
@@ -328,8 +332,9 @@ button:focus-visible, a:focus-visible {
 }
 .card:hover {
   border-color: var(--color-accent-500);
-  transform: translateY(-3px);
+  transform: translateY(-3px) scale(var(--hover-scale-card));
   box-shadow: 0 20px 40px rgba(10, 37, 64, 0.10), 0 4px 12px rgba(10, 37, 64, 0.04);
+  z-index: 3;
 }
 .card:hover::before { opacity: 1; }
 .card-dark {
