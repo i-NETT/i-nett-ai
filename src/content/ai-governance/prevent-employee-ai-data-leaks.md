@@ -90,7 +90,7 @@ Each of those five layers is achievable. The challenge for a 30 to 150 person fi
 
 Fortify AI is a managed deployment of secure, compliance-ready AI. Rather than leaving employees to choose between a consumer chatbot and nothing, it gives them a governed environment configured to your regulatory requirements, whether that is HIPAA, GDPR, SOC, or CCPA. Each deployment is isolated to a dedicated tenant, and customer data is not used to train models or shared across clients. The guardrails, classification support, and monitoring are operated by our managed services team, so the layered system runs in the background instead of becoming another project on your plate.
 
-For leaders in healthcare, legal, and financial services, the appeal is straightforward: your people get the productivity they are already seeking, and you get the visibility and protection a consumer tool can never offer. The work is also underwritten by a Lloyd's of London cybersecurity insurance policy, an added measure of accountability behind the deployment.
+For leaders in healthcare, legal, and financial services, the appeal is straightforward: your people get the productivity they are already seeking, and you get the visibility and protection a consumer tool can never offer. Through i-NETT's Lloyd's of London cyber insurance partnership, the firms we manage can qualify for discounted cyber coverage, reflecting the strength of the managed security posture.
 
 ## The Cost of Getting This Wrong
 

@@ -3,10 +3,11 @@
 > Fortify AI is the managed AI offering from i-NETT, a Southern California
 > MSP serving 30 to 150 employee firms in healthcare, legal, financial
 > services, and professional services. We deploy AI infrastructure that
-> meets HIPAA, GDPR, SOC, and CCPA compliance requirements, underwritten
-> by Lloyd's of London cybersecurity insurance policy. Coverage extends
-> nationally across the United States and Canada through 148 cities via
-> the Technology Assurance Group network.
+> meets HIPAA, GDPR, SOC, and CCPA compliance requirements. i-NETT is a
+> Lloyd's of London cyber insurance partner, and the firms we manage can
+> qualify for discounted cyber coverage that reflects this security posture.
+> Service extends nationally across the United States and Canada through
+> 148 cities via the Technology Assurance Group network.
 
 ## What Fortify AI Is
 
@@ -34,7 +35,7 @@ extension nationally and into Canada.
 - Legal AI: https://i-nett.ai/industries/legal
 - Financial Services AI: https://i-nett.ai/industries/financial-services
 - Professional Services AI: https://i-nett.ai/industries/professional-services
-- Insurance Policy (Lloyd's of London): https://i-nett.ai/insurance-policy
+- Lloyd's of London Cyber Insurance Partnership: https://i-nett.ai/insurance-policy
 - Coverage and Service Area: https://i-nett.ai/coverage
 - Southern California: https://i-nett.ai/locations/southern-california
 - San Diego: https://i-nett.ai/locations/san-diego
@@ -45,9 +46,10 @@ extension nationally and into Canada.
 
 Built for HIPAA, GDPR, SOC, and CCPA compliance. Deployments are
 configured to your regulatory environment and reviewed by your
-compliance team. Underwritten by Lloyd's of London cybersecurity
-insurance policy. ISO 27001 aligned through the Technology Assurance
-Group network.
+compliance team. i-NETT is a Lloyd's of London cyber insurance partner,
+and the firms we manage can qualify for discounted cyber coverage that
+reflects this security posture. ISO 27001 aligned through the Technology
+Assurance Group network.
 
 ## Coverage
 

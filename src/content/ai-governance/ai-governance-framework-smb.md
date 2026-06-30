@@ -98,7 +98,7 @@ That is the reframe worth internalizing. Governance is not the tax you pay for u
 
 ## Where Fortify AI fits
 
-Most of this framework, the policy, the tool list, the review cadence, is operational discipline your firm owns. Where we help is the part that is hardest to do alone: standing up AI infrastructure that satisfies the data-handling rule by design. [Fortify AI](https://i-nett.ai/fortify-ai) is a managed deployment configured to your regulatory environment, isolated to your firm, and operated so that your data is not used to train external models or shared across clients. It is built for HIPAA, GDPR, SOC, and CCPA requirements and underwritten by a Lloyd's of London cybersecurity insurance policy.
+Most of this framework, the policy, the tool list, the review cadence, is operational discipline your firm owns. Where we help is the part that is hardest to do alone: standing up AI infrastructure that satisfies the data-handling rule by design. [Fortify AI](https://i-nett.ai/fortify-ai) is a managed deployment configured to your regulatory environment, isolated to your firm, and operated so that your data is not used to train external models or shared across clients. It is built for HIPAA, GDPR, SOC, and CCPA requirements. Through i-NETT's Lloyd's of London cyber insurance partnership, the firms we manage can qualify for discounted cyber coverage, reflecting the strength of the managed security posture.
 
 In other words, you bring the governance discipline, and we make sure the technology underneath it can actually honor those rules. That combination is what lets a 30 to 150 employee firm adopt AI at the pace of an enterprise without the enterprise risk profile.
 
