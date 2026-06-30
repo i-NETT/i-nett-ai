@@ -72,14 +72,32 @@ const calcId = id;
       <input
         id={`${calcId}-hourly`}
         type="range"
-        min="25"
-        max="200"
+        min="15"
+        max="1000"
         step="1"
         value="52"
         data-roi-hourly
         aria-label="Average hourly fully loaded cost per employee in US dollars"
       />
-      <div class="roi-field__scale"><span>$25</span><span>$200</span></div>
+      <div class="roi-field__row">
+        <div class="roi-field__scale roi-field__scale--grow">
+          <span>$15</span><span>$1,000</span>
+        </div>
+        <div class="roi-field__numeric">
+          <label for={`${calcId}-hourly-num`} class="sr-only">Type exact average hourly cost</label>
+          <input
+            id={`${calcId}-hourly-num`}
+            type="number"
+            min="15"
+            max="1000"
+            step="1"
+            value="52"
+            inputmode="numeric"
+            data-roi-hourly-num
+            aria-label="Type exact average hourly cost in US dollars"
+          />
+        </div>
+      </div>
     </div>
 
     <div class="roi-field">
@@ -102,7 +120,7 @@ const calcId = id;
   </div>
 
   <div class="roi-calc__results" aria-live="polite">
-    <p class="roi-calc__annual-label">Estimated annual productivity opportunity</p>
+    <p class="roi-calc__annual-label">Estimated annual productivity opportunity<span class="roi-calc__star">*</span></p>
     <p class="roi-calc__annual" data-roi-annual>$1,950,000</p>
     <div class="roi-calc__secondary">
       <div>
@@ -117,6 +135,7 @@ const calcId = id;
     <p class="roi-calc__context" data-roi-context>
       For a typical healthcare practice with 150 employees, that is what a five hour per week productivity uplift is worth, year over year.
     </p>
+    <p class="roi-calc__footnote">* Based on 50 working weeks per employee, allowing about two weeks of paid time off when no hours are saved.</p>
   </div>
 
   <div class="roi-calc__ctas">
@@ -131,11 +150,13 @@ const calcId = id;
   <p class="disclaimer roi-calc__disclaimer">
     Estimated savings are based on assumed inputs and industry productivity research.
     Actual results vary by industry, deployment scope, and execution. This calculator
-    is for illustrative purposes only and is not a forecast of actual results. Wage data
-    sourced from U.S. Bureau of Labor Statistics Occupational Employment Statistics,
-    May 2024. Productivity assumptions sourced from recent studies on generative AI
-    impact in knowledge work (4 to 8 hours per employee per week is the industry-cited
-    range; this calculator defaults to 5).
+    is for illustrative purposes only and is not a forecast of actual results. Annual
+    figures are calculated on 50 working weeks per employee, allowing roughly two weeks
+    of paid time off, when no hours are saved. Wage data sourced from U.S. Bureau of
+    Labor Statistics Occupational Employment Statistics, May 2024. Productivity
+    assumptions sourced from recent studies on generative AI impact in knowledge work
+    (4 to 8 hours per employee per week is the industry-cited range; this calculator
+    defaults to 5).
   </p>
 </div>
 
@@ -322,6 +343,15 @@ const calcId = id;
     margin-left: auto;
     margin-right: auto;
   }
+  .roi-calc__footnote {
+    margin-top: var(--space-3);
+    font-size: var(--fs-xs);
+    color: rgba(255,255,255,0.55);
+    max-width: 60ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .roi-calc__star { color: var(--color-glow); margin-left: 0.1em; }
 
   .roi-calc__ctas {
     display: flex;
@@ -333,7 +363,8 @@ const calcId = id;
     .roi-calc__ctas { flex-direction: row; justify-content: center; }
   }
   .roi-calc__disclaimer {
-    margin-top: var(--space-5);
+    margin: var(--space-5) auto 0;
+    max-width: 80ch;
     text-align: center;
   }
 </style>
@@ -345,6 +376,7 @@ const calcId = id;
     employees: HTMLInputElement;
     employeesNum: HTMLInputElement;
     hourly: HTMLInputElement;
+    hourlyNum: HTMLInputElement;
     hours: HTMLInputElement;
     out: {
       employees: HTMLElement;
@@ -382,6 +414,10 @@ const calcId = id;
     if (Number(ctx.employeesNum.value) !== employees && document.activeElement !== ctx.employeesNum) {
       ctx.employeesNum.value = String(employees);
     }
+    // Keep the hourly number box in sync with the slider.
+    if (Number(ctx.hourlyNum.value) !== hourly && document.activeElement !== ctx.hourlyNum) {
+      ctx.hourlyNum.value = String(hourly);
+    }
 
     const weekly = employees * hourly * hours;
     const monthly = weekly * 4.33;
@@ -407,6 +443,7 @@ const calcId = id;
       employees: el.querySelector('[data-roi-employees]') as HTMLInputElement,
       employeesNum: el.querySelector('[data-roi-employees-num]') as HTMLInputElement,
       hourly: el.querySelector('[data-roi-hourly]') as HTMLInputElement,
+      hourlyNum: el.querySelector('[data-roi-hourly-num]') as HTMLInputElement,
       hours: el.querySelector('[data-roi-hours]') as HTMLInputElement,
       out: {
         employees: el.querySelector('[data-roi-employees-output]') as HTMLElement,
@@ -427,7 +464,10 @@ const calcId = id;
         ctx.employees.value = emp;
         ctx.employeesNum.value = emp;
       }
-      if (hr) ctx.hourly.value = hr;
+      if (hr) {
+        ctx.hourly.value = hr;
+        ctx.hourlyNum.value = hr;
+      }
       calc(ctx);
     });
 
@@ -462,6 +502,32 @@ const calcId = id;
     [ctx.hourly, ctx.hours].forEach((input) =>
       input.addEventListener('input', () => calc(ctx))
     );
+
+    // Hourly number box drives the slider. Free typing in between, clamp on
+    // blur or Enter. Range is $15 to $1,000.
+    ctx.hourlyNum.addEventListener('input', () => {
+      const raw = Number(ctx.hourlyNum.value);
+      if (Number.isFinite(raw) && ctx.hourlyNum.value !== '') {
+        const capped = Math.max(15, Math.min(1000, raw));
+        ctx.hourly.value = String(capped);
+        calc(ctx);
+      }
+    });
+    const clampHourly = () => {
+      const v = Math.max(15, Math.min(1000, Math.round(Number(ctx.hourlyNum.value) || 15)));
+      ctx.hourlyNum.value = String(v);
+      ctx.hourly.value = String(v);
+      calc(ctx);
+    };
+    ctx.hourlyNum.addEventListener('blur', clampHourly);
+    ctx.hourlyNum.addEventListener('keydown', (e) => {
+      if ((e as KeyboardEvent).key === 'Enter') {
+        e.preventDefault();
+        clampHourly();
+        (ctx.hourlyNum as HTMLInputElement).blur();
+      }
+    });
+
     calc(ctx);
   });
 </script>

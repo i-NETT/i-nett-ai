@@ -411,7 +411,7 @@ const leadersSchema = {
         <h2 id="three-things-heading">What separates Fortify AI from every other AI platform on the market.</h2>
       </div>
       <div class="three-grid">
-        <article class="three-card reveal reveal-up reveal-delay-1">
+        <button type="button" class="three-card reveal reveal-up reveal-delay-1" data-pillar-open="tt-1" aria-haspopup="dialog">
           <div class="three-card__icon" aria-hidden="true">
             <svg viewBox="0 0 32 32" width="28" height="28" focusable="false">
               <path d="M16 3 L26 7 V15 C26 22 16 28 16 28 C16 28 6 22 6 15 V7 Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
@@ -424,9 +424,10 @@ const leadersSchema = {
             your tenant, with no shared training, no cross-client exposure, and
             architecture configured to your regulatory environment.
           </p>
-        </article>
+          <span class="three-card__more" aria-hidden="true">Learn more <span class="three-card__more-icon">+</span></span>
+        </button>
 
-        <article class="three-card three-card--featured reveal reveal-up reveal-delay-2">
+        <button type="button" class="three-card three-card--featured reveal reveal-up reveal-delay-2" data-pillar-open="tt-2" aria-haspopup="dialog">
           <div class="three-card__icon" aria-hidden="true">
             <svg viewBox="0 0 32 32" width="28" height="28" focusable="false">
               <circle cx="16" cy="16" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -440,9 +441,10 @@ const leadersSchema = {
             actually works, deployed and maintained by people who understand your
             business.
           </p>
-        </article>
+          <span class="three-card__more" aria-hidden="true">Learn more <span class="three-card__more-icon">+</span></span>
+        </button>
 
-        <article class="three-card reveal reveal-up reveal-delay-3">
+        <button type="button" class="three-card reveal reveal-up reveal-delay-3" data-pillar-open="tt-3" aria-haspopup="dialog">
           <div class="three-card__icon" aria-hidden="true">
             <svg viewBox="0 0 32 32" width="28" height="28" focusable="false">
               <circle cx="16" cy="11" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
@@ -456,7 +458,126 @@ const leadersSchema = {
             reduces bad answers and hallucinations. Gives employees back hours every
             week. Powered by HermanScience behavioral science methodology.
           </p>
-        </article>
+          <span class="three-card__more" aria-hidden="true">Learn more <span class="three-card__more-icon">+</span></span>
+        </button>
+      </div>
+
+      <!-- Three things detail popups (reuse the pillar-modal system) -->
+      <div class="pillar-modal" data-pillar-modal="tt-1" hidden role="dialog" aria-modal="true" aria-labelledby="tt-1-title">
+        <div class="pillar-modal__backdrop" data-pillar-close></div>
+        <div class="pillar-modal__panel" role="document">
+          <header class="pillar-modal__head">
+            <span class="card-num">01</span>
+            <button class="pillar-modal__close" type="button" data-pillar-close aria-label="Close detail">
+              <svg viewBox="0 0 24 24" width="22" height="22" focusable="false" aria-hidden="true"><path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </header>
+          <div class="pillar-modal__body">
+            <div class="pillar-modal__icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" width="56" height="56" focusable="false"><path d="M32 6 L52 14 V30 C52 44 32 58 32 58 C32 58 12 44 12 30 V14 Z" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="M22 32 L28 38 L42 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2 id="tt-1-title">Completely secure AI</h2>
+            <p>
+              No other LLM platform offers this isolation posture. Every Fortify AI
+              deployment runs in a dedicated tenant, so your data is never pooled with
+              other clients and is never used to train shared models.
+            </p>
+            <p>
+              The architecture is configured to your regulatory environment from the
+              start, and your compliance team reviews the posture before go-live. You
+              get isolation you can defend in an audit, not a checkbox you have to chase.
+            </p>
+            <h3 class="pillar-modal__outcomes-head">What you get</h3>
+            <ul class="pillar-modal__outcomes">
+              <li>Dedicated tenant, with no shared training data</li>
+              <li>No cross-client exposure</li>
+              <li>Architecture configured to your regulatory environment</li>
+              <li>Compliance review completed before deployment</li>
+            </ul>
+            <div class="pillar-modal__cta">
+              <a href={SITE.bookingUrl} class="btn btn-accent btn-lg" target="_blank" rel="noopener">Book a 30 minute consultation</a>
+              <a href="/fortify-ai" class="btn btn-outline btn-lg">Read more on Fortify AI</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pillar-modal" data-pillar-modal="tt-2" hidden role="dialog" aria-modal="true" aria-labelledby="tt-2-title">
+        <div class="pillar-modal__backdrop" data-pillar-close></div>
+        <div class="pillar-modal__panel" role="document">
+          <header class="pillar-modal__head">
+            <span class="card-num">02</span>
+            <button class="pillar-modal__close" type="button" data-pillar-close aria-label="Close detail">
+              <svg viewBox="0 0 24 24" width="22" height="22" focusable="false" aria-hidden="true"><path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </header>
+          <div class="pillar-modal__body">
+            <div class="pillar-modal__icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" width="56" height="56" focusable="false"><circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M32 16 V32 L42 38" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="32" r="3" fill="currentColor"/></svg>
+            </div>
+            <h2 id="tt-2-title">Automations built for your team</h2>
+            <p>
+              This is not self-serve tooling you have to learn. We design each automation
+              around how your team actually works, deploy it into your environment, and
+              operate it for you.
+            </p>
+            <p>
+              We start with the two or three workflows that return the most value first.
+              Documentation, intake, summarization, and client communication are common
+              early wins, then we expand based on measured results, not a roadmap of promises.
+            </p>
+            <h3 class="pillar-modal__outcomes-head">What you get</h3>
+            <ul class="pillar-modal__outcomes">
+              <li>Workflows mapped to your real processes</li>
+              <li>Deployed and maintained by our team</li>
+              <li>First production workflow live in weeks, not quarters</li>
+              <li>Expansion driven by measured outcomes</li>
+            </ul>
+            <div class="pillar-modal__cta">
+              <a href={SITE.bookingUrl} class="btn btn-accent btn-lg" target="_blank" rel="noopener">Book a 30 minute consultation</a>
+              <a href="/how-it-works" class="btn btn-outline btn-lg">Read more on how it works</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pillar-modal" data-pillar-modal="tt-3" hidden role="dialog" aria-modal="true" aria-labelledby="tt-3-title">
+        <div class="pillar-modal__backdrop" data-pillar-close></div>
+        <div class="pillar-modal__panel" role="document">
+          <header class="pillar-modal__head">
+            <span class="card-num">03</span>
+            <button class="pillar-modal__close" type="button" data-pillar-close aria-label="Close detail">
+              <svg viewBox="0 0 24 24" width="22" height="22" focusable="false" aria-hidden="true"><path d="M6 6 L18 18 M18 6 L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+          </header>
+          <div class="pillar-modal__body">
+            <div class="pillar-modal__icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64" width="56" height="56" focusable="false"><circle cx="32" cy="22" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M14 54 C14 44 22 38 32 38 C42 38 50 44 50 54" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+            <h2 id="tt-3-title">A full-time prompt coach</h2>
+            <p>
+              Behavioral-science guidance is built into every interaction, so your team
+              gets better answers without learning prompt engineering. It dramatically
+              reduces bad answers and hallucinations and gives employees back hours every week.
+            </p>
+            <p>
+              Powered by HermanScience behavioral-science methodology, the coach nudges
+              each request toward clarity, context, and the right level of detail, quietly
+              raising the quality of every output across your firm.
+            </p>
+            <h3 class="pillar-modal__outcomes-head">What you get</h3>
+            <ul class="pillar-modal__outcomes">
+              <li>Fewer hallucinations and bad answers</li>
+              <li>Hours saved per employee each week</li>
+              <li>No prompt-engineering training required</li>
+              <li>Built into every interaction by default</li>
+            </ul>
+            <div class="pillar-modal__cta">
+              <a href={SITE.bookingUrl} class="btn btn-accent btn-lg" target="_blank" rel="noopener">Book a 30 minute consultation</a>
+              <a href="/fortify-ai" class="btn btn-outline btn-lg">Read more on Fortify AI</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -469,30 +590,33 @@ const leadersSchema = {
         <h2 id="why-us-heading">Three things consumer AI cannot give you.</h2>
       </div>
       <div class="grid grid-3">
-        <div class="card card-dark reveal reveal-up reveal-delay-1">
+        <a href="/insurance-policy" class="card card-dark why-link reveal reveal-up reveal-delay-1">
           <h3>An underwritten security posture</h3>
           <p>
             Fortify AI deployments are operated inside an environment underwritten by
             Lloyd&rsquo;s of London cybersecurity insurance policy. That is not marketing
             language. It is a financial backstop.
           </p>
-        </div>
-        <div class="card card-dark reveal reveal-up reveal-delay-2">
+          <span class="why-more" aria-hidden="true">See the policy <span>&rarr;</span></span>
+        </a>
+        <a href="/how-it-works" class="card card-dark why-link reveal reveal-up reveal-delay-2">
           <h3>A regulatory blueprint, not a checkbox</h3>
           <p>
             HIPAA, GDPR, SOC, and CCPA are designed into deployment from day one,
             then reviewed by your compliance team. You get a configuration you can
             defend, not a vendor questionnaire you have to chase.
           </p>
-        </div>
-        <div class="card card-dark reveal reveal-up reveal-delay-3">
+          <span class="why-more" aria-hidden="true">How it works <span>&rarr;</span></span>
+        </a>
+        <a href="/about" class="card card-dark why-link reveal reveal-up reveal-delay-3">
           <h3>A managed services team behind the model</h3>
           <p>
             AI without operations is a liability. We bring 20 plus years of managed
             services discipline into every Fortify AI rollout, including 24/7 monitoring
             through the Technology Assurance Group network.
           </p>
-        </div>
+          <span class="why-more" aria-hidden="true">Meet the team <span>&rarr;</span></span>
+        </a>
       </div>
     </div>
   </section>
@@ -555,10 +679,14 @@ const leadersSchema = {
   </section>
 
   <!-- ROI CALCULATOR (live, inline) -->
-  <section class="section section-roi" id="roi" aria-labelledby="roi-heading">
+  <section class="section section-roi roi-showcase roi-steel" id="roi" aria-labelledby="roi-heading">
+    <div class="roi-showcase__bg" aria-hidden="true"></div>
     <div class="container">
       <div class="roi-home-intro reveal reveal-up">
-        <span class="eyebrow">Your number</span>
+        <span class="pill pill-accent roi-showcase__badge">
+          <span class="roi-showcase__pulse" aria-hidden="true"></span>
+          Live ROI calculator
+        </span>
         <h2 id="roi-heading">What is a five-hour-per-week productivity uplift worth to your firm?</h2>
         <p class="lead">
           Pick your industry. Drag the sliders. Type an exact employee count if you
@@ -566,7 +694,11 @@ const leadersSchema = {
         </p>
       </div>
       <div class="roi-home-calc reveal reveal-up reveal-delay-1">
-        <ROICalculator variant="inline" id="home-roi" showMethodologyLink={true} />
+        <div class="roi-stage">
+          <div class="roi-stage__inner">
+            <ROICalculator variant="inline" id="home-roi" showMethodologyLink={true} />
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -1319,8 +1451,195 @@ const leadersSchema = {
   .roi-home-intro h2 { margin-top: var(--space-2); }
   .roi-home-intro .lead { margin-top: var(--space-4); }
   .roi-home-calc { max-width: 1000px; margin: 0 auto; }
+
+  /* ===== ROI SHOWCASE: dark glowing console + 3D floating stage ===== */
   .section-roi {
-    background: linear-gradient(180deg, var(--color-bg-soft) 0%, var(--color-bg) 100%);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      radial-gradient(1100px 520px at 50% -8%, #0E3A5F 0%, rgba(14,58,95,0) 60%),
+      linear-gradient(180deg, var(--color-ink-900) 0%, #07101D 100%);
+    color: var(--color-text-on-dark);
+  }
+  .roi-showcase__bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .roi-showcase__bg::before {
+    content: ''; position: absolute; inset: -1px;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(ellipse 78% 68% at 50% 34%, #000 28%, transparent 76%);
+    mask-image: radial-gradient(ellipse 78% 68% at 50% 34%, #000 28%, transparent 76%);
+  }
+  .roi-showcase__bg::after {
+    content: ''; position: absolute; left: 50%; top: 40%;
+    width: 760px; height: 520px; transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side, rgba(0,180,255,0.20), transparent 72%);
+  }
+  .roi-showcase .roi-home-intro h2 { color: #fff; }
+  .roi-showcase .roi-home-intro .lead { color: var(--color-text-on-dark-soft); }
+  .roi-showcase__badge {
+    background: rgba(0,180,255,0.14);
+    border-color: rgba(0,224,255,0.4);
+    color: #fff;
+  }
+  .roi-showcase__pulse {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--color-glow);
+    box-shadow: 0 0 0 0 rgba(0,224,255,0.7);
+    animation: roi-pulse 2.4s ease-out infinite;
+  }
+  @keyframes roi-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0,224,255,0.55); }
+    70% { box-shadow: 0 0 0 12px rgba(0,224,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,224,255,0); }
+  }
+
+  .roi-home-calc { perspective: 1800px; }
+  .roi-stage {
+    position: relative;
+    border-radius: calc(var(--radius-xl) + 8px);
+    padding: 7px;
+    background: linear-gradient(155deg, rgba(0,224,255,0.6) 0%, rgba(0,180,255,0.18) 38%, rgba(17,53,92,0.5) 100%);
+    box-shadow:
+      0 50px 90px -30px rgba(0,0,0,0.7),
+      0 0 0 1px rgba(0,224,255,0.22),
+      0 0 70px -16px rgba(0,180,255,0.5);
+    transform: rotateX(4deg);
+    transform-origin: 50% 0;
+    transition: transform 600ms var(--ease-out);
+  }
+  .roi-stage:hover, .roi-stage:focus-within { transform: rotateX(0deg); }
+  .roi-stage::before {
+    content: ''; position: absolute; inset: -40px; z-index: -1;
+    background: radial-gradient(closest-side, rgba(0,180,255,0.32), transparent 70%);
+  }
+  .roi-stage__inner {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: #fff;
+  }
+  .roi-stage__inner::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,0.45), rgba(255,255,255,0) 16%);
+  }
+  .roi-stage :global(.roi-calc) { border: none; border-radius: var(--radius-xl); }
+  .roi-stage :global(.roi-field label) { font-size: var(--fs-base); }
+  .roi-stage :global(.roi-calc__ctas .btn) { min-height: 56px; padding: 1em 1.75em; font-size: var(--fs-base); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .roi-showcase__pulse { animation: none; }
+    .roi-stage { transform: none; }
+  }
+
+  /* ===== Dark brushed metal plate (vertical grain, light-blue tint) ===== */
+  .roi-steel .roi-stage__inner {
+    background-image:
+      /* soft light-blue reflections (top + lower-left), like the reference */
+      radial-gradient(150% 80% at 50% -10%, rgba(150,185,220,0.22), transparent 42%),
+      radial-gradient(120% 70% at 18% 108%, rgba(120,165,210,0.16), transparent 48%),
+      /* vertical brushed grain (north-south) */
+      repeating-linear-gradient(90deg,
+        rgba(210,230,255,0.05) 0px, rgba(210,230,255,0.05) 1px,
+        rgba(0,0,0,0.22) 1px, rgba(0,0,0,0.22) 2px,
+        rgba(210,230,255,0.025) 2px, rgba(210,230,255,0.025) 3px),
+      /* dark blue-charcoal base, brighter in the center (vignette) */
+      radial-gradient(130% 130% at 50% 38%, #2c3c50 0%, #1d2a39 46%, #121b27 100%);
+    background-size: 100% 100%, 100% 100%, 3px 100%, 100% 100%;
+    background-repeat: no-repeat, no-repeat, repeat, no-repeat;
+    box-shadow:
+      inset 0 1px 0 rgba(180,205,235,0.18),
+      inset 0 -8px 20px rgba(0,0,0,0.5),
+      inset 0 0 0 1px rgba(120,150,185,0.20);
+  }
+  .roi-steel .roi-stage__inner::after {
+    background: linear-gradient(180deg, rgba(190,215,240,0.16), rgba(190,215,240,0) 16%);
+  }
+  .roi-steel :global(.roi-calc) { background: transparent; }
+
+  /* Dark theme: lighten text so it reads on the metal */
+  .roi-steel :global(.roi-calc__title),
+  .roi-steel :global(.roi-field label) { color: #EAF1F8; }
+  .roi-steel :global(.roi-calc__sub) { color: rgba(206,222,238,0.78); }
+  .roi-steel :global(.roi-calc__header .eyebrow) { color: var(--color-glow); }
+  .roi-steel :global(.roi-field output) { color: var(--color-glow); }
+  .roi-steel :global(.roi-field__scale) { color: rgba(200,216,232,0.6); }
+  .roi-steel :global(.roi-calc__disclaimer) { color: rgba(196,212,230,0.62); }
+
+  /* Inputs as dark inset controls on the plate */
+  .roi-steel :global(.roi-field select),
+  .roi-steel :global(.roi-field__numeric input) {
+    background: rgba(12,20,30,0.55);
+    border-color: rgba(130,160,195,0.4);
+    color: #EAF1F8;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+  }
+  .roi-steel :global(input[type="range"]) {
+    background: rgba(8,14,22,0.55);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  /* Results panel reads as an inset screen on the metal */
+  .roi-steel :global(.roi-calc__results) {
+    box-shadow: inset 0 0 0 1px rgba(140,170,205,0.28), 0 10px 26px rgba(0,0,0,0.45);
+  }
+
+  /* "See full methodology" outline button on dark metal */
+  .roi-steel :global(.roi-calc__ctas .btn-outline) {
+    background: rgba(255,255,255,0.08);
+    color: #EAF1F8;
+    border-color: rgba(180,205,235,0.4);
+  }
+  .roi-steel :global(.roi-calc__ctas .btn-outline:hover) {
+    background: rgba(255,255,255,0.16);
+    border-color: rgba(180,205,235,0.7);
+    color: #fff;
+  }
+
+  /* ===== Wide, squat layout so the header + calculator fit one screen ===== */
+  .section-roi { padding-top: var(--space-8); padding-bottom: var(--space-9); }
+  .roi-showcase .roi-home-intro { margin-bottom: var(--space-5); }
+  .roi-home-calc { max-width: 1140px; }
+  .roi-stage :global(.roi-calc) { padding: clamp(1.25rem, 2.5vw, 1.9rem); }
+  .roi-stage :global(.roi-calc__header) { margin-bottom: var(--space-4); }
+  .roi-stage :global(.roi-calc__results) { margin-top: 0; padding: var(--space-5); }
+  .roi-stage :global(.roi-calc__annual) { font-size: clamp(2.5rem, 1.6rem + 3.2vw, 4rem); margin: var(--space-2) 0; }
+  .roi-stage :global(.roi-calc__secondary) { margin-top: var(--space-4); padding-top: var(--space-4); }
+  .roi-stage :global(.roi-calc__context) { margin-top: var(--space-3); }
+  .roi-stage :global(.roi-calc__ctas) { margin-top: var(--space-4); }
+  .roi-stage :global(.roi-calc__disclaimer) { margin-left: auto; margin-right: auto; max-width: 90ch; text-align: center; }
+
+  @media (min-width: 820px) {
+    .roi-stage :global(.roi-calc) {
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      grid-template-areas:
+        "header   header"
+        "controls results"
+        "ctas     results"
+        "disc     disc";
+      column-gap: clamp(1.5rem, 3vw, 2.5rem);
+      row-gap: var(--space-4);
+      align-items: start;
+    }
+    .roi-stage :global(.roi-calc__header) { grid-area: header; }
+    .roi-stage :global(.roi-calc__controls) { grid-area: controls; align-content: start; gap: var(--space-4); }
+    .roi-stage :global(.roi-calc__results) {
+      grid-area: results;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .roi-stage :global(.roi-calc__ctas) {
+      grid-area: ctas;
+      justify-content: flex-start;
+      align-self: end;
+      margin-top: var(--space-2);
+    }
+    .roi-stage :global(.roi-calc__disclaimer) { grid-area: disc; }
   }
   .roi-grid {
     display: grid;
@@ -1717,6 +2036,8 @@ const leadersSchema = {
   .pillar-modal__cta {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--space-3);
     margin-top: var(--space-5);
   }
   @keyframes pillar-fade { from { opacity: 0 } to { opacity: 1 } }
@@ -1785,6 +2106,60 @@ const leadersSchema = {
   .three-card h3 {
     font-size: var(--fs-lg);
     line-height: 1.2;
+  }
+  /* three-card as a clickable popup trigger */
+  button.three-card {
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .three-card__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-top: auto;
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    color: var(--color-accent-500);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+  }
+  .three-card--featured .three-card__more { color: var(--color-glow); }
+  .three-card:hover .three-card__more,
+  .three-card:focus-visible .three-card__more { opacity: 1; transform: translateY(0); }
+  .three-card__more-icon { font-size: 1.2em; line-height: 1; }
+  @media (prefers-reduced-motion: reduce) {
+    .three-card__more { opacity: 1; transform: none; }
+  }
+
+  /* why-us cards as links */
+  .why-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .why-link .why-more {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-weight: 600;
+    font-size: var(--fs-sm);
+    color: var(--color-glow);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+  }
+  .why-link:hover .why-more,
+  .why-link:focus-visible .why-more { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .why-link .why-more { opacity: 1; transform: none; }
   }
 
   /* Podcast section with YouTube embed */
