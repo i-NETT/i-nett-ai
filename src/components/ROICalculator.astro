@@ -312,6 +312,17 @@ const calcId = id;
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
+    transition: transform 280ms var(--ease-out), filter 280ms var(--ease-out);
+    will-change: transform;
+  }
+  /* Light-blue pop + glow while the value is changing, settles shortly after. */
+  .roi-calc__annual.is-changing {
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 22px rgba(0, 224, 255, 0.6));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .roi-calc__annual { transition: none; }
+    .roi-calc__annual.is-changing { transform: none; filter: none; }
   }
   .roi-calc__secondary {
     display: grid;
@@ -387,6 +398,8 @@ const calcId = id;
       weekly: HTMLElement;
       context: HTMLElement;
     };
+    _init?: boolean;
+    _glow?: number;
   };
 
   const fmtUSD = (n: number) =>
@@ -426,7 +439,17 @@ const calcId = id;
     ctx.out.employees.textContent = fmtNum(employees);
     ctx.out.hourly.textContent = fmtUSD(hourly);
     ctx.out.hours.textContent = String(hours);
-    ctx.out.annual.textContent = fmtUSD(annual);
+
+    // Pop + glow the headline number whenever it actually changes (not on load).
+    const annualStr = fmtUSD(annual);
+    if (ctx._init && ctx.out.annual.textContent !== annualStr) {
+      ctx.out.annual.classList.add('is-changing');
+      clearTimeout(ctx._glow);
+      ctx._glow = window.setTimeout(() => ctx.out.annual.classList.remove('is-changing'), 650);
+    }
+    ctx.out.annual.textContent = annualStr;
+    ctx._init = true;
+
     ctx.out.monthly.textContent = fmtUSD(monthly);
     ctx.out.weekly.textContent = fmtUSD(weekly);
 
