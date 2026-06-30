@@ -1,0 +1,266 @@
+---
+/**
+ * ROIShowcase
+ * ------------------------------------------------------------------
+ * The premium ROI calculator presentation: a dark glowing console
+ * section with a 3D brushed-steel plate holding the live calculator.
+ * Used on the homepage and the /roi-calculator page so the two are
+ * always identical. Owns all of its own styling (steel plate, layout,
+ * dark theme). The calculator math/markup lives in ROICalculator.astro.
+ */
+import ROICalculator from '@components/ROICalculator.astro';
+
+interface Props {
+  heading?: string;
+  lead?: string;
+  badge?: string;
+  calcId?: string;
+  showMethodologyLink?: boolean;
+  showIntro?: boolean;
+  sectionId?: string;
+}
+const {
+  heading = 'What is a five-hour-per-week productivity uplift worth to your firm?',
+  lead = 'Pick your industry. Drag the sliders. Type an exact employee count if you prefer. The number is yours to take to your board.',
+  badge = 'Live ROI calculator',
+  calcId = 'roi-calc',
+  showMethodologyLink = true,
+  showIntro = true,
+  sectionId,
+} = Astro.props;
+const headingId = `${calcId}-heading`;
+---
+<section
+  class="section section-roi roi-showcase roi-steel"
+  id={sectionId}
+  aria-labelledby={showIntro ? headingId : undefined}
+>
+  <div class="roi-showcase__bg" aria-hidden="true"></div>
+  <div class="container">
+    {showIntro && (
+      <div class="roi-home-intro reveal reveal-up">
+        <span class="pill pill-accent roi-showcase__badge">
+          <span class="roi-showcase__pulse" aria-hidden="true"></span>
+          {badge}
+        </span>
+        <h2 id={headingId}>{heading}</h2>
+        <p class="lead">{lead}</p>
+      </div>
+    )}
+    <div class="roi-home-calc reveal reveal-up reveal-delay-1">
+      <div class="roi-stage">
+        <div class="roi-stage__inner">
+          <ROICalculator variant="inline" id={calcId} showMethodologyLink={showMethodologyLink} />
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .roi-home-intro { max-width: 760px; margin: 0 auto var(--space-7); text-align: center; }
+  .roi-home-intro h2 { margin-top: var(--space-2); }
+  .roi-home-intro .lead { margin-top: var(--space-4); }
+  .roi-home-calc { max-width: 1140px; margin: 0 auto; }
+
+  /* ===== Dark glowing console + 3D floating stage ===== */
+  .section-roi {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background:
+      radial-gradient(1100px 520px at 50% -8%, #0E3A5F 0%, rgba(14,58,95,0) 60%),
+      linear-gradient(180deg, var(--color-ink-900) 0%, #07101D 100%);
+    color: var(--color-text-on-dark);
+  }
+  .roi-showcase__bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .roi-showcase__bg::before {
+    content: ''; position: absolute; inset: -1px;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(ellipse 78% 68% at 50% 34%, #000 28%, transparent 76%);
+    mask-image: radial-gradient(ellipse 78% 68% at 50% 34%, #000 28%, transparent 76%);
+  }
+  .roi-showcase__bg::after {
+    content: ''; position: absolute; left: 50%; top: 40%;
+    width: 760px; height: 520px; transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side, rgba(0,180,255,0.20), transparent 72%);
+  }
+  .roi-showcase .roi-home-intro h2 { color: #fff; }
+  .roi-showcase .roi-home-intro .lead { color: var(--color-text-on-dark-soft); }
+  .roi-showcase__badge {
+    background: rgba(0,180,255,0.14);
+    border-color: rgba(0,224,255,0.4);
+    color: #fff;
+  }
+  .roi-showcase__pulse {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--color-glow);
+    box-shadow: 0 0 0 0 rgba(0,224,255,0.7);
+    animation: roi-pulse 2.4s ease-out infinite;
+  }
+  @keyframes roi-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0,224,255,0.55); }
+    70% { box-shadow: 0 0 0 12px rgba(0,224,255,0); }
+    100% { box-shadow: 0 0 0 0 rgba(0,224,255,0); }
+  }
+
+  .roi-home-calc { perspective: 1800px; }
+  .roi-stage {
+    position: relative;
+    border-radius: calc(var(--radius-xl) + 8px);
+    padding: 7px;
+    background: linear-gradient(155deg, rgba(0,224,255,0.6) 0%, rgba(0,180,255,0.18) 38%, rgba(17,53,92,0.5) 100%);
+    box-shadow:
+      0 50px 90px -30px rgba(0,0,0,0.7),
+      0 0 0 1px rgba(0,224,255,0.22),
+      0 0 70px -16px rgba(0,180,255,0.5);
+    transform: rotateX(4deg);
+    transform-origin: 50% 0;
+    transition: transform 600ms var(--ease-out);
+  }
+  .roi-stage:hover, .roi-stage:focus-within { transform: rotateX(0deg); }
+  .roi-stage::before {
+    content: ''; position: absolute; inset: -40px; z-index: -1;
+    background: radial-gradient(closest-side, rgba(0,180,255,0.32), transparent 70%);
+  }
+  .roi-stage__inner {
+    position: relative;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    background: #fff;
+  }
+  .roi-stage__inner::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(180deg, rgba(255,255,255,0.45), rgba(255,255,255,0) 16%);
+  }
+  .roi-stage :global(.roi-calc) { border: none; border-radius: var(--radius-xl); }
+  .roi-stage :global(.roi-field label) { font-size: var(--fs-base); }
+  .roi-stage :global(.roi-calc__ctas .btn) { min-height: 56px; padding: 1em 1.75em; font-size: var(--fs-base); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .roi-showcase__pulse { animation: none; }
+    .roi-stage { transform: none; }
+  }
+
+  /* ===== Dark brushed steel plate (vertical grain, light-blue tint) ===== */
+  .roi-steel .roi-stage__inner {
+    background-image:
+      /* soft light-blue reflections, top and lower-left */
+      radial-gradient(150% 80% at 50% -10%, rgba(160,195,228,0.24), transparent 44%),
+      radial-gradient(120% 72% at 16% 110%, rgba(120,165,210,0.16), transparent 50%),
+      /* vertical sheen bands sweeping across the plate */
+      linear-gradient(90deg,
+        rgba(255,255,255,0) 0%, rgba(198,220,248,0.10) 22%, rgba(255,255,255,0) 44%,
+        rgba(150,182,216,0.07) 70%, rgba(255,255,255,0) 100%),
+      /* primary vertical brushed grain (dense) */
+      repeating-linear-gradient(90deg,
+        rgba(214,234,255,0.07) 0px, rgba(214,234,255,0.07) 1px,
+        rgba(0,0,0,0.20) 1px, rgba(0,0,0,0.20) 2px),
+      /* fine secondary grain, offset period, for realism */
+      repeating-linear-gradient(90deg,
+        rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px,
+        transparent 1px, transparent 5px),
+      /* dark blue-charcoal base, brighter center (vignette) */
+      radial-gradient(135% 130% at 50% 36%, #2f4054 0%, #1d2a39 46%, #111a26 100%);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 2px 100%, 5px 100%, 100% 100%;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat, repeat, no-repeat;
+    box-shadow:
+      inset 0 1px 0 rgba(185,210,238,0.20),
+      inset 0 -8px 22px rgba(0,0,0,0.52),
+      inset 0 0 0 1px rgba(120,150,185,0.22);
+  }
+  .roi-steel .roi-stage__inner::after {
+    background: linear-gradient(180deg, rgba(190,215,240,0.16), rgba(190,215,240,0) 16%);
+  }
+  .roi-steel :global(.roi-calc) { background: transparent; }
+
+  /* Dark theme: lighten text so it reads on the metal */
+  .roi-steel :global(.roi-calc__title),
+  .roi-steel :global(.roi-field label) { color: #EAF1F8; }
+  .roi-steel :global(.roi-calc__sub) { color: rgba(206,222,238,0.78); }
+  .roi-steel :global(.roi-calc__header .eyebrow) { color: var(--color-glow); }
+  .roi-steel :global(.roi-field output) { color: var(--color-glow); }
+  .roi-steel :global(.roi-field__scale) { color: rgba(200,216,232,0.6); }
+  .roi-steel :global(.roi-calc__disclaimer) { color: rgba(196,212,230,0.62); }
+
+  /* Inputs as dark inset controls on the plate */
+  .roi-steel :global(.roi-field select),
+  .roi-steel :global(.roi-field__numeric input) {
+    background: rgba(12,20,30,0.55);
+    border-color: rgba(130,160,195,0.4);
+    color: #EAF1F8;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+  }
+  .roi-steel :global(input[type="range"]) {
+    background: rgba(8,14,22,0.55);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  /* Results panel reads as an inset screen on the metal */
+  .roi-steel :global(.roi-calc__results) {
+    box-shadow: inset 0 0 0 1px rgba(140,170,205,0.28), 0 10px 26px rgba(0,0,0,0.45);
+  }
+
+  /* "See full methodology" outline button on dark metal */
+  .roi-steel :global(.roi-calc__ctas .btn-outline) {
+    background: rgba(255,255,255,0.08);
+    color: #EAF1F8;
+    border-color: rgba(180,205,235,0.4);
+  }
+  .roi-steel :global(.roi-calc__ctas .btn-outline:hover) {
+    background: rgba(255,255,255,0.16);
+    border-color: rgba(180,205,235,0.7);
+    color: #fff;
+  }
+
+  /* ===== Wide, squat layout so the header + calculator fit one screen ===== */
+  .section-roi { padding-top: var(--space-8); padding-bottom: var(--space-9); }
+  .roi-showcase .roi-home-intro { margin-bottom: var(--space-5); }
+  .roi-home-calc { max-width: 1140px; }
+  .roi-stage :global(.roi-calc) { padding: clamp(1.25rem, 2.5vw, 1.9rem); }
+  .roi-stage :global(.roi-calc__header) { margin-bottom: var(--space-3); }
+  .roi-stage :global(.roi-calc__title) { font-size: var(--fs-lg); }
+  /* The intro/heading above already explains how to use it, so drop the
+     calculator's own sub-line to save height. */
+  .roi-stage :global(.roi-calc__sub) { display: none; }
+  .roi-stage :global(.roi-calc__results) { margin-top: 0; padding: var(--space-5); }
+  .roi-stage :global(.roi-calc__annual) { font-size: clamp(2.5rem, 1.6rem + 3.2vw, 4rem); margin: var(--space-2) 0; }
+  .roi-stage :global(.roi-calc__secondary) { margin-top: var(--space-4); padding-top: var(--space-4); }
+  .roi-stage :global(.roi-calc__context) { margin-top: var(--space-3); }
+  .roi-stage :global(.roi-calc__ctas) { margin-top: var(--space-4); }
+  .roi-stage :global(.roi-calc__disclaimer) { max-width: none; text-align: center; }
+
+  @media (min-width: 820px) {
+    .roi-stage :global(.roi-calc) {
+      display: grid;
+      grid-template-columns: 1.02fr 0.98fr;
+      grid-template-areas:
+        "header   header"
+        "controls results"
+        "ctas     results"
+        "disc     disc";
+      column-gap: clamp(1.5rem, 3vw, 2.5rem);
+      row-gap: var(--space-4);
+      align-items: start;
+    }
+    .roi-stage :global(.roi-calc__header) { grid-area: header; }
+    .roi-stage :global(.roi-calc__controls) { grid-area: controls; align-content: start; gap: var(--space-4); }
+    .roi-stage :global(.roi-calc__results) {
+      grid-area: results;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .roi-stage :global(.roi-calc__ctas) {
+      grid-area: ctas;
+      justify-content: flex-start;
+      align-self: start;
+      margin-top: var(--space-2);
+    }
+    .roi-stage :global(.roi-calc__disclaimer) { grid-area: disc; }
+  }
+</style>

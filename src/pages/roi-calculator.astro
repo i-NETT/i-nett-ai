@@ -1,6 +1,6 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
-import ROICalculator from '@components/ROICalculator.astro';
+import ROIShowcase from '@components/ROIShowcase.astro';
 import FAQ from '@components/FAQ.astro';
 
 const breadcrumbs = [
@@ -31,18 +31,19 @@ const faqs = [
   title="ROI Calculator : Estimate your annual AI productivity opportunity"
   description="Estimate your firm's annual AI productivity opportunity. Industry-specific defaults anchored to U.S. Bureau of Labor Statistics data. For illustrative purposes only."
   eyebrow="ROI Calculator"
-  pageHeading="What is a five hour per week productivity uplift worth to your firm?"
-  pageLead="Pick your industry. Adjust the sliders. The number is yours to take to your board. Anchored to BLS Occupational Employment Statistics and current research on generative AI productivity in knowledge work."
+  pageHeading="See your firm's AI productivity opportunity"
+  pageLead="Estimate the annual value of an AI productivity uplift across your team, anchored to BLS Occupational Employment Statistics and current research on generative AI in knowledge work."
   breadcrumbs={breadcrumbs}
   faqs={faqs}
   pageType="WebApplication"
 >
   <!-- CALCULATOR -->
-  <section class="section">
-    <div class="container container-narrow">
-      <ROICalculator variant="inline" id="roi-page-calc" showMethodologyLink={false} />
-    </div>
-  </section>
+  <ROIShowcase
+    calcId="roi-page-calc"
+    showMethodologyLink={true}
+    heading="What is a five-hour-per-week productivity uplift worth to your firm?"
+    lead="Pick your industry. Drag the sliders. Type an exact employee count if you prefer. The number is yours to take to your board."
+  />
 
   <!-- METHODOLOGY -->
   <section class="section section-soft">
