@@ -12,40 +12,48 @@ const breadcrumbs = [
 const faqs = [
   {
     q: 'What does Fortify AI actually deliver?',
-    a: 'Fortify AI delivers a configured, operated AI environment for your firm. That includes a dedicated tenant, integration with your data sources, role-based access, audit logging, compliance-aligned configuration, and managed operations from the i-NETT team.'
+    a: 'A secure, governed AI environment that your team can actually use: no-code AI agents that automate work and answer from your knowledge base, access to all major frontier models through one controlled platform, behavioral-science coaching built into every prompt, and managed operations from the i-NETT team. It runs on enterprise security by design, with Zero Data Retention, tenant isolation, role-based access, audit logging, and compliance-aligned configuration.'
+  },
+  {
+    q: 'Who is Fortify AI for?',
+    a: 'Any organization. There is no business it could not serve. The biggest impact lands when you have at least 20 people using AI day to day, where the productivity and governance gains compound across the team. It is also a strong fit for any organization, of any size, that needs serious security and data protection from the very first prompt.'
+  },
+  {
+    q: 'How secure is it, really?',
+    a: 'Security is built into every interaction, not bolted on. Customer data is isolated to your dedicated tenant and is never used to train models or shared across clients. Zero Data Retention means queries are processed and then discarded, not stored. Three layers protect every request: PII redaction and keyword blocklists on the way in, guardrail and intent models analyzing each interaction, and sandboxed, least-privilege execution for agents. The platform is aligned with SOC 2, HIPAA, GDPR, and ISO 42001 AI governance.'
   },
   {
     q: 'What is included in a Fortify AI engagement?',
-    a: 'Discovery and readiness assessment, deployment configuration, integration with up to three approved data sources, role-based access setup, user enablement for your team, quarterly compliance review, and ongoing managed operations including monitoring, updates, and model evaluation.'
+    a: 'Discovery and readiness assessment, deployment configuration, integration with up to three approved data sources, no-code agent and workflow setup, role-based access, user enablement and prompt coaching for your team, quarterly compliance review, and ongoing managed operations including monitoring, updates, and model evaluation.'
   },
   {
     q: 'Who owns the data?',
-    a: 'You do. Customer data is isolated to your dedicated tenant. We do not use customer data for model training or share it across clients. Data residency and retention are configured to your compliance requirements.'
+    a: 'You do. Customer data is isolated to your dedicated tenant, and Zero Data Retention means it is not stored after a query is processed. We do not use customer data for model training or share it across clients. Data residency and retention are configured to your compliance requirements.'
   },
   {
     q: 'What is the engagement model?',
-    a: 'Fortify AI is delivered as a managed subscription with a defined deployment scope. Pricing scales with the number of users, the number of workflows in production, and the depth of integration. We size the engagement during the readiness assessment.'
+    a: 'Fortify AI is delivered as a managed subscription with a defined deployment scope. Pricing scales with the number of users, the number of agents and workflows in production, and the depth of integration. We size the engagement during the readiness assessment.'
   },
 ];
 ---
 <PageLayout
-  title="Fortify AI : Managed AI deployment for mid-market firms"
-  description="Fortify AI is the managed AI offering from i-NETT. Compliance-ready infrastructure, configured to your regulatory environment, operated by our team. HIPAA, GDPR, SOC, CCPA. Discounted cyber insurance through our Lloyd's of London partnership."
+  title="Fortify AI : Secure, managed AI for any organization"
+  description="Fortify AI is i-NETT's fully managed, secure AI deployment. No-code AI agents, all major models in one governed environment, Zero Data Retention, layered security, and behavioral-science prompt coaching. For any organization that takes data protection seriously. HIPAA, GDPR, SOC 2, CCPA, and ISO 42001 aligned."
   eyebrow="The product"
-  pageHeading="Fortify AI is managed AI for the firms regulators trust."
-  pageLead="Mid-market firms need AI capability without the risk profile of consumer tooling. Fortify AI is the configured deployment, the compliance posture, and the managed operations team that delivers exactly that."
+  pageHeading="Managed AI that is secure enough for regulators, and ready for any organization."
+  pageLead="Fortify AI is the deployment, the security, the coaching, and the team behind it. Any organization can run it. The biggest gains land when 20 or more people are using AI day to day, or any time you need serious data protection from the very first prompt."
   breadcrumbs={breadcrumbs}
   faqs={faqs}
   speakable={['.answer-block__a']}
   service={{
     name: 'Fortify AI',
-    description: 'Managed AI infrastructure for regulated mid-market firms. HIPAA, GDPR, SOC, CCPA aligned. Discounted cyber insurance through our Lloyd’s of London partnership.',
+    description: 'Fully managed, secure AI deployment for any organization. No-code AI agents, all major models in one governed environment, Zero Data Retention, layered security, and behavioral-science prompt coaching. Aligned with HIPAA, GDPR, SOC 2, CCPA, and ISO 42001.',
   }}
 >
   <section class="section">
     <div class="container">
       <AnswerBlock>
-        <p>Fortify AI is the managed AI offering from i-NETT, a Southern California technology firm that deploys secure, compliance-ready AI infrastructure for mid-market businesses with 30 to 150 employees. Each deployment is isolated to a dedicated tenant, gives your team access to all major frontier model providers through one governed environment, and is operated by i-NETT's managed services team, with customer data never used for model training or shared across clients. Fortify AI is configured for HIPAA, GDPR, and CCPA requirements, aligned with SOC 2 controls, and, through i-NETT's Lloyd's of London partnership, the firms we manage can qualify for discounted cyber insurance that reflects the strength of the managed security posture.</p>
+        <p>Fortify AI is the fully managed AI offering from i-NETT, a Southern California technology firm. It gives your team a secure, governed AI environment: no-code AI agents that work around the clock, access to all major frontier models through one controlled platform, and your organization's knowledge made searchable and conversational, scoped to authorized users. Every interaction runs on enterprise security by design, with Zero Data Retention, tenant isolation, and layered protection, and customer data is never used for model training or shared across clients. Behavioral-science coaching is built into every prompt to raise output quality and cut rework. i-NETT configures it to your regulatory environment, operates it for you, and reviews it with your compliance team. Fortify AI fits any organization, with the biggest impact when 20 or more people use AI day to day, or whenever an organization needs strong security and data protection from the outset, regardless of size. It is aligned with HIPAA, GDPR, SOC 2, CCPA, and ISO 42001 AI governance.</p>
       </AnswerBlock>
     </div>
   </section>
@@ -56,23 +64,83 @@ const faqs = [
       <div class="grid grid-2 feat-grid">
         <div>
           <span class="eyebrow">What it is</span>
-          <h2>A configured, operated AI environment for your firm.</h2>
+          <h2>A configured, operated, and secured AI environment for your organization.</h2>
           <p class="lead">
-            Fortify AI is not a license bundle. It is the deployment, the configuration,
-            and the team behind it. We build your environment, integrate it with your
-            systems, configure it for your regulatory footprint, and operate it for you
-            from day one.
+            Fortify AI is not a license bundle. It is the deployment, the security, the
+            coaching, and the team behind it. We build your environment, integrate it with
+            your systems, configure it for your regulatory footprint, and operate it for
+            you from day one, on any platform you already work in.
           </p>
         </div>
         <ul class="feat-list">
-          <li><strong>Dedicated tenant.</strong> Your data, your environment, your audit trail.</li>
-          <li><strong>Compliance configuration.</strong> HIPAA, GDPR, SOC, CCPA built into deployment.</li>
-          <li><strong>Integration with your systems.</strong> Up to three approved data sources in scope at launch.</li>
-          <li><strong>Role-based access.</strong> Granular control for clinicians, attorneys, advisors, and admins.</li>
-          <li><strong>Audit logging.</strong> Full activity logs for compliance review.</li>
-          <li><strong>Managed operations.</strong> Monitoring, updates, model evaluation, quarterly compliance review.</li>
+          <li><strong>No-code AI agents.</strong> Agents that automate workflows, answer from your knowledge base, and integrate with your systems, delivered through chat, email, API, or scheduled runs.</li>
+          <li><strong>All major models, one governed environment.</strong> Use the best frontier model for each task without juggling separate accounts or exposing data.</li>
+          <li><strong>Zero Data Retention.</strong> Queries are processed and then discarded. Your data is never stored to train anyone's model, and never shared across clients.</li>
+          <li><strong>Dedicated tenant and role-based access.</strong> Your environment, your audit trail, with granular control for every role.</li>
+          <li><strong>Behavioral-science coaching.</strong> Real-time, on-prompt guidance that lifts output quality and cuts rework for every user.</li>
+          <li><strong>Managed operations.</strong> Monitoring, updates, model evaluation, and quarterly compliance review by the i-NETT team.</li>
         </ul>
       </div>
+    </div>
+  </section>
+
+  <!-- SECURE BY DESIGN -->
+  <section class="section section-dark">
+    <div class="container">
+      <div class="section-intro">
+        <span class="eyebrow">Secure by design</span>
+        <h2>Protection built into every interaction, not bolted on after.</h2>
+        <p class="lead">
+          Most AI tools ask you to trust a policy. Fortify AI enforces protection at the
+          infrastructure level, so security holds whether or not anyone is watching.
+        </p>
+      </div>
+      <div class="grid grid-3" style="margin-top: var(--space-7);">
+        <div class="card card-dark">
+          <span class="card-num">01</span>
+          <h3>Screened on the way in</h3>
+          <p>Deterministic pre-processing redacts personal information and enforces keyword blocklists before a request ever reaches a model.</p>
+        </div>
+        <div class="card card-dark">
+          <span class="card-num">02</span>
+          <h3>Analyzed in real time</h3>
+          <p>Guardrail and intent models evaluate every interaction, catching prompt injection, misuse, and unsafe requests as they happen.</p>
+        </div>
+        <div class="card card-dark">
+          <span class="card-num">03</span>
+          <h3>Contained at execution</h3>
+          <p>Agents run in sandboxed, least-privilege environments, so automation can act on your behalf without ever overreaching.</p>
+        </div>
+      </div>
+      <p class="lead" style="margin-top: var(--space-7);">
+        Layered on top of Zero Data Retention and tenant isolation, and aligned with
+        SOC 2, HIPAA, GDPR, and ISO 42001 AI governance, this is the kind of posture that
+        makes a strong cyber insurance position possible.
+      </p>
+    </div>
+  </section>
+
+  <!-- COACHING -->
+  <section class="section">
+    <div class="container container-narrow">
+      <span class="eyebrow">A coach in every prompt</span>
+      <h2>It is not about how well the AI works. It is about how well your people work with it.</h2>
+      <p class="lead">
+        Most of the value of AI is lost between a good intention and a vague prompt.
+        Fortify AI builds behavioral-science coaching into every interaction, guiding each
+        person to a better prompt in the moment and learning their patterns over time.
+        That means fewer bad answers, less rework, and real productivity, without sending
+        anyone to a prompt-engineering course.
+      </p>
+      <div class="stat-strip">
+        <div class="stat-strip__item"><span class="stat-strip__num">up to 80%</span><span class="stat-strip__label">better prompts</span></div>
+        <div class="stat-strip__item"><span class="stat-strip__num">up to 73%</span><span class="stat-strip__label">better AI output</span></div>
+        <div class="stat-strip__item"><span class="stat-strip__num">~65%</span><span class="stat-strip__label">reduced risk</span></div>
+        <div class="stat-strip__item"><span class="stat-strip__num">~54%</span><span class="stat-strip__label">fewer tokens used</span></div>
+      </div>
+      <p class="disclaimer">
+        Figures reflect demonstrated results of the behavioral-science coaching technology built into Fortify AI. Actual results vary by team, workflow, and adoption.
+      </p>
     </div>
   </section>
 
@@ -88,11 +156,11 @@ const faqs = [
       <div class="grid grid-3" style="margin-top: var(--space-7);">
         <div class="card">
           <h3>Documentation</h3>
-          <p>Clinical notes, legal memoranda, advisory write-ups, consulting deliverables. Drafted from your inputs, reviewed by your team.</p>
+          <p>Reports, notes, memos, write-ups, and deliverables. Drafted from your inputs, reviewed by your team.</p>
         </div>
         <div class="card">
           <h3>Knowledge retrieval</h3>
-          <p>Your firm&rsquo;s playbooks, prior matters, policies, and reference material made searchable and conversational, scoped to authorized users.</p>
+          <p>Your organization&rsquo;s playbooks, prior work, policies, and reference material made searchable and conversational, scoped to authorized users.</p>
         </div>
         <div class="card">
           <h3>Intake and triage</h3>
@@ -103,8 +171,8 @@ const faqs = [
           <p>Long-form documents, meeting transcripts, and email threads reduced to action-ready summaries with citation back to source.</p>
         </div>
         <div class="card">
-          <h3>Client communication</h3>
-          <p>Draft replies, status updates, and follow-ups that match your firm&rsquo;s voice and your client&rsquo;s history. Always reviewed before send.</p>
+          <h3>Customer communication</h3>
+          <p>Draft replies, status updates, and follow-ups that match your voice and your customer&rsquo;s history. Always reviewed before send.</p>
         </div>
         <div class="card">
           <h3>Reporting and analysis</h3>
@@ -118,11 +186,11 @@ const faqs = [
   <section class="section">
     <div class="container container-narrow">
       <span class="eyebrow">Compliance posture</span>
-      <h2>Built for HIPAA, GDPR, SOC, and CCPA. Reviewed by your compliance team.</h2>
+      <h2>Built for HIPAA, GDPR, SOC 2, CCPA, and ISO 42001. Reviewed by your compliance team.</h2>
       <p class="lead">
         Every Fortify AI deployment is configured to the regulatory environment your
-        firm operates inside. Configuration is documented. Audit logging is enabled by
-        default. Your compliance team reviews the deployment before it goes live and
+        organization operates inside. Configuration is documented. Audit logging is enabled
+        by default. Your compliance team reviews the deployment before it goes live and
         again every quarter.
       </p>
       <div class="callout">
@@ -131,14 +199,14 @@ const faqs = [
         </p>
         <p>
           Because i-NETT&rsquo;s managed security is rated so highly for reducing risk,
-          the firms we manage can qualify for discounted cyber insurance through our
+          the organizations we manage can qualify for discounted cyber insurance through our
           Lloyd&rsquo;s of London partnership, so a strong posture becomes a real financial
           advantage.
         </p>
       </div>
       <p class="disclaimer">
-        Built for HIPAA, GDPR, SOC, and CCPA compliance. Deployments are configured to
-        your regulatory environment and reviewed by your compliance team.
+        Built for HIPAA, GDPR, SOC 2, CCPA, and ISO 42001 AI governance. Deployments are
+        configured to your regulatory environment and reviewed by your compliance team.
       </p>
     </div>
   </section>
@@ -160,6 +228,35 @@ const faqs = [
     background: var(--color-bg-soft);
     border-radius: var(--radius-md);
     border-left: 3px solid var(--color-accent-500);
+  }
+
+  .stat-strip {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+    margin: var(--space-7) 0 var(--space-4);
+  }
+  @media (min-width: 640px) { .stat-strip { grid-template-columns: repeat(4, 1fr); } }
+  .stat-strip__item {
+    text-align: center;
+    padding: var(--space-5) var(--space-3);
+    background: var(--color-bg-soft);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-border);
+  }
+  .stat-strip__num {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--fs-xl);
+    color: var(--color-ink-800);
+    letter-spacing: -0.02em;
+  }
+  .stat-strip__label {
+    display: block;
+    margin-top: var(--space-1);
+    font-size: var(--fs-sm);
+    color: var(--color-text-muted);
   }
 
   .callout {
