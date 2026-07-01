@@ -6,6 +6,7 @@ import VisualPromptCoach from '@components/visuals/VisualPromptCoach.astro';
 import VisualWorkflowSpread from '@components/visuals/VisualWorkflowSpread.astro';
 import VisualAgentFlow from '@components/visuals/VisualAgentFlow.astro';
 import VisualSecurityLayers from '@components/visuals/VisualSecurityLayers.astro';
+import VisualChatUI from '@components/visuals/VisualChatUI.astro';
 import { SITE } from '@lib/site';
 
 const breadcrumbs = [
@@ -59,6 +60,28 @@ const faqs = [
       <AnswerBlock>
         <p>Fortify AI is the fully managed AI offering from i-NETT, a Southern California technology firm. It gives your team a secure, governed AI environment: no-code AI agents that work around the clock, access to all major frontier models through one controlled platform, and your organization's knowledge made searchable and conversational, scoped to authorized users. Every interaction runs on enterprise security by design, with Zero Data Retention, tenant isolation, and layered protection, and customer data is never used for model training or shared across clients. Behavioral-science coaching is built into every prompt to raise output quality and cut rework. i-NETT configures it to your regulatory environment, operates it for you, and reviews it with your compliance team. Fortify AI fits any organization, with the biggest impact when 20 or more people use AI day to day, or whenever an organization needs strong security and data protection from the outset, regardless of size. It is aligned with HIPAA, GDPR, SOC 2, CCPA, and ISO 42001 AI governance.</p>
       </AnswerBlock>
+    </div>
+  </section>
+
+  <!-- THE ACTUAL PRODUCT -->
+  <section class="section section-soft">
+    <div class="container">
+      <div class="section-intro-center reveal reveal-up">
+        <span class="eyebrow">The actual product</span>
+        <h2>This is the workspace your team logs into.</h2>
+        <p class="lead">
+          One clean, branded environment with every major frontier model behind a single
+          secure login: Claude, GPT, Gemini, Grok, DeepSeek, Llama, and more. Your team
+          picks the best model for each task, and the security, coaching, and governance
+          ride along on every prompt.
+        </p>
+      </div>
+      <div class="reveal reveal-up reveal-delay-1" style="margin-top: var(--space-7);">
+        <VisualChatUI />
+      </div>
+      <p class="disclaimer" style="margin-top: var(--space-5); text-align: center;">
+        Interface recreation shown. Available models evolve as providers release new versions.
+      </p>
     </div>
   </section>
 
@@ -319,6 +342,14 @@ const faqs = [
 </PageLayout>
 
 <style>
+  .section-intro-center {
+    max-width: 64ch;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .section-intro-center h2 { margin-top: var(--space-3); }
+  .section-intro-center .lead { margin: var(--space-4) auto 0; }
+
   /* Alternating pillar rows: copy + animated visual */
   .pillar-row {
     display: grid;

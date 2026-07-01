@@ -1,0 +1,231 @@
+---
+/**
+ * VisualChatUI — faithful recreation of the actual Fortify AI workspace
+ * (the i-NETT-branded chat clients log into), including the model picker
+ * showing every major frontier model in one governed environment.
+ * Pure HTML/CSS, decorative (aria-hidden), reduced-motion safe.
+ * History items are sanitized placeholders; model roster mirrors the
+ * real product.
+ */
+---
+<div class="vcu" aria-hidden="true">
+  <div class="vcu__frame">
+    <!-- sidebar -->
+    <aside class="vcu__side">
+      <div class="vcu__brand">
+        <svg viewBox="0 0 34 22" width="30" height="20">
+          <path d="M10 20 a8 8 0 0 1 -1 -15.9 a10 10 0 0 1 18.6 2.6 a6.5 6.5 0 0 1 -1.4 13.3 z" fill="none" stroke="#1B5EBE" stroke-width="2.4"/>
+        </svg>
+        <b>i-NETT</b>
+      </div>
+      <div class="vcu__newchat">+ New chat</div>
+      <nav class="vcu__nav">
+        <span>&#128269; Search</span>
+        <span>&#9881; Studio</span>
+        <span>&#10024; Experts</span>
+        <span>&#129302; Agents</span>
+      </nav>
+      <div class="vcu__hist">
+        <em>Today</em>
+        <span>Good morning brief</span>
+        <span>Rewrite client proposal</span>
+        <em>Previous 7 days</em>
+        <span>SharePoint folder cleanup</span>
+        <span>Security update deadline</span>
+      </div>
+    </aside>
+
+    <!-- main panel -->
+    <div class="vcu__main">
+      <p class="vcu__hello">Nick has entered the chat.</p>
+
+      <div class="vcu__inputcard">
+        <p class="vcu__placeholder">Ask anything&hellip; <span class="vcu__caret"></span></p>
+        <div class="vcu__inputbar">
+          <span class="vcu__plus">+</span>
+          <span class="vcu__model">Claude Opus 4.8 <i>&#9662;</i></span>
+          <span class="vcu__ready">Ready when you are.</span>
+          <span class="vcu__send">&#8593;</span>
+        </div>
+      </div>
+
+      <div class="vcu__chips">
+        <span>Summarize</span><span>Analyze</span><span>Draft</span><span>Brainstorm</span><span>Explain</span>
+      </div>
+
+      <!-- model picker (the money shot) -->
+      <div class="vcu__models">
+        <em>Models</em>
+        <div class="vcu__mrow"><b>Claude Opus 4.8</b><span class="vcu__check">&#10003;</span><i>Web search</i><i>Reasoning</i></div>
+        <div class="vcu__mrow"><b>Claude Sonnet 5</b><i>Web search</i><i>Reasoning</i></div>
+        <div class="vcu__mrow"><b>GPT-5.5</b><i>Web search</i><i>Reasoning</i></div>
+        <div class="vcu__mrow"><b>Gemini 3.1 Pro</b><i>Web search</i><i>Reasoning</i></div>
+        <div class="vcu__mrow"><b>Grok 4.20</b><i>Web search</i><i>Reasoning</i></div>
+        <div class="vcu__mrow"><b>Claude Haiku 4.5</b><i>Web search</i><i>Reasoning</i></div>
+        <div class="vcu__mrow"><b>DeepSeek V4 Pro</b><i>Web search</i><i>Reasoning</i></div>
+        <div class="vcu__mrow"><b>Llama 4 Maverick</b><i>Web search</i></div>
+        <div class="vcu__mrow"><b>Kimi K2.7 Code</b><i>Web search</i><i>Reasoning</i></div>
+        <div class="vcu__mrow vcu__mrow--fade"><b>Qwen3.7 Plus</b><i>Web search</i><i>Reasoning</i></div>
+        <span class="vcu__more">+ more, all in one secure login</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .vcu {
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+    filter: drop-shadow(0 30px 60px rgba(10, 37, 64, 0.25));
+  }
+  .vcu__frame {
+    position: relative;
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    min-height: 400px;
+    font-size: 0.72rem;
+    line-height: 1.4;
+  }
+  @media (max-width: 640px) {
+    .vcu__frame { grid-template-columns: 1fr; }
+    .vcu__side { display: none; }
+  }
+
+  /* Sidebar */
+  .vcu__side {
+    background: #F7F8FA;
+    border-right: 1px solid var(--color-border);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .vcu__brand { display: flex; align-items: center; gap: 6px; }
+  .vcu__brand b { font-size: 0.9rem; letter-spacing: 0.01em; color: #101828; }
+  .vcu__newchat {
+    background: #ECEEF2; border-radius: 8px;
+    padding: 0.5em 0.8em; font-weight: 600; color: #101828;
+  }
+  .vcu__nav { display: grid; gap: 0.65em; color: #4A5A6E; padding-left: 2px; }
+  .vcu__hist { display: grid; gap: 0.5em; color: #4A5A6E; }
+  .vcu__hist em {
+    font-style: normal; font-size: 0.62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.07em; color: #98A2B3;
+    margin-top: 0.4em;
+  }
+  .vcu__hist span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* Main */
+  .vcu__main {
+    position: relative;
+    padding: var(--space-7) var(--space-5) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-4);
+  }
+  .vcu__hello {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #101828;
+    letter-spacing: -0.02em;
+  }
+  .vcu__inputcard {
+    width: 100%;
+    max-width: 430px;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 14px;
+    box-shadow: 0 6px 22px rgba(10,37,64,0.07);
+    padding: var(--space-4);
+  }
+  .vcu__placeholder { color: #98A2B3; margin-bottom: var(--space-5); }
+  .vcu__caret {
+    display: inline-block; width: 1px; height: 0.95em;
+    background: #667085; vertical-align: -0.15em;
+    animation: vcu-blink 1.1s steps(1) infinite;
+  }
+  @keyframes vcu-blink { 50% { opacity: 0; } }
+  .vcu__inputbar { display: flex; align-items: center; gap: 10px; }
+  .vcu__plus { color: #667085; font-size: 1rem; }
+  .vcu__model {
+    border: 1px solid var(--color-border); border-radius: 999px;
+    padding: 0.3em 0.75em; font-weight: 700; color: #101828;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(0,180,255,0.14);
+  }
+  .vcu__model i { font-style: normal; color: #667085; }
+  .vcu__ready { margin-left: auto; color: #98A2B3; font-size: 0.68rem; }
+  .vcu__send {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #101828; color: #fff;
+    display: grid; place-items: center; font-size: 0.8rem;
+    animation: vcu-pulse 2.6s ease-out infinite;
+  }
+  @keyframes vcu-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(16,24,40,0.35); }
+    70% { box-shadow: 0 0 0 8px rgba(16,24,40,0); }
+    100% { box-shadow: 0 0 0 0 rgba(16,24,40,0); }
+  }
+  .vcu__chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .vcu__chips span {
+    border: 1px solid var(--color-border); border-radius: 999px;
+    padding: 0.32em 0.85em; color: #4A5A6E; background: #fff;
+  }
+
+  /* Model picker panel */
+  .vcu__models {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    width: 235px;
+    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 18px 44px rgba(10,37,64,0.18);
+    padding: var(--space-3);
+    display: grid;
+    gap: 2px;
+    animation: vcu-panel 900ms var(--ease-out) 600ms both;
+  }
+  @keyframes vcu-panel {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (max-width: 900px) { .vcu__models { display: none; } }
+  .vcu__models em {
+    font-style: normal; font-size: 0.62rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.07em; color: #98A2B3;
+    margin-bottom: 4px;
+  }
+  .vcu__mrow {
+    display: flex; align-items: center; gap: 5px;
+    padding: 0.28em 0.4em; border-radius: 6px;
+  }
+  .vcu__mrow:first-of-type { background: #F2FAFF; }
+  .vcu__mrow b { font-weight: 600; color: #101828; margin-right: auto; white-space: nowrap; }
+  .vcu__mrow i {
+    font-style: normal; font-size: 0.56rem;
+    background: #F2F4F7; color: #667085;
+    border-radius: 999px; padding: 0.15em 0.55em;
+    white-space: nowrap;
+  }
+  .vcu__check { color: var(--color-accent-500); font-weight: 700; }
+  .vcu__mrow--fade { opacity: 0.45; }
+  .vcu__more {
+    font-size: 0.62rem; color: var(--color-accent-500);
+    font-weight: 600; padding: 0.3em 0.4em 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vcu__caret, .vcu__send { animation: none; }
+    .vcu__models { animation: none; opacity: 1; }
+  }
+</style>
