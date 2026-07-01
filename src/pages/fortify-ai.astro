@@ -2,6 +2,10 @@
 import PageLayout from '@layouts/PageLayout.astro';
 import FAQ from '@components/FAQ.astro';
 import AnswerBlock from '@components/AnswerBlock.astro';
+import VisualPromptCoach from '@components/visuals/VisualPromptCoach.astro';
+import VisualWorkflowSpread from '@components/visuals/VisualWorkflowSpread.astro';
+import VisualAgentFlow from '@components/visuals/VisualAgentFlow.astro';
+import VisualSecurityLayers from '@components/visuals/VisualSecurityLayers.astro';
 import { SITE } from '@lib/site';
 
 const breadcrumbs = [
@@ -58,12 +62,172 @@ const faqs = [
     </div>
   </section>
 
+  <!-- PILLAR 1: PROMPT COACH -->
+  <section class="section">
+    <div class="container">
+      <div class="pillar-row">
+        <div class="pillar-row__copy reveal reveal-left">
+          <span class="eyebrow">Pillar 01 &middot; A coach in every prompt</span>
+          <h2>Watch a vague prompt become a great one.</h2>
+          <p class="lead">
+            Most of the value of AI is lost between a good intention and a vague prompt.
+            Fortify AI builds behavioral-science coaching into every interaction, guiding
+            each person to a better prompt in the moment and learning their patterns over
+            time. Fewer bad answers, less rework, no prompt-engineering course required.
+          </p>
+          <div class="stat-strip">
+            <div class="stat-strip__item"><span class="stat-strip__num">up to 80%</span><span class="stat-strip__label">better prompts</span></div>
+            <div class="stat-strip__item"><span class="stat-strip__num">up to 73%</span><span class="stat-strip__label">better AI output</span></div>
+            <div class="stat-strip__item"><span class="stat-strip__num">~65%</span><span class="stat-strip__label">reduced risk</span></div>
+            <div class="stat-strip__item"><span class="stat-strip__num">~54%</span><span class="stat-strip__label">fewer tokens used</span></div>
+          </div>
+          <p class="disclaimer">
+            Figures reflect demonstrated results of the behavioral-science coaching technology built into Fortify AI. Actual results vary by team, workflow, and adoption.
+          </p>
+        </div>
+        <div class="pillar-row__visual reveal reveal-right reveal-delay-1">
+          <VisualPromptCoach />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PILLAR 2: WORKFLOWS THAT SPREAD -->
+  <section class="section section-soft">
+    <div class="container">
+      <div class="pillar-row pillar-row--flip">
+        <div class="pillar-row__visual reveal reveal-left reveal-delay-1">
+          <VisualWorkflowSpread />
+        </div>
+        <div class="pillar-row__copy reveal reveal-right">
+          <span class="eyebrow">Pillar 02 &middot; Workflows and skills that spread</span>
+          <h2>One person&rsquo;s win becomes everyone&rsquo;s standard.</h2>
+          <p class="lead">
+            In most companies, when one person finds a smarter way to work with AI, that
+            knowledge stays locked in their head. With Fortify AI, a winning workflow or
+            skill is packaged and shared with everyone who does that same job, so your
+            best people set the bar and the whole team clears it.
+          </p>
+          <ul class="pillar-points">
+            <li>Proven workflows and skills shared across your team</li>
+            <li>Less duplicated effort, faster ramp for new hires</li>
+            <li>Compounding, organization-wide leverage a standalone chatbot cannot deliver</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PILLAR 3: CUSTOM AGENTS -->
+  <section class="section">
+    <div class="container">
+      <div class="pillar-row">
+        <div class="pillar-row__copy reveal reveal-left">
+          <span class="eyebrow">Pillar 03 &middot; Custom agents, built with you</span>
+          <h2>Agents that take real work off your team&rsquo;s plate.</h2>
+          <p class="lead">
+            Beyond day-to-day AI, we build custom agents that handle a process end to
+            end: answering from your knowledge base, integrating with the systems you
+            already use, and delivering results through chat, email, or scheduled runs.
+            We design and build each one with you, around how your business actually runs.
+          </p>
+          <ul class="pillar-points">
+            <li>No-code agents working 24/7 in your environment</li>
+            <li>Built with you around your real workflows</li>
+            <li>One-time build cost, then simple token-based monthly pricing</li>
+          </ul>
+          <div class="pillar-cta">
+            <a href={SITE.bookingUrl} class="btn btn-accent" target="_blank" rel="noopener">
+              Scope your first agent
+              <span aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </div>
+        <div class="pillar-row__visual reveal reveal-right reveal-delay-1">
+          <VisualAgentFlow />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="section section-soft">
+    <div class="container container-narrow">
+      <span class="eyebrow reveal reveal-fade">Simple, transparent pricing</span>
+      <h2 class="reveal reveal-up">Pay for what you use, with no surprises.</h2>
+      <p class="lead reveal reveal-up reveal-delay-1">
+        Fortify AI pricing is built to be predictable. There is a one-time cost to build
+        each custom agent with you, and after that you pay only for monthly token usage.
+        We assess your expected usage up front, so you know the cost before you commit.
+      </p>
+      <div class="grid grid-3" style="margin-top: var(--space-7);">
+        <div class="card reveal reveal-up reveal-delay-1">
+          <h3>One-time build</h3>
+          <p>A single, reasonable cost to design and build each agent with you, around how your business actually works.</p>
+        </div>
+        <div class="card reveal reveal-up reveal-delay-2">
+          <h3>Monthly token usage</h3>
+          <p>After that, you pay only for what you use. Our cost-cutting initiatives and token-reduction policies, processes, and procedures keep usage lean, so most agents run about $500 to $1,000 per month, usually considerably less than agents configured without an expert partner. Only unusually heavy usage goes higher, which is uncommon.</p>
+        </div>
+        <div class="card reveal reveal-up reveal-delay-3">
+          <h3>Assessed up front</h3>
+          <p>We estimate your expected token usage during the readiness assessment, so the monthly number is predictable, not a surprise on your invoice.</p>
+        </div>
+      </div>
+      <p class="disclaimer" style="margin-top: var(--space-5);">
+        Typical agent cost ranges are illustrative. Your actual cost depends on usage and
+        scope, which we estimate with you before you commit.
+      </p>
+    </div>
+  </section>
+
+  <!-- SECURE BY DESIGN -->
+  <section class="section section-dark">
+    <div class="container">
+      <div class="pillar-row pillar-row--flip">
+        <div class="pillar-row__visual reveal reveal-left reveal-delay-1">
+          <VisualSecurityLayers />
+        </div>
+        <div class="pillar-row__copy reveal reveal-right">
+          <span class="eyebrow">Secure by design</span>
+          <h2>Protection built into every interaction, not bolted on after.</h2>
+          <p class="lead">
+            Most AI tools ask you to trust a policy. Fortify AI enforces protection at the
+            infrastructure level, so security holds whether or not anyone is watching.
+          </p>
+        </div>
+      </div>
+      <div class="grid grid-3" style="margin-top: var(--space-7);">
+        <div class="card card-dark reveal reveal-up reveal-delay-1">
+          <span class="card-num">01</span>
+          <h3>Screened on the way in</h3>
+          <p>Deterministic pre-processing redacts personal information and enforces keyword blocklists before a request ever reaches a model.</p>
+        </div>
+        <div class="card card-dark reveal reveal-up reveal-delay-2">
+          <span class="card-num">02</span>
+          <h3>Analyzed in real time</h3>
+          <p>Guardrail and intent models evaluate every interaction, catching prompt injection, misuse, and unsafe requests as they happen.</p>
+        </div>
+        <div class="card card-dark reveal reveal-up reveal-delay-3">
+          <span class="card-num">03</span>
+          <h3>Contained at execution</h3>
+          <p>Agents run in sandboxed, least-privilege environments, so automation can act on your behalf without ever overreaching.</p>
+        </div>
+      </div>
+      <p class="lead reveal reveal-up" style="margin-top: var(--space-7);">
+        Layered on top of Zero Data Retention and tenant isolation, and aligned with
+        SOC 2, HIPAA, GDPR, and ISO 42001 AI governance, this is the kind of posture that
+        makes a strong cyber insurance position possible.
+      </p>
+    </div>
+  </section>
+
   <!-- WHAT IT IS -->
   <section class="section">
     <div class="container">
       <div class="grid grid-2 feat-grid">
-        <div>
-          <span class="eyebrow">What it is</span>
+        <div class="reveal reveal-left">
+          <span class="eyebrow">Everything included</span>
           <h2>A configured, operated, and secured AI environment for your organization.</h2>
           <p class="lead">
             Fortify AI is not a license bundle. It is the deployment, the security, the
@@ -73,109 +237,48 @@ const faqs = [
           </p>
         </div>
         <ul class="feat-list">
-          <li><strong>No-code AI agents.</strong> Agents that automate workflows, answer from your knowledge base, and integrate with your systems, delivered through chat, email, API, or scheduled runs.</li>
-          <li><strong>All major models, one governed environment.</strong> Use the best frontier model for each task without juggling separate accounts or exposing data.</li>
-          <li><strong>Zero Data Retention.</strong> Queries are processed and then discarded. Your data is never stored to train anyone's model, and never shared across clients.</li>
-          <li><strong>Dedicated tenant and role-based access.</strong> Your environment, your audit trail, with granular control for every role.</li>
-          <li><strong>Behavioral-science coaching.</strong> Real-time, on-prompt guidance that lifts output quality and cuts rework for every user.</li>
-          <li><strong>Shared workflows and skills.</strong> When one person builds a winning workflow or skill, it is packaged and shared with everyone who does that job, so the whole team levels up together.</li>
-          <li><strong>Managed operations.</strong> Monitoring, updates, model evaluation, and quarterly compliance review by the i-NETT team.</li>
+          <li class="reveal reveal-up reveal-delay-1"><strong>No-code AI agents.</strong> Agents that automate workflows, answer from your knowledge base, and integrate with your systems, delivered through chat, email, API, or scheduled runs.</li>
+          <li class="reveal reveal-up reveal-delay-2"><strong>All major models, one governed environment.</strong> Use the best frontier model for each task without juggling separate accounts or exposing data.</li>
+          <li class="reveal reveal-up reveal-delay-3"><strong>Zero Data Retention.</strong> Queries are processed and then discarded. Your data is never stored to train anyone's model, and never shared across clients.</li>
+          <li class="reveal reveal-up reveal-delay-4"><strong>Dedicated tenant and role-based access.</strong> Your environment, your audit trail, with granular control for every role.</li>
+          <li class="reveal reveal-up reveal-delay-5"><strong>Behavioral-science coaching.</strong> Real-time, on-prompt guidance that lifts output quality and cuts rework for every user.</li>
+          <li class="reveal reveal-up reveal-delay-6"><strong>Shared workflows and skills.</strong> When one person builds a winning workflow or skill, it is packaged and shared with everyone who does that job, so the whole team levels up together.</li>
         </ul>
       </div>
-    </div>
-  </section>
-
-  <!-- SECURE BY DESIGN -->
-  <section class="section section-dark">
-    <div class="container">
-      <div class="section-intro">
-        <span class="eyebrow">Secure by design</span>
-        <h2>Protection built into every interaction, not bolted on after.</h2>
-        <p class="lead">
-          Most AI tools ask you to trust a policy. Fortify AI enforces protection at the
-          infrastructure level, so security holds whether or not anyone is watching.
-        </p>
-      </div>
-      <div class="grid grid-3" style="margin-top: var(--space-7);">
-        <div class="card card-dark">
-          <span class="card-num">01</span>
-          <h3>Screened on the way in</h3>
-          <p>Deterministic pre-processing redacts personal information and enforces keyword blocklists before a request ever reaches a model.</p>
-        </div>
-        <div class="card card-dark">
-          <span class="card-num">02</span>
-          <h3>Analyzed in real time</h3>
-          <p>Guardrail and intent models evaluate every interaction, catching prompt injection, misuse, and unsafe requests as they happen.</p>
-        </div>
-        <div class="card card-dark">
-          <span class="card-num">03</span>
-          <h3>Contained at execution</h3>
-          <p>Agents run in sandboxed, least-privilege environments, so automation can act on your behalf without ever overreaching.</p>
-        </div>
-      </div>
-      <p class="lead" style="margin-top: var(--space-7);">
-        Layered on top of Zero Data Retention and tenant isolation, and aligned with
-        SOC 2, HIPAA, GDPR, and ISO 42001 AI governance, this is the kind of posture that
-        makes a strong cyber insurance position possible.
-      </p>
-    </div>
-  </section>
-
-  <!-- COACHING -->
-  <section class="section">
-    <div class="container container-narrow">
-      <span class="eyebrow">A coach in every prompt</span>
-      <h2>It is not about how well the AI works. It is about how well your people work with it.</h2>
-      <p class="lead">
-        Most of the value of AI is lost between a good intention and a vague prompt.
-        Fortify AI builds behavioral-science coaching into every interaction, guiding each
-        person to a better prompt in the moment and learning their patterns over time.
-        That means fewer bad answers, less rework, and real productivity, without sending
-        anyone to a prompt-engineering course.
-      </p>
-      <div class="stat-strip">
-        <div class="stat-strip__item"><span class="stat-strip__num">up to 80%</span><span class="stat-strip__label">better prompts</span></div>
-        <div class="stat-strip__item"><span class="stat-strip__num">up to 73%</span><span class="stat-strip__label">better AI output</span></div>
-        <div class="stat-strip__item"><span class="stat-strip__num">~65%</span><span class="stat-strip__label">reduced risk</span></div>
-        <div class="stat-strip__item"><span class="stat-strip__num">~54%</span><span class="stat-strip__label">fewer tokens used</span></div>
-      </div>
-      <p class="disclaimer">
-        Figures reflect demonstrated results of the behavioral-science coaching technology built into Fortify AI. Actual results vary by team, workflow, and adoption.
-      </p>
     </div>
   </section>
 
   <!-- WHAT IT DOES -->
   <section class="section section-soft">
     <div class="container">
-      <span class="eyebrow">What it does</span>
-      <h2>The workflows we ship first.</h2>
-      <p class="lead">
+      <span class="eyebrow reveal reveal-fade">What it does</span>
+      <h2 class="reveal reveal-up">The workflows we ship first.</h2>
+      <p class="lead reveal reveal-up reveal-delay-1">
         Our deployment team starts with the workflows that return the most value in the
         first 90 days. We expand from there as your team builds confidence.
       </p>
       <div class="grid grid-3" style="margin-top: var(--space-7);">
-        <div class="card">
+        <div class="card reveal reveal-up reveal-delay-1">
           <h3>Documentation</h3>
           <p>Reports, notes, memos, write-ups, and deliverables. Drafted from your inputs, reviewed by your team.</p>
         </div>
-        <div class="card">
+        <div class="card reveal reveal-up reveal-delay-2">
           <h3>Knowledge retrieval</h3>
           <p>Your organization&rsquo;s playbooks, prior work, policies, and reference material made searchable and conversational, scoped to authorized users.</p>
         </div>
-        <div class="card">
+        <div class="card reveal reveal-up reveal-delay-3">
           <h3>Intake and triage</h3>
           <p>Incoming requests classified, summarized, and routed. Standard responses drafted for review before they go out.</p>
         </div>
-        <div class="card">
+        <div class="card reveal reveal-up reveal-delay-1">
           <h3>Summarization</h3>
           <p>Long-form documents, meeting transcripts, and email threads reduced to action-ready summaries with citation back to source.</p>
         </div>
-        <div class="card">
+        <div class="card reveal reveal-up reveal-delay-2">
           <h3>Customer communication</h3>
           <p>Draft replies, status updates, and follow-ups that match your voice and your customer&rsquo;s history. Always reviewed before send.</p>
         </div>
-        <div class="card">
+        <div class="card reveal reveal-up reveal-delay-3">
           <h3>Reporting and analysis</h3>
           <p>Operational and financial reporting pulled from your authorized data sources, with natural-language drill-down for your leadership team.</p>
         </div>
@@ -183,49 +286,18 @@ const faqs = [
     </div>
   </section>
 
-  <!-- PRICING -->
-  <section class="section">
-    <div class="container container-narrow">
-      <span class="eyebrow">Simple, transparent pricing</span>
-      <h2>Pay for what you use, with no surprises.</h2>
-      <p class="lead">
-        Fortify AI pricing is built to be predictable. There is a one-time cost to build
-        each custom agent with you, and after that you pay only for monthly token usage.
-        We assess your expected usage up front, so you know the cost before you commit.
-      </p>
-      <div class="grid grid-3" style="margin-top: var(--space-7);">
-        <div class="card">
-          <h3>One-time build</h3>
-          <p>A single, reasonable cost to design and build each agent with you, around how your business actually works.</p>
-        </div>
-        <div class="card">
-          <h3>Monthly token usage</h3>
-          <p>After that, you pay only for what you use. Our cost-cutting initiatives and token-reduction policies, processes, and procedures keep usage lean, so most agents run about $500 to $1,000 per month, usually considerably less than agents configured without an expert partner. Only unusually heavy usage goes higher, which is uncommon.</p>
-        </div>
-        <div class="card">
-          <h3>Assessed up front</h3>
-          <p>We estimate your expected token usage during the readiness assessment, so the monthly number is predictable, not a surprise on your invoice.</p>
-        </div>
-      </div>
-      <p class="disclaimer">
-        Typical agent cost ranges are illustrative. Your actual cost depends on usage and
-        scope, which we estimate with you before you commit.
-      </p>
-    </div>
-  </section>
-
   <!-- COMPLIANCE BLOCK -->
   <section class="section">
     <div class="container container-narrow">
-      <span class="eyebrow">Compliance posture</span>
-      <h2>Built for HIPAA, GDPR, SOC 2, CCPA, and ISO 42001. Reviewed by your compliance team.</h2>
-      <p class="lead">
+      <span class="eyebrow reveal reveal-fade">Compliance posture</span>
+      <h2 class="reveal reveal-up">Built for HIPAA, GDPR, SOC 2, CCPA, and ISO 42001. Reviewed by your compliance team.</h2>
+      <p class="lead reveal reveal-up reveal-delay-1">
         Every Fortify AI deployment is configured to the regulatory environment your
         organization operates inside. Configuration is documented. Audit logging is enabled
         by default. Your compliance team reviews the deployment before it goes live and
         again every quarter.
       </p>
-      <div class="callout">
+      <div class="callout reveal reveal-up reveal-delay-2">
         <p class="callout__lead">
           A Lloyd&rsquo;s of London cyber insurance partner.
         </p>
@@ -247,6 +319,48 @@ const faqs = [
 </PageLayout>
 
 <style>
+  /* Alternating pillar rows: copy + animated visual */
+  .pillar-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-7);
+    align-items: center;
+  }
+  @media (min-width: 900px) {
+    .pillar-row { grid-template-columns: 1.1fr 0.9fr; gap: var(--space-9); }
+    .pillar-row--flip { grid-template-columns: 0.9fr 1.1fr; }
+  }
+  .pillar-row__visual { display: flex; justify-content: center; }
+  /* Mobile: visual first so the animation hooks before the copy */
+  .pillar-row__visual { order: -1; }
+  @media (min-width: 900px) { .pillar-row__visual { order: 0; } }
+
+  .pillar-row__copy h2 { margin-top: var(--space-3); }
+  .pillar-row__copy .lead { margin-top: var(--space-4); }
+  .pillar-points {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-5) 0 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .pillar-points li {
+    position: relative;
+    padding-left: 1.75em;
+    line-height: var(--lh-normal);
+  }
+  .pillar-points li::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0.42em;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at center, var(--color-accent-500) 0%, var(--color-accent-500) 34%, rgba(0,180,255,0.16) 40%, rgba(0,180,255,0.16) 100%);
+  }
+  .section-dark .pillar-points li { color: var(--color-text-on-dark-soft); }
+  .pillar-cta { margin-top: var(--space-6); }
+
   .feat-grid { gap: var(--space-7); align-items: start; }
   .feat-list {
     list-style: none;
@@ -265,13 +379,13 @@ const faqs = [
   .stat-strip {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-4);
-    margin: var(--space-7) 0 var(--space-4);
+    gap: var(--space-3);
+    margin: var(--space-6) 0 var(--space-4);
   }
   @media (min-width: 640px) { .stat-strip { grid-template-columns: repeat(4, 1fr); } }
   .stat-strip__item {
     text-align: center;
-    padding: var(--space-5) var(--space-3);
+    padding: var(--space-4) var(--space-2);
     background: var(--color-bg-soft);
     border-radius: var(--radius-lg);
     border: 1px solid var(--color-border);
@@ -280,14 +394,14 @@ const faqs = [
     display: block;
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: var(--fs-xl);
+    font-size: var(--fs-lg);
     color: var(--color-ink-800);
     letter-spacing: -0.02em;
   }
   .stat-strip__label {
     display: block;
     margin-top: var(--space-1);
-    font-size: var(--fs-sm);
+    font-size: var(--fs-xs);
     color: var(--color-text-muted);
   }
 

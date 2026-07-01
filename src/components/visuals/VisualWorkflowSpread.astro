@@ -1,0 +1,181 @@
+---
+/**
+ * VisualWorkflowSpread — one teammate's workflow win spreads to the team.
+ * A single node lights up, pulses travel down the connection lines, and
+ * the rest of the team lights up one by one. Loops. CSS/SVG only,
+ * decorative (aria-hidden), reduced-motion shows everyone lit.
+ */
+---
+<div class="vws" aria-hidden="true">
+  <svg viewBox="0 0 440 320" xmlns="http://www.w3.org/2000/svg">
+    <!-- connection lines -->
+    <g class="vws__lines" fill="none" stroke-width="1.5">
+      <path class="vws__line vws__line--1" d="M220 96 L110 200" />
+      <path class="vws__line vws__line--2" d="M220 96 L220 214" />
+      <path class="vws__line vws__line--3" d="M220 96 L330 200" />
+      <path class="vws__line vws__line--4" d="M110 200 L60 268" />
+      <path class="vws__line vws__line--5" d="M330 200 L380 268" />
+    </g>
+
+    <!-- traveling pulses -->
+    <circle class="vws__pulse vws__pulse--1" r="4" />
+    <circle class="vws__pulse vws__pulse--2" r="4" />
+    <circle class="vws__pulse vws__pulse--3" r="4" />
+
+    <!-- origin node -->
+    <g class="vws__node vws__node--origin">
+      <circle cx="220" cy="76" r="26" class="vws__node-bg" />
+      <circle cx="220" cy="76" r="26" class="vws__node-ring" />
+      <path d="M220 64 a7 7 0 1 1 0 14 a7 7 0 1 1 0 -14 M206 92 c2 -8 8 -11 14 -11 c6 0 12 3 14 11" class="vws__node-person" />
+      <circle cx="220" cy="76" r="34" class="vws__halo" />
+    </g>
+
+    <!-- teammate nodes -->
+    <g class="vws__node vws__node--t1">
+      <circle cx="110" cy="212" r="22" class="vws__node-bg" />
+      <circle cx="110" cy="212" r="22" class="vws__node-ring" />
+      <path d="M110 202 a6 6 0 1 1 0 12 a6 6 0 1 1 0 -12 M98 226 c2 -7 7 -9 12 -9 c5 0 10 2 12 9" class="vws__node-person" />
+    </g>
+    <g class="vws__node vws__node--t2">
+      <circle cx="220" cy="236" r="22" class="vws__node-bg" />
+      <circle cx="220" cy="236" r="22" class="vws__node-ring" />
+      <path d="M220 226 a6 6 0 1 1 0 12 a6 6 0 1 1 0 -12 M208 250 c2 -7 7 -9 12 -9 c5 0 10 2 12 9" class="vws__node-person" />
+    </g>
+    <g class="vws__node vws__node--t3">
+      <circle cx="330" cy="212" r="22" class="vws__node-bg" />
+      <circle cx="330" cy="212" r="22" class="vws__node-ring" />
+      <path d="M330 202 a6 6 0 1 1 0 12 a6 6 0 1 1 0 -12 M318 226 c2 -7 7 -9 12 -9 c5 0 10 2 12 9" class="vws__node-person" />
+    </g>
+    <g class="vws__node vws__node--t4">
+      <circle cx="60" cy="284" r="17" class="vws__node-bg" />
+      <circle cx="60" cy="284" r="17" class="vws__node-ring" />
+      <path d="M60 276 a5 5 0 1 1 0 10 a5 5 0 1 1 0 -10 M50 295 c2 -6 6 -7 10 -7 c4 0 8 1 10 7" class="vws__node-person" />
+    </g>
+    <g class="vws__node vws__node--t5">
+      <circle cx="380" cy="284" r="17" class="vws__node-bg" />
+      <circle cx="380" cy="284" r="17" class="vws__node-ring" />
+      <path d="M380 276 a5 5 0 1 1 0 10 a5 5 0 1 1 0 -10 M370 295 c2 -6 6 -7 10 -7 c4 0 8 1 10 7" class="vws__node-person" />
+    </g>
+
+    <!-- badge over origin -->
+    <g class="vws__badge">
+      <rect x="252" y="46" rx="10" width="128" height="24" />
+      <text x="316" y="62" text-anchor="middle">Workflow shared</text>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .vws {
+    --loop: 8s;
+    background: linear-gradient(165deg, #0e1c2c 0%, #0a1420 100%);
+    border: 1px solid rgba(0,180,255,0.22);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4);
+    box-shadow: 0 24px 60px -20px rgba(0,0,0,0.55), 0 0 40px -18px rgba(0,180,255,0.45);
+    max-width: 460px;
+    width: 100%;
+  }
+  .vws svg { width: 100%; height: auto; display: block; }
+
+  .vws__line { stroke: rgba(140,170,205,0.22); }
+  .vws__node-bg { fill: rgba(255,255,255,0.05); }
+  .vws__node-ring { fill: none; stroke: rgba(140,170,205,0.35); stroke-width: 1.5; }
+  .vws__node-person { fill: none; stroke: rgba(183,198,216,0.75); stroke-width: 2; stroke-linecap: round; }
+
+  /* Origin lights immediately */
+  .vws__node--origin .vws__node-bg { fill: rgba(0,180,255,0.22); animation: vws-glow var(--loop) both infinite; }
+  .vws__node--origin .vws__node-ring { stroke: #00E0FF; }
+  .vws__node--origin .vws__node-person { stroke: #fff; }
+  .vws__halo {
+    fill: none; stroke: rgba(0,224,255,0.5); stroke-width: 1.5;
+    animation: vws-halo var(--loop) ease-out infinite;
+    transform-origin: 220px 76px;
+  }
+  @keyframes vws-halo {
+    0%, 8% { transform: scale(0.8); opacity: 0; }
+    16% { opacity: 0.9; }
+    34%, 100% { transform: scale(1.5); opacity: 0; }
+  }
+  @keyframes vws-glow {
+    0% { fill: rgba(255,255,255,0.05); }
+    8%, 100% { fill: rgba(0,180,255,0.22); }
+  }
+
+  /* Pulses travel along lines (line 1, 2, 3) */
+  .vws__pulse { fill: #00E0FF; opacity: 0; }
+  .vws__pulse--1 { animation: vws-p1 var(--loop) ease-in-out infinite; }
+  .vws__pulse--2 { animation: vws-p2 var(--loop) ease-in-out infinite; }
+  .vws__pulse--3 { animation: vws-p3 var(--loop) ease-in-out infinite; }
+  @keyframes vws-p1 {
+    0%, 18% { transform: translate(220px, 96px); opacity: 0; }
+    22% { opacity: 1; }
+    38% { transform: translate(110px, 200px); opacity: 1; }
+    42%, 100% { transform: translate(110px, 200px); opacity: 0; }
+  }
+  @keyframes vws-p2 {
+    0%, 22% { transform: translate(220px, 96px); opacity: 0; }
+    26% { opacity: 1; }
+    42% { transform: translate(220px, 214px); opacity: 1; }
+    46%, 100% { transform: translate(220px, 214px); opacity: 0; }
+  }
+  @keyframes vws-p3 {
+    0%, 26% { transform: translate(220px, 96px); opacity: 0; }
+    30% { opacity: 1; }
+    46% { transform: translate(330px, 200px); opacity: 1; }
+    50%, 100% { transform: translate(330px, 200px); opacity: 0; }
+  }
+
+  /* Lines brighten as pulses pass, teammates light up in order */
+  .vws__line--1 { animation: vws-line var(--loop) both infinite; animation-delay: 0s; }
+  .vws__line--2, .vws__line--3 { animation: vws-line var(--loop) both infinite; }
+  .vws__line--4, .vws__line--5 { animation: vws-line var(--loop) both infinite; }
+
+  @keyframes vws-line {
+    0%, 20% { stroke: rgba(140,170,205,0.22); }
+    50%, 100% { stroke: rgba(0,224,255,0.45); }
+  }
+
+  .vws__node--t1 .vws__node-bg { animation: vws-light var(--loop) both infinite; animation-delay: 0.2s; }
+  .vws__node--t2 .vws__node-bg { animation: vws-light var(--loop) both infinite; animation-delay: 0.5s; }
+  .vws__node--t3 .vws__node-bg { animation: vws-light var(--loop) both infinite; animation-delay: 0.8s; }
+  .vws__node--t4 .vws__node-bg { animation: vws-light var(--loop) both infinite; animation-delay: 1.4s; }
+  .vws__node--t5 .vws__node-bg { animation: vws-light var(--loop) both infinite; animation-delay: 1.7s; }
+  .vws__node--t1 .vws__node-ring, .vws__node--t2 .vws__node-ring, .vws__node--t3 .vws__node-ring,
+  .vws__node--t4 .vws__node-ring, .vws__node--t5 .vws__node-ring {
+    animation: vws-ring var(--loop) both infinite;
+  }
+  .vws__node--t1 .vws__node-ring { animation-delay: 0.2s; }
+  .vws__node--t2 .vws__node-ring { animation-delay: 0.5s; }
+  .vws__node--t3 .vws__node-ring { animation-delay: 0.8s; }
+  .vws__node--t4 .vws__node-ring { animation-delay: 1.4s; }
+  .vws__node--t5 .vws__node-ring { animation-delay: 1.7s; }
+  @keyframes vws-light {
+    0%, 38% { fill: rgba(255,255,255,0.05); }
+    46%, 92% { fill: rgba(0,180,255,0.20); }
+    100% { fill: rgba(0,180,255,0.20); }
+  }
+  @keyframes vws-ring {
+    0%, 38% { stroke: rgba(140,170,205,0.35); }
+    46%, 100% { stroke: rgba(0,224,255,0.8); }
+  }
+
+  .vws__badge rect { fill: rgba(0,180,255,0.14); stroke: rgba(0,224,255,0.4); }
+  .vws__badge text {
+    fill: #CFF2FF; font-size: 12px; font-weight: 600;
+    font-family: var(--font-sans);
+  }
+  .vws__badge { animation: vws-badge var(--loop) both infinite; }
+  @keyframes vws-badge {
+    0%, 10% { opacity: 0; transform: translateY(4px); }
+    16%, 100% { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vws * { animation: none !important; }
+    .vws__node-bg { fill: rgba(0,180,255,0.20); }
+    .vws__node-ring { stroke: rgba(0,224,255,0.8); }
+    .vws__badge { opacity: 1; }
+    .vws__pulse, .vws__halo { opacity: 0; }
+  }
+</style>

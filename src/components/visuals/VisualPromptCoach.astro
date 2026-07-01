@@ -1,0 +1,161 @@
+---
+/**
+ * VisualPromptCoach — animated demo of the coaching layer.
+ * A vague prompt appears, the coach suggests an upgrade, the improved
+ * prompt types in, and a quality meter fills. Loops forever. CSS-only,
+ * decorative (aria-hidden), reduced-motion shows the final frame.
+ */
+---
+<div class="vpc" aria-hidden="true">
+  <div class="vpc__chrome">
+    <span></span><span></span><span></span>
+    <em>Fortify AI &middot; prompt coach</em>
+  </div>
+
+  <div class="vpc__row vpc__row--user">
+    <div class="vpc__bubble vpc__bubble--vague">write something about our services</div>
+  </div>
+
+  <div class="vpc__row vpc__row--coach">
+    <div class="vpc__coachcard">
+      <span class="vpc__coachtag">
+        <svg viewBox="0 0 16 16" width="11" height="11"><path d="M8 1.5 l1.6 3.5 3.9 0.5 -2.9 2.6 0.8 3.8 -3.4 -2 -3.4 2 0.8 -3.8 -2.9 -2.6 3.9 -0.5 z" fill="currentColor"/></svg>
+        Coach
+      </span>
+      Add your audience, goal, and tone &mdash; try this:
+    </div>
+  </div>
+
+  <div class="vpc__row vpc__row--user">
+    <div class="vpc__bubble vpc__bubble--good">
+      <span class="vpc__typing">Write a 3-paragraph overview of our managed IT services for healthcare CFOs, focused on risk reduction, in a confident, plain-English tone.</span>
+    </div>
+  </div>
+
+  <div class="vpc__meter">
+    <span class="vpc__meter-label">Output quality</span>
+    <span class="vpc__meter-track"><span class="vpc__meter-fill"></span></span>
+    <span class="vpc__meter-pct">+73%</span>
+  </div>
+</div>
+
+<style>
+  .vpc {
+    --loop: 9s;
+    background: linear-gradient(165deg, #0e1c2c 0%, #0a1420 100%);
+    border: 1px solid rgba(0,180,255,0.22);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    box-shadow: 0 24px 60px -20px rgba(0,0,0,0.55), 0 0 40px -18px rgba(0,180,255,0.45);
+    display: grid;
+    gap: var(--space-4);
+    font-size: var(--fs-sm);
+    max-width: 460px;
+    width: 100%;
+  }
+  .vpc__chrome {
+    display: flex; align-items: center; gap: 6px;
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .vpc__chrome span { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.14); }
+  .vpc__chrome em {
+    margin-left: auto; font-style: normal;
+    font-family: var(--font-mono); font-size: 0.7rem;
+    color: rgba(183,198,216,0.55); letter-spacing: 0.04em;
+  }
+  .vpc__row { display: flex; }
+  .vpc__row--user { justify-content: flex-end; }
+  .vpc__bubble {
+    max-width: 85%;
+    padding: 0.6em 0.9em;
+    border-radius: 12px 12px 3px 12px;
+    line-height: 1.45;
+  }
+  .vpc__bubble--vague {
+    background: rgba(255,255,255,0.08);
+    color: rgba(220,232,244,0.85);
+    animation: vpc-in var(--loop) both infinite;
+  }
+  .vpc__row--coach { animation: vpc-coach var(--loop) both infinite; }
+  .vpc__coachcard {
+    background: rgba(0,180,255,0.10);
+    border: 1px solid rgba(0,224,255,0.35);
+    border-radius: 12px 12px 12px 3px;
+    padding: 0.6em 0.9em;
+    color: #cfe7f7;
+    line-height: 1.45;
+    max-width: 88%;
+  }
+  .vpc__coachtag {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--color-glow);
+    margin-right: 0.5em;
+  }
+  .vpc__bubble--good {
+    background: rgba(0,180,255,0.16);
+    border: 1px solid rgba(0,224,255,0.3);
+    color: #eaf5fc;
+    animation: vpc-good var(--loop) both infinite;
+  }
+  .vpc__typing {
+    display: inline-block;
+  }
+  .vpc__meter {
+    display: flex; align-items: center; gap: var(--space-3);
+    padding-top: var(--space-3);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    animation: vpc-meter-in var(--loop) both infinite;
+  }
+  .vpc__meter-label {
+    font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em;
+    color: rgba(183,198,216,0.6); white-space: nowrap;
+  }
+  .vpc__meter-track {
+    flex: 1; height: 6px; border-radius: 4px;
+    background: rgba(255,255,255,0.10); overflow: hidden;
+  }
+  .vpc__meter-fill {
+    display: block; height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, #00B4FF, #00E0FF);
+    transform-origin: left;
+    animation: vpc-fill var(--loop) both infinite;
+  }
+  .vpc__meter-pct {
+    font-family: var(--font-mono); font-weight: 700;
+    color: var(--color-glow); font-size: 0.8rem;
+  }
+
+  /* Timeline (9s loop):
+     0-8%   vague prompt appears
+     18%    coach card appears
+     36%    improved prompt appears
+     55-75% meter fills
+     92-100% hold then restart */
+  @keyframes vpc-in {
+    0% { opacity: 0; transform: translateY(8px); }
+    6%, 100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes vpc-coach {
+    0%, 14% { opacity: 0; transform: translateY(8px); }
+    20%, 100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes vpc-good {
+    0%, 32% { opacity: 0; transform: translateY(8px); }
+    38%, 100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes vpc-meter-in {
+    0%, 48% { opacity: 0; }
+    54%, 100% { opacity: 1; }
+  }
+  @keyframes vpc-fill {
+    0%, 52% { transform: scaleX(0.18); }
+    75%, 100% { transform: scaleX(0.91); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .vpc__bubble--vague, .vpc__row--coach, .vpc__bubble--good,
+    .vpc__meter { animation: none; opacity: 1; transform: none; }
+    .vpc__meter-fill { animation: none; transform: scaleX(0.91); }
+  }
+</style>

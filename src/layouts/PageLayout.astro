@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Breadcrumbs from '@components/Breadcrumbs.astro';
 import CTASection from '@components/CTASection.astro';
+import { SITE } from '@lib/site';
 
 interface BreadcrumbItem { name: string; url: string; }
 interface FaqItem { q: string; a: string; }
@@ -24,6 +25,7 @@ interface Props {
   person?: boolean;
   pageType?: 'WebPage' | 'WebApplication' | 'AboutPage' | 'ContactPage' | 'CollectionPage';
   hideFinalCta?: boolean;
+  heroCta?: boolean;
   speakable?: string[];
 }
 const {
@@ -40,6 +42,7 @@ const {
   person,
   pageType,
   hideFinalCta = false,
+  heroCta = true,
   speakable,
 } = Astro.props;
 ---
@@ -56,11 +59,24 @@ const {
   speakable={speakable}
 >
   <section class="page-header">
+    <div class="page-header__bg" aria-hidden="true">
+      <div class="page-header__grid"></div>
+      <span class="page-header__orb page-header__orb--a"></span>
+      <span class="page-header__orb page-header__orb--b"></span>
+    </div>
     <div class="container">
       {breadcrumbs && <Breadcrumbs items={breadcrumbs} />}
       {eyebrow && <span class="eyebrow">{eyebrow}</span>}
       <h1>{pageHeading ?? title}</h1>
       {pageLead && <p class="lead">{pageLead}</p>}
+      {heroCta && (
+        <div class="page-header__ctas">
+          <a href={SITE.bookingUrl} class="btn btn-accent" target="_blank" rel="noopener">
+            Book a 30 minute consultation
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        </div>
+      )}
     </div>
   </section>
 
@@ -70,11 +86,86 @@ const {
 </BaseLayout>
 
 <style>
+  /* Dark, animated page hero — matches the homepage's visual language so
+     every subpage opens with the same premium treatment. */
   .page-header {
-    padding: var(--space-9) 0 var(--space-7);
-    background: linear-gradient(180deg, var(--color-bg-soft) 0%, var(--color-bg) 100%);
-    border-bottom: 1px solid var(--color-border);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: var(--space-9) 0 var(--space-8);
+    background:
+      radial-gradient(900px 420px at 78% -10%, #0E3A5F 0%, rgba(14,58,95,0) 62%),
+      linear-gradient(180deg, var(--color-ink-900) 0%, #0A1826 100%);
+    color: var(--color-text-on-dark);
   }
-  .page-header h1 { margin-top: var(--space-2); }
-  .page-header .lead { margin-top: var(--space-4); }
+  .page-header__bg { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .page-header__grid {
+    position: absolute; inset: -1px;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(ellipse 85% 90% at 35% 20%, #000 30%, transparent 80%);
+    mask-image: radial-gradient(ellipse 85% 90% at 35% 20%, #000 30%, transparent 80%);
+  }
+  .page-header__orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    will-change: transform;
+  }
+  .page-header__orb--a {
+    width: 380px; height: 380px;
+    top: -140px; right: 4%;
+    background: radial-gradient(circle, rgba(0,180,255,0.30) 0%, transparent 70%);
+    animation: ph-drift-a 22s var(--ease-in-out) infinite alternate;
+  }
+  .page-header__orb--b {
+    width: 460px; height: 460px;
+    bottom: -220px; left: -6%;
+    background: radial-gradient(circle, rgba(17,53,92,0.55) 0%, transparent 70%);
+    animation: ph-drift-b 30s var(--ease-in-out) infinite alternate;
+  }
+  @keyframes ph-drift-a {
+    from { transform: translate3d(0,0,0) scale(1); }
+    to   { transform: translate3d(-50px, 30px, 0) scale(1.1); }
+  }
+  @keyframes ph-drift-b {
+    from { transform: translate3d(0,0,0) scale(1.05); }
+    to   { transform: translate3d(40px, -24px, 0) scale(1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page-header__orb { animation: none; }
+  }
+
+  .page-header h1 {
+    margin-top: var(--space-2);
+    color: #fff;
+    max-width: 22ch;
+    animation: ph-rise 700ms var(--ease-out) both;
+  }
+  .page-header .lead {
+    margin-top: var(--space-4);
+    color: var(--color-text-on-dark-soft);
+    animation: ph-rise 700ms var(--ease-out) 120ms both;
+  }
+  .page-header .eyebrow { color: var(--color-glow); }
+  .page-header__ctas {
+    margin-top: var(--space-6);
+    animation: ph-rise 700ms var(--ease-out) 240ms both;
+  }
+  @keyframes ph-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .page-header h1, .page-header .lead, .page-header__ctas { animation: none; }
+  }
+
+  /* Breadcrumbs on dark */
+  .page-header :global(.breadcrumbs),
+  .page-header :global(.breadcrumbs a) { color: rgba(183,198,216,0.75); }
+  .page-header :global(.breadcrumbs a:hover) { color: var(--color-glow); }
+  .page-header :global(.breadcrumbs [aria-current="page"]) { color: #fff; }
+  .page-header :global(.sep) { color: rgba(183,198,216,0.4); }
 </style>

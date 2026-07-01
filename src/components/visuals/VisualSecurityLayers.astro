@@ -1,0 +1,150 @@
+---
+/**
+ * VisualSecurityLayers — layered defense around your data.
+ * Concentric rings guard a data core; a radar sweep rotates; threat dots
+ * approach and dissolve at the outer ring; the core stays green-lit.
+ * Loops. CSS/SVG only, decorative (aria-hidden).
+ */
+---
+<div class="vsl" aria-hidden="true">
+  <svg viewBox="0 0 360 320" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="vsl-sweep" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="rgba(0,224,255,0)" />
+        <stop offset="1" stop-color="rgba(0,224,255,0.35)" />
+      </linearGradient>
+    </defs>
+
+    <!-- rings -->
+    <circle cx="180" cy="160" r="130" class="vsl__ring vsl__ring--outer" />
+    <circle cx="180" cy="160" r="92" class="vsl__ring vsl__ring--mid" />
+    <circle cx="180" cy="160" r="56" class="vsl__ring vsl__ring--inner" />
+
+    <!-- radar sweep -->
+    <g class="vsl__sweep">
+      <path d="M180 160 L180 30 A130 130 0 0 1 292 95 Z" fill="url(#vsl-sweep)" />
+    </g>
+
+    <!-- threat dots: approach, get caught at outer ring, dissolve -->
+    <circle class="vsl__threat vsl__threat--1" r="5" />
+    <circle class="vsl__threat vsl__threat--2" r="5" />
+    <circle class="vsl__threat vsl__threat--3" r="5" />
+    <circle class="vsl__catch vsl__catch--1" r="10" />
+    <circle class="vsl__catch vsl__catch--2" r="10" />
+    <circle class="vsl__catch vsl__catch--3" r="10" />
+
+    <!-- data core -->
+    <g class="vsl__core">
+      <rect x="152" y="136" width="56" height="48" rx="8" />
+      <path d="M180 128 v8 M164 132 l4 6 M196 132 l-4 6" class="vsl__core-antenna" />
+      <circle cx="171" cy="160" r="3" class="vsl__core-led" />
+      <path d="M182 156 l5 5 9 -10" class="vsl__core-check" />
+    </g>
+
+    <!-- ring labels -->
+    <g class="vsl__label" transform="translate(180, 20)">
+      <text text-anchor="middle">Screened &middot; Analyzed &middot; Contained</text>
+    </g>
+    <g class="vsl__label vsl__label--zdr" transform="translate(180, 306)">
+      <text text-anchor="middle">Zero Data Retention &middot; dedicated tenant</text>
+    </g>
+  </svg>
+</div>
+
+<style>
+  .vsl {
+    --loop: 7s;
+    background: linear-gradient(165deg, #0e1c2c 0%, #0a1420 100%);
+    border: 1px solid rgba(0,180,255,0.22);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4);
+    box-shadow: 0 24px 60px -20px rgba(0,0,0,0.55), 0 0 40px -18px rgba(0,180,255,0.45);
+    max-width: 440px;
+    width: 100%;
+  }
+  .vsl svg { width: 100%; height: auto; display: block; }
+
+  .vsl__ring { fill: none; stroke-width: 1.5; }
+  .vsl__ring--outer { stroke: rgba(0,224,255,0.4); stroke-dasharray: 5 7; animation: vsl-spin 40s linear infinite; transform-origin: 180px 160px; }
+  .vsl__ring--mid { stroke: rgba(0,180,255,0.3); }
+  .vsl__ring--inner { stroke: rgba(140,170,205,0.4); }
+  @keyframes vsl-spin { to { transform: rotate(360deg); } }
+
+  .vsl__sweep {
+    animation: vsl-sweep 5.5s linear infinite;
+    transform-origin: 180px 160px;
+  }
+  @keyframes vsl-sweep { to { transform: rotate(360deg); } }
+
+  .vsl__threat { fill: rgba(255,120,120,0.85); }
+  .vsl__catch { fill: none; stroke: #00E0FF; stroke-width: 1.5; opacity: 0; }
+  .vsl__threat--1 { animation: vsl-t1 var(--loop) ease-in infinite; }
+  .vsl__catch--1  { animation: vsl-c1 var(--loop) ease-out infinite; }
+  .vsl__threat--2 { animation: vsl-t2 var(--loop) ease-in infinite; }
+  .vsl__catch--2  { animation: vsl-c2 var(--loop) ease-out infinite; }
+  .vsl__threat--3 { animation: vsl-t3 var(--loop) ease-in infinite; }
+  .vsl__catch--3  { animation: vsl-c3 var(--loop) ease-out infinite; }
+
+  /* threats fly toward the core, dissolve at outer ring (r=130) */
+  @keyframes vsl-t1 {
+    0% { transform: translate(24px, 40px); opacity: 0; }
+    6% { opacity: 1; }
+    22% { transform: translate(72px, 96px); opacity: 1; }
+    26%, 100% { transform: translate(72px, 96px); opacity: 0; }
+  }
+  @keyframes vsl-c1 {
+    0%, 21% { transform: translate(72px, 96px) scale(0.4); opacity: 0; }
+    26% { opacity: 0.9; }
+    36%, 100% { transform: translate(72px, 96px) scale(1.6); opacity: 0; }
+  }
+  @keyframes vsl-t2 {
+    0%, 34% { transform: translate(346px, 96px); opacity: 0; }
+    40% { opacity: 1; }
+    54% { transform: translate(296px, 128px); opacity: 1; }
+    58%, 100% { transform: translate(296px, 128px); opacity: 0; }
+  }
+  @keyframes vsl-c2 {
+    0%, 53% { transform: translate(296px, 128px) scale(0.4); opacity: 0; }
+    58% { opacity: 0.9; }
+    68%, 100% { transform: translate(296px, 128px) scale(1.6); opacity: 0; }
+  }
+  @keyframes vsl-t3 {
+    0%, 66% { transform: translate(120px, 320px); opacity: 0; }
+    72% { opacity: 1; }
+    86% { transform: translate(140px, 278px); opacity: 1; }
+    90%, 100% { transform: translate(140px, 278px); opacity: 0; }
+  }
+  @keyframes vsl-c3 {
+    0%, 85% { transform: translate(140px, 278px) scale(0.4); opacity: 0; }
+    90% { opacity: 0.9; }
+    100% { transform: translate(140px, 278px) scale(1.6); opacity: 0; }
+  }
+
+  .vsl__core rect {
+    fill: rgba(0,180,255,0.12);
+    stroke: rgba(0,224,255,0.65);
+    stroke-width: 1.8;
+  }
+  .vsl__core-antenna { fill: none; stroke: rgba(0,224,255,0.65); stroke-width: 1.8; stroke-linecap: round; }
+  .vsl__core-led {
+    fill: #4ADE80;
+    animation: vsl-led 2s ease-in-out infinite;
+  }
+  @keyframes vsl-led { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+  .vsl__core-check {
+    fill: none; stroke: #4ADE80; stroke-width: 2.4;
+    stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  .vsl__label text {
+    fill: rgba(183,198,216,0.65);
+    font-size: 11.5px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.04em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .vsl * { animation: none !important; }
+    .vsl__threat, .vsl__catch { opacity: 0; }
+  }
+</style>
