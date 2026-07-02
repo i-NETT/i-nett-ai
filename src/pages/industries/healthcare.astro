@@ -2,6 +2,7 @@
 import PageLayout from '@layouts/PageLayout.astro';
 import FAQ from '@components/FAQ.astro';
 import AnswerBlock from '@components/AnswerBlock.astro';
+import DemoStream from '@components/DemoStream.astro';
 import { SITE } from '@lib/site';
 
 const breadcrumbs = [
@@ -54,6 +55,9 @@ const faqs = [
       </AnswerBlock>
     </div>
   </section>
+
+  <!-- LIVE SCRIPTED DEMO -->
+  <DemoStream />
 
   <!-- COMPLIANCE FIRST -->
   <section class="section">

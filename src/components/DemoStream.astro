@@ -2,6 +2,10 @@
 // Watch Fortify AI in action. Scripted, cycling demo of four exchanges.
 // Pure CSS + JS. No real AI calls. No specific efficacy claims.
 //
+// Styled as the real i-NETT workspace (light theme, official logo).
+// A prominent industry banner above the chat switches and re-pops with
+// each exchange so viewers always know which example they are watching.
+//
 // Exchanges show one at a time. The user message appears, then a brief
 // "thinking" pause, then the response streams in via typewriter. After a
 // hold, the next exchange takes over. Stops cycling when the viewer
@@ -50,14 +54,23 @@ const exchanges = [
       </p>
     </div>
 
-    <div class="demo reveal reveal-up reveal-delay-2" data-demo-stream>
+    <div class="demo reveal reveal-up reveal-delay-2" data-demo-stream data-industry="healthcare">
       <header class="demo__chrome" aria-hidden="true">
         <span class="demo__dot" style="--c: #ff5f57"></span>
         <span class="demo__dot" style="--c: #febc2e"></span>
         <span class="demo__dot" style="--c: #28c840"></span>
-        <span class="demo__title" data-demo-title>Healthcare, Practice Manager</span>
+        <img class="demo__logo" src="/assets/brand/inett-logo.png" alt="" width="72" height="32" loading="lazy" />
         <span class="demo__live"><span class="demo__live-dot" aria-hidden="true"></span>Live demo</span>
       </header>
+
+      <div class="demo__industry" data-demo-banner>
+        <span class="demo__industry-dot" aria-hidden="true"></span>
+        <span class="demo__industry-text">
+          <b data-demo-industry-name>Healthcare</b>
+          <span class="demo__industry-sep" aria-hidden="true">example</span>
+          <span class="demo__industry-persona" data-demo-persona>Practice Manager</span>
+        </span>
+      </div>
 
       <div class="demo__body" aria-live="polite" aria-label="Fortify AI exchange">
         <div class="demo__row demo__row--user" data-demo-user-row>
@@ -121,37 +134,42 @@ const exchanges = [
   }
   .demo-intro .lead { margin: var(--space-3) auto 0; }
 
+  /* Light workspace frame: this is what the real product looks like. */
   .demo {
-    background: var(--color-ink-900);
-    color: var(--color-text-on-dark);
+    background: #fff;
+    color: var(--color-text);
     border-radius: var(--radius-xl);
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 30px 80px rgba(10, 37, 64, 0.18), 0 8px 20px rgba(10, 37, 64, 0.08);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 30px 80px rgba(10, 37, 64, 0.16), 0 8px 20px rgba(10, 37, 64, 0.07);
   }
+
+  /* Industry accent per exchange */
+  .demo[data-industry="healthcare"] { --ind: #0E9F6E; --ind-soft: rgba(14, 159, 110, 0.10); --ind-line: rgba(14, 159, 110, 0.35); }
+  .demo[data-industry="legal"] { --ind: #7C3AED; --ind-soft: rgba(124, 58, 237, 0.10); --ind-line: rgba(124, 58, 237, 0.35); }
+  .demo[data-industry="financial-services"] { --ind: #D97706; --ind-soft: rgba(217, 119, 6, 0.11); --ind-line: rgba(217, 119, 6, 0.38); }
+  .demo[data-industry="professional-services"] { --ind: #2563EB; --ind-soft: rgba(37, 99, 235, 0.10); --ind-line: rgba(37, 99, 235, 0.35); }
 
   .demo__chrome {
     display: flex;
     align-items: center;
     gap: var(--space-3);
     padding: var(--space-3) var(--space-5);
-    background: rgba(255, 255, 255, 0.04);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: #F7F8FA;
+    border-bottom: 1px solid var(--color-border);
   }
   .demo__dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: var(--c, #555);
-    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+    background: var(--c, #ccc);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
   }
-  .demo__title {
-    flex: 1;
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: var(--fs-xs);
-    color: rgba(255, 255, 255, 0.65);
-    letter-spacing: 0.06em;
+  .demo__logo {
+    height: 30px;
+    width: auto;
+    object-fit: contain;
+    margin: 0 auto;
   }
   .demo__live {
     display: inline-flex;
@@ -160,20 +178,71 @@ const exchanges = [
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    color: var(--color-glow);
-    font-weight: 600;
+    color: var(--color-accent-500);
+    font-weight: 700;
   }
   .demo__live-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: var(--color-glow);
-    box-shadow: 0 0 8px var(--color-glow);
+    background: var(--color-accent-500);
+    box-shadow: 0 0 8px rgba(0, 180, 255, 0.7);
     animation: live-pulse 1.8s ease-in-out infinite;
   }
   @keyframes live-pulse {
     0%, 100% { opacity: 0.5; }
     50% { opacity: 1; }
+  }
+
+  /* THE INDUSTRY BANNER — big, colored, impossible to miss. */
+  .demo__industry {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-5);
+    background: var(--ind-soft);
+    border-bottom: 1px solid var(--ind-line);
+  }
+  .demo__industry.is-swap { animation: ind-pop 520ms var(--ease-out); }
+  @keyframes ind-pop {
+    0% { opacity: 0.2; transform: translateY(-6px); }
+    55% { transform: translateY(1px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .demo__industry-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--ind);
+    box-shadow: 0 0 0 4px var(--ind-soft);
+    flex-shrink: 0;
+  }
+  .demo__industry-text {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5em;
+    flex-wrap: wrap;
+    line-height: 1.2;
+  }
+  .demo__industry-text b {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: var(--fs-md);
+    letter-spacing: -0.01em;
+    color: var(--ind);
+    text-transform: uppercase;
+  }
+  .demo__industry-sep {
+    font-size: var(--fs-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+  }
+  .demo__industry-persona {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--color-text-soft);
   }
 
   .demo__body {
@@ -210,8 +279,8 @@ const exchanges = [
     letter-spacing: 0.06em;
   }
   .demo__avatar--user {
-    background: rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.8);
+    background: var(--color-bg-muted);
+    color: var(--color-text-soft);
   }
   .demo__avatar--ai {
     background: linear-gradient(135deg, var(--color-ink-700) 0%, var(--color-accent-500) 100%);
@@ -229,17 +298,18 @@ const exchanges = [
     font-size: var(--fs-sm);
     line-height: 1.55;
     max-width: 80%;
-    color: #fff;
+    color: var(--color-text);
   }
   .demo__bubble--user {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
     border-bottom-right-radius: 4px;
   }
   .demo__bubble--ai {
-    background: linear-gradient(135deg, rgba(0, 180, 255, 0.12) 0%, rgba(0, 180, 255, 0.04) 100%);
-    border: 1px solid rgba(0, 180, 255, 0.25);
+    background: linear-gradient(135deg, rgba(0, 180, 255, 0.10) 0%, rgba(0, 180, 255, 0.03) 100%);
+    border: 1px solid rgba(0, 180, 255, 0.35);
     border-bottom-left-radius: 4px;
+    color: var(--color-ink-800);
   }
   .demo__bubble--thinking { display: inline-flex; align-items: center; gap: 4px; }
   .demo__dots {
@@ -249,7 +319,7 @@ const exchanges = [
   .demo__dots span {
     width: 6px;
     height: 6px;
-    background: var(--color-glow);
+    background: var(--color-accent-500);
     border-radius: 50%;
     animation: thinking 1.2s ease-in-out infinite;
   }
@@ -264,7 +334,7 @@ const exchanges = [
     display: inline-block;
     width: 8px;
     height: 1em;
-    background: var(--color-glow);
+    background: var(--color-accent-500);
     margin-left: 2px;
     vertical-align: text-bottom;
     animation: blink 1s steps(2, start) infinite;
@@ -275,8 +345,8 @@ const exchanges = [
 
   .demo__footer {
     padding: var(--space-3) var(--space-5) var(--space-4);
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid var(--color-border);
+    background: #FAFBFC;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -290,17 +360,17 @@ const exchanges = [
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.18);
+    background: var(--color-border-strong);
     transition: background var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
     cursor: pointer;
   }
   .demo__nav-dot[aria-selected="true"] {
-    background: var(--color-glow);
+    background: var(--ind, var(--color-accent-500));
     transform: scale(1.25);
   }
   .demo__note {
     font-size: 0.75rem;
-    color: rgba(255, 255, 255, 0.5);
+    color: var(--color-text-muted);
     text-align: center;
   }
 
@@ -308,6 +378,7 @@ const exchanges = [
     .demo__row { opacity: 1; transform: none; transition: none; }
     .demo__caret, .demo__dots span, .demo__live-dot { animation: none; }
     .demo__caret { opacity: 0; }
+    .demo__industry.is-swap { animation: none; }
   }
 </style>
 
@@ -327,7 +398,9 @@ const exchanges = [
     const exchanges: Exchange[] = JSON.parse(payloadEl.textContent);
     const root = document.querySelector<HTMLElement>('[data-demo-stream]');
     if (root) {
-      const title = root.querySelector<HTMLElement>('[data-demo-title]');
+      const banner = root.querySelector<HTMLElement>('[data-demo-banner]');
+      const industryName = root.querySelector<HTMLElement>('[data-demo-industry-name]');
+      const personaEl = root.querySelector<HTMLElement>('[data-demo-persona]');
       const userRow = root.querySelector<HTMLElement>('[data-demo-user-row]');
       const userText = root.querySelector<HTMLElement>('[data-demo-user]');
       const aiRow = root.querySelector<HTMLElement>('[data-demo-ai-row]');
@@ -339,6 +412,8 @@ const exchanges = [
       const TYPE_MS = reduceMotion ? 0 : 22; // ms per character
       const HOLD_MS = 3200;
       const THINK_MS = reduceMotion ? 0 : 700;
+
+      const slugify = (s: string) => s.toLowerCase().replace(/[^a-z]+/g, '-');
 
       let index = 0;
       let activeTimers: number[] = [];
@@ -389,7 +464,16 @@ const exchanges = [
         if (!isVisible) return;
         reset();
         const ex = exchanges[i];
-        if (title) title.textContent = `${ex.industry}, ${ex.persona}`;
+
+        // Swap the big industry banner: recolor, rename, re-pop.
+        root.setAttribute('data-industry', slugify(ex.industry));
+        if (industryName) industryName.textContent = ex.industry;
+        if (personaEl) personaEl.textContent = ex.persona;
+        if (banner && !reduceMotion) {
+          banner.classList.remove('is-swap');
+          void banner.offsetWidth; // restart the pop animation
+          banner.classList.add('is-swap');
+        }
         setNav(i);
 
         if (userRow && userText) {

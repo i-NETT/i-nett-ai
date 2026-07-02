@@ -7,6 +7,7 @@ import VisualWorkflowSpread from '@components/visuals/VisualWorkflowSpread.astro
 import VisualAgentFlow from '@components/visuals/VisualAgentFlow.astro';
 import VisualSecurityLayers from '@components/visuals/VisualSecurityLayers.astro';
 import VisualChatUI from '@components/visuals/VisualChatUI.astro';
+import DemoStream from '@components/DemoStream.astro';
 import { SITE } from '@lib/site';
 
 const breadcrumbs = [
@@ -84,6 +85,9 @@ const faqs = [
       </p>
     </div>
   </section>
+
+  <!-- LIVE SCRIPTED DEMO -->
+  <DemoStream />
 
   <!-- PILLAR 1: PROMPT COACH -->
   <section class="section">
