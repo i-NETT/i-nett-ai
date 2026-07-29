@@ -1,0 +1,912 @@
+---
+/**
+ * AIReadinessScan.astro — Fortify AI Readiness & Risk Scan
+ *
+ * A self-contained, multi-screen assessment: intro -> adaptive questions ->
+ * analysis theater -> scored report + findings -> lead gate -> results -> book.
+ *
+ * The report is computed ENTIRELY client-side (computeReport) so it renders
+ * complete even if the backend is unreachable. The Worker call only enhances
+ * the Analyst Note with a personalized paragraph, and routes the lead into
+ * HubSpot. Ported from the AITS AI Risk Scan, reskinned to the i-NETT brand
+ * and re-positioned around Fortify AI's three pillars + security/compliance.
+ *
+ * Backend: see /Scan tool/inett-scan (Cloudflare Worker). Update PROXY_URL
+ * below to the deployed Worker URL.
+ */
+import { SITE } from '../lib/site';
+---
+
+<section class="section" id="scan">
+  <div class="container container-narrow">
+    <div class="scan" id="scanRoot">
+      <div class="scan__head">
+        <div class="scan__eyebrow">FORTIFY AI &middot; READINESS &amp; RISK SCAN</div>
+        <div class="scan__title">AI Readiness &amp; Risk Scan</div>
+        <div class="scan__status" id="scanStatusLine" data-phase="intro">System ready</div>
+      </div>
+
+      <div class="scan__panel" id="scanPanel">
+        <!-- INTRO -->
+        <div id="introScreen" class="scan__body">
+          <div class="scan__tags">
+            <span class="scan-tag scan-tag--accent">SHADOW AI</span>
+            <span class="scan-tag scan-tag--accent">COMPLIANCE</span>
+            <span class="scan-tag scan-tag--accent">ENABLEMENT</span>
+            <span class="scan-tag scan-tag--accent">EXPOSURE SCORE</span>
+          </div>
+          <h2 class="scan__introTitle">Is your organization getting the upside of AI &mdash; without the exposure?</h2>
+          <p class="scan__introSub">
+            A short, no-jargon scan any leader can finish in about 90 seconds. See where AI is
+            already in use across your team, where it&rsquo;s quietly exposing you, and where a
+            governed rollout would give you the biggest lift. No IT knowledge needed.
+          </p>
+          <div class="scan__checklist">
+            <div class="scan__checklistLabel">WHAT YOU GET INSTANTLY</div>
+            <div class="scan__check">AI exposure score (0&ndash;100)</div>
+            <div class="scan__check">Shadow AI &amp; compliance flags for your data</div>
+            <div class="scan__check">Hours a week your team could hand to custom agents</div>
+            <div class="scan__check">Your top findings &mdash; with what to do about each</div>
+          </div>
+          <div class="scan__trust">
+            <span class="scan__trustItem"><span class="scan__dot"></span>No software to install</span>
+            <span class="scan__trustItem"><span class="scan__dot"></span>Private &mdash; answers aren&rsquo;t stored on the page</span>
+            <span class="scan__trustItem"><span class="scan__dot"></span>90 seconds</span>
+          </div>
+          <button class="btn btn-accent btn-lg btn-block" id="startBtn">
+            Start my free scan <span aria-hidden="true">&rarr;</span>
+          </button>
+        </div>
+
+        <!-- QUESTIONS -->
+        <div id="questionScreen" style="display:none">
+          <div class="scan__progress"><div class="scan__progressFill" id="progressFill" style="width:0%"></div></div>
+          <div class="scan__body">
+            <div class="scan__qHeader">
+              <div class="scan__qCount" id="qCount">Q 1</div>
+              <div class="scan__qDots" id="qDots"></div>
+            </div>
+            <div class="scan__qLabel" id="qLabel"></div>
+            <div class="scan__qNote" id="qNote" style="display:none"></div>
+            <div class="scan__options" id="optionsList"></div>
+            <button class="btn btn-outline btn-block scan__skip" id="multiNextBtn" style="display:none">Skip <span aria-hidden="true">&rarr;</span></button>
+          </div>
+        </div>
+
+        <!-- ANALYSIS THEATER -->
+        <div id="scanScreen" style="display:none" class="scan__body">
+          <div class="scan__consoleHead" id="scanHeader">Analysis in progress</div>
+          <div class="scan__scanBar"><div class="scan__scanBarFill" id="scanFill" style="width:0%"></div></div>
+          <div class="scan__console" id="terminal"><span id="cursor" class="scan__cursor">_</span></div>
+          <div class="scan__pct" id="scanPct">0% complete</div>
+        </div>
+
+        <!-- RESULTS -->
+        <div id="resultsScreen" style="display:none">
+          <div class="scan__resultsTop">
+            <div>
+              <div class="scan__resultsEyebrow">SCAN COMPLETE</div>
+              <div class="scan__resultsTitle">AI Readiness &amp; Risk Report</div>
+            </div>
+            <span class="scan-tag scan-tag--warn" id="riskTag">&mdash;</span>
+          </div>
+          <div class="scan__body">
+            <div class="scan__scoreRow">
+              <div class="scan__scoreCol">
+                <svg width="165" height="100" viewBox="0 0 165 100" role="img" aria-label="Exposure score gauge">
+                  <path d="M 15 88 A 70 70 0 0 1 150 88" fill="none" stroke="var(--color-border)" stroke-width="10" stroke-linecap="round"/>
+                  <path id="meterArc" d="M 15 88 A 70 70 0 0 1 150 88" fill="none" stroke="var(--color-accent-500)" stroke-width="10" stroke-linecap="round" stroke-dasharray="220" stroke-dashoffset="220"/>
+                  <circle id="meterDot" cx="82" cy="18" r="7" fill="var(--color-accent-500)"/>
+                  <text id="meterScore" x="82" y="84" text-anchor="middle" font-family="var(--font-mono)" font-weight="bold" font-size="26" fill="var(--color-ink-800)">0</text>
+                  <text id="meterLabel" x="82" y="98" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--color-text-muted)" letter-spacing="3">--</text>
+                </svg>
+              </div>
+              <div class="scan__statsCol">
+                <div class="scan__stat scan__stat--warn">
+                  <div class="scan__statLabel">SHADOW AI EXPOSURE</div>
+                  <div class="scan__statVal" id="shadowEst">&mdash;</div>
+                  <div class="scan__statSub" id="shadowSub"></div>
+                </div>
+                <div class="scan__stat scan__stat--danger">
+                  <div class="scan__statLabel">COMPLIANCE FLAGS</div>
+                  <div class="scan__statVal" id="compFlags">&mdash;</div>
+                  <div class="scan__statSub" id="compSub"></div>
+                </div>
+                <div class="scan__stat scan__stat--teal">
+                  <div class="scan__statLabel">RECOVERABLE HOURS / WEEK</div>
+                  <div class="scan__statVal" id="hoursVal">&mdash;</div>
+                  <div class="scan__statSub" id="hoursSub"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="scan__findingsLabel" id="shownLabel">YOUR TOP FINDINGS &mdash; AND WHAT TO DO ABOUT EACH</div>
+            <div id="findingsList"></div>
+
+            <!-- LEAD GATE -->
+            <div id="gateSection">
+              <div class="scan__findingsLabel" id="lockedLabel"></div>
+              <div id="lockedCards"></div>
+              <div class="scan__gate">
+                <div class="scan__gateTitle">Unlock your full report</div>
+                <div class="scan__gateSub">
+                  Every remaining finding with what to do about it, plus your analyst note &mdash; on
+                  screen immediately. A senior i-NETT analyst also gets a copy to prepare
+                  recommendations before we reach out.
+                </div>
+                <div class="scan__gateFields">
+                  <input class="scan__input" id="leadName" type="text" autocomplete="name" placeholder="Your name">
+                  <input class="scan__input" id="leadCompany" type="text" autocomplete="organization" placeholder="Company name">
+                  <input class="scan__input scan__input--wide" id="leadWebsite" type="text" autocomplete="url" placeholder="Company website (or type 'none')">
+                  <input class="scan__input" id="leadEmail" type="email" autocomplete="email" placeholder="Work email">
+                  <input class="scan__input" id="leadCell" type="tel" autocomplete="tel" placeholder="Cell phone">
+                </div>
+                <div class="scan__gateContact">
+                  <span class="scan__gateContactLabel">Best way(s) to reach you</span>
+                  <div class="scan__chips" id="leadChips">
+                    <button type="button" class="scan__chip" data-c="Text">Text</button>
+                    <button type="button" class="scan__chip" data-c="Call">Call</button>
+                    <button type="button" class="scan__chip" data-c="Email">Email</button>
+                  </div>
+                </div>
+                <div class="scan__gateError" id="gateError" style="display:none"></div>
+                <button class="btn btn-accent btn-block" id="unlockBtn">Unlock my full report <span aria-hidden="true">&rarr;</span></button>
+                <div class="scan__gateFine">No spam. One follow-up from a real person &mdash; usually with something useful.</div>
+              </div>
+            </div>
+
+            <div class="scan__analyst" id="analystBox" style="display:none">
+              <div class="scan__analystLabel">ANALYST NOTE</div>
+              <div class="scan__analystText" id="analystText"></div>
+            </div>
+
+            <div class="scan__cta" id="ctaSection" style="opacity:0;transform:translateY(12px)">
+              <div class="scan__ctaNote">
+                <div class="scan__ctaTop">TURN THIS INTO A PLAN</div>
+                <div class="scan__ctaSub">
+                  In a free 30-minute review we walk your findings, show you what a governed Fortify AI
+                  rollout would put in place, and map the first deployment &mdash; a prompt-coaching win, a
+                  shared workflow, or a custom agent &mdash; that can be live within 30 days.
+                </div>
+              </div>
+              <button class="btn btn-accent btn-lg btn-block" id="bookBtn">Walk through my results &mdash; book 30 min <span aria-hidden="true">&rarr;</span></button>
+              <div class="scan__ctaFine">Free &middot; No obligation &middot; i-nett.ai</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="disclaimer scan__disclaimer">
+        Estimates are industry-informed, for discussion &mdash; not a specific study, audit, or legal or
+        insurance advice. By unlocking your full report you consent to i-NETT contacting you about your
+        results. See our <a href="/privacy">privacy policy</a>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- BOOKING MODAL (HubSpot Meetings) -->
+<div class="scan-cal" id="calOverlay">
+  <div class="scan-cal__box">
+    <div class="scan-cal__header">
+      <div class="scan-cal__title">Book your free 30-min review</div>
+      <button class="scan-cal__close" id="calClose" aria-label="Close">&times;</button>
+    </div>
+    <iframe class="scan-cal__frame" id="calFrame" title="Book a review with i-NETT" src="about:blank" frameborder="0" scrolling="yes"></iframe>
+    <div class="scan-cal__fallback">
+      Trouble loading? <a id="calFallback" href={SITE.bookingUrl} target="_blank" rel="noopener">Open the booking page in a new tab &rarr;</a>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* ===== Layout shell ===== */
+  .scan { max-width: 560px; margin: 0 auto; }
+  .scan__head { text-align: center; margin-bottom: var(--space-5); }
+  .scan__eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px; letter-spacing: 3px;
+    color: var(--color-accent-500); margin-bottom: var(--space-2);
+  }
+  .scan__title { font-size: var(--fs-xl); font-weight: 800; color: var(--color-ink-800); letter-spacing: -0.02em; }
+  .scan__status {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--color-text-muted); margin-top: 5px; min-height: 18px;
+  }
+  .scan__status::before { content: "\25AE "; color: var(--color-accent-500); }
+
+  .scan__panel {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: var(--space-4);
+  }
+  .scan__body { padding: var(--space-6) var(--space-5); }
+
+  /* ===== Intro ===== */
+  .scan__tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--space-5); }
+  .scan-tag {
+    font-family: var(--font-mono); font-size: 10px;
+    border: 1px solid; padding: 3px 8px; border-radius: 3px;
+    letter-spacing: 1px; white-space: nowrap;
+  }
+  .scan-tag--accent { color: var(--color-ink-700); border-color: rgba(0,180,255,0.45); background: rgba(0,180,255,0.07); }
+  .scan-tag--warn { color: var(--color-warning); border-color: var(--color-warning); }
+  .scan-tag--danger { color: var(--color-danger); border-color: var(--color-danger); }
+  .scan-tag--ok { color: var(--color-success); border-color: var(--color-success); }
+  .scan-tag--info { color: var(--color-ink-700); border-color: rgba(0,180,255,0.45); }
+
+  .scan__introTitle { font-size: var(--fs-lg); font-weight: 800; line-height: 1.3; margin-bottom: var(--space-3); color: var(--color-ink-800); }
+  .scan__introSub { color: var(--color-text-soft); line-height: var(--lh-loose); font-size: var(--fs-sm); margin-bottom: var(--space-5); }
+  .scan__checklist {
+    background: var(--color-bg-soft);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-4); margin-bottom: var(--space-5);
+  }
+  .scan__checklistLabel { font-family: var(--font-mono); font-size: 9px; color: var(--color-accent-500); letter-spacing: 2px; margin-bottom: var(--space-2); }
+  .scan__check { font-size: var(--fs-sm); color: var(--color-text-soft); line-height: 2; }
+  .scan__check::before { content: "\2713  "; color: var(--color-success); font-weight: bold; }
+  .scan__trust { display: flex; gap: 14px; justify-content: center; margin-bottom: var(--space-5); flex-wrap: wrap; }
+  .scan__trustItem { font-size: 12px; color: var(--color-text-muted); display: flex; align-items: center; gap: 5px; }
+  .scan__dot { width: 5px; height: 5px; border-radius: 50%; background: var(--color-accent-500); flex-shrink: 0; }
+
+  /* ===== Questions ===== */
+  .scan__progress { height: 4px; background: var(--color-bg-muted); }
+  .scan__progressFill { height: 100%; background: var(--color-accent-500); transition: width 0.4s ease; }
+  .scan__qHeader { display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); }
+  .scan__qCount { font-family: var(--font-mono); font-size: 10px; color: var(--color-text-muted); }
+  .scan__qDots { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; max-width: 60%; }
+  .scan__qDot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-border-strong); }
+  .scan__qDot.active { background: var(--color-accent-500); }
+  .scan__qDot.done { background: var(--color-accent-500); opacity: 0.4; }
+  .scan__qLabel { font-size: var(--fs-md); font-weight: 700; line-height: 1.4; margin-bottom: var(--space-4); color: var(--color-ink-800); }
+  .scan__qNote { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-muted); margin-bottom: var(--space-3); margin-top: calc(-1 * var(--space-2)); }
+  .scan__options { display: flex; flex-direction: column; gap: 8px; }
+  .scan__opt {
+    width: 100%; padding: 13px 15px;
+    background: var(--color-bg); border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md); color: var(--color-text); text-align: left;
+    cursor: pointer; font-size: var(--fs-sm); display: flex; align-items: center; gap: 10px;
+    transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+  }
+  .scan__opt:hover { border-color: var(--color-accent-500); background: var(--color-bg-soft); }
+  .scan__opt.selected { background: rgba(0,180,255,0.08); border-color: var(--color-accent-500); color: var(--color-ink-800); font-weight: 600; }
+  .scan__opt .scan__optMark { font-size: 11px; flex-shrink: 0; color: var(--color-accent-500); }
+  .scan__skip { margin-top: var(--space-3); }
+
+  /* ===== Analysis theater (dark console accent) ===== */
+  .scan__consoleHead { font-family: var(--font-mono); font-size: 12px; color: var(--color-accent-500); letter-spacing: 2px; margin-bottom: var(--space-4); min-height: 20px; }
+  .scan__consoleHead::before { content: "\25AE "; }
+  .scan__scanBar { background: var(--color-bg-muted); border-radius: 3px; height: 5px; margin-bottom: var(--space-5); overflow: hidden; }
+  .scan__scanBarFill { height: 100%; background: linear-gradient(90deg, var(--color-accent-500), var(--color-glow)); transition: width 0.25s linear; border-radius: 3px; }
+  .scan__console {
+    background: var(--color-ink-900); border: 1px solid var(--color-ink-700);
+    border-radius: var(--radius-md); padding: 16px; min-height: 190px;
+    font-family: var(--font-mono); font-size: 12px; line-height: 2.2; color: var(--color-text-on-dark-soft);
+  }
+  .scan__console .t-default { color: var(--color-text-on-dark-soft); }
+  .scan__console .t-ai { color: var(--color-accent-300); }
+  .scan__console .t-done { color: #5EE6A8; }
+  .scan__cursor { color: var(--color-accent-500); }
+  .scan__pct { text-align: center; margin-top: 12px; font-family: var(--font-mono); font-size: 11px; color: var(--color-text-muted); }
+
+  /* ===== Results ===== */
+  .scan__resultsTop {
+    background: var(--color-ink-900); color: var(--color-text-on-dark);
+    border-bottom: 1px solid var(--color-ink-700);
+    padding: 14px var(--space-5); display: flex; justify-content: space-between; align-items: center;
+  }
+  .scan__resultsEyebrow { font-family: var(--font-mono); font-size: 9px; color: var(--color-glow); letter-spacing: 3px; margin-bottom: 2px; }
+  .scan__resultsTitle { font-size: var(--fs-sm); font-weight: 700; color: #fff; }
+  .scan__scoreRow { display: flex; gap: 12px; margin-bottom: var(--space-5); align-items: flex-start; flex-wrap: wrap; }
+  .scan__scoreCol { flex-shrink: 0; }
+  .scan__statsCol { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 180px; }
+  .scan__stat { border-radius: var(--radius-md); padding: 10px 12px; border: 1px solid; }
+  .scan__stat--warn { background: rgba(184,110,0,0.06); border-color: rgba(184,110,0,0.3); }
+  .scan__stat--danger { background: rgba(193,48,48,0.05); border-color: rgba(193,48,48,0.28); }
+  .scan__stat--teal { background: rgba(15,139,95,0.06); border-color: rgba(15,139,95,0.3); }
+  .scan__statLabel { font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px; margin-bottom: 3px; }
+  .scan__stat--warn .scan__statLabel { color: var(--color-warning); }
+  .scan__stat--danger .scan__statLabel { color: var(--color-danger); }
+  .scan__stat--teal .scan__statLabel { color: var(--color-success); }
+  .scan__statVal { font-size: 13px; font-weight: 700; color: var(--color-ink-800); }
+  .scan__statSub { font-size: 11px; color: var(--color-text-soft); margin-top: 2px; line-height: 1.5; }
+
+  .scan__findingsLabel { font-family: var(--font-mono); font-size: 9px; color: var(--color-text-muted); letter-spacing: 2px; margin-bottom: 10px; }
+  .scan__finding { border-radius: var(--radius-md); padding: 13px 14px; margin-bottom: 8px; border: 1px solid; border-left-width: 3px; }
+  .scan__finding--warn { background: rgba(184,110,0,0.05); border-color: rgba(184,110,0,0.3); }
+  .scan__finding--danger { background: rgba(193,48,48,0.05); border-color: rgba(193,48,48,0.3); }
+  .scan__finding--info { background: rgba(0,180,255,0.05); border-color: rgba(0,180,255,0.3); }
+  .scan__findingTop { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+  .scan__findingNum { font-family: var(--font-mono); font-size: 9px; color: var(--color-text-muted); }
+  .scan__findingHead { font-weight: 700; font-size: 14px; line-height: 1.4; margin-bottom: 5px; color: var(--color-ink-800); }
+  .scan__findingDetail { color: var(--color-text-soft); font-size: 13px; line-height: 1.6; margin-bottom: 7px; }
+  .scan__findingFix { font-size: 13px; line-height: 1.6; color: var(--color-text); }
+  .scan__findingFix strong { color: var(--color-success); font-weight: 700; }
+  .scan__findingPrev { margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--color-border); font-size: 12px; line-height: 1.6; color: var(--color-text-soft); }
+  .scan__findingPrev b { color: var(--color-ink-800); font-weight: 700; }
+  .scan__fpLead { font-family: var(--font-mono); font-size: 10px; letter-spacing: 1px; color: var(--color-accent-500); text-transform: uppercase; }
+
+  .scan__locked { background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 13px 14px; margin-bottom: 8px; position: relative; overflow: hidden; }
+  .scan__lockedGhost { opacity: 0.18; }
+  .scan__ghostBar { height: 7px; background: var(--color-border-strong); border-radius: 4px; margin-bottom: 6px; }
+  .scan__lockedOverlay { position: absolute; inset: 0; background: rgba(246,248,251,0.82); display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .scan__lockLabel { font-family: var(--font-mono); font-size: 10px; color: var(--color-text-muted); letter-spacing: 1px; }
+
+  .scan__gate { background: rgba(0,180,255,0.05); border: 1px solid rgba(0,180,255,0.35); border-radius: var(--radius-md); padding: 20px 18px; margin: 14px 0 18px; }
+  .scan__gateTitle { font-size: var(--fs-md); font-weight: 800; margin-bottom: 6px; color: var(--color-ink-800); }
+  .scan__gateSub { font-size: 13px; color: var(--color-text-soft); line-height: 1.6; margin-bottom: 14px; }
+  .scan__gateFields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .scan__input { width: 100%; padding: 12px 13px; background: var(--color-bg); border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); color: var(--color-text); font-size: 14px; min-height: 48px; }
+  .scan__input--wide { grid-column: 1 / -1; }
+  .scan__input:focus { outline: none; border-color: var(--color-accent-500); }
+  .scan__input.invalid { border-color: var(--color-danger); }
+  .scan__gateContact { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+  .scan__gateContactLabel { font-size: 12px; color: var(--color-text-soft); }
+  .scan__chips { display: flex; gap: 6px; }
+  .scan__chip { font-size: 13px; font-weight: 600; color: var(--color-text-soft); background: var(--color-bg); border: 1px solid var(--color-border-strong); border-radius: var(--radius-pill); padding: 6px 14px; cursor: pointer; transition: border-color .2s, color .2s, background .2s; }
+  .scan__chip.is-on { color: var(--color-ink-800); border-color: var(--color-accent-500); background: rgba(0,180,255,0.12); }
+  .scan__gateError { color: var(--color-danger); font-size: 12px; margin-bottom: 10px; font-family: var(--font-mono); }
+  .scan__gateFine { text-align: center; font-size: 11px; color: var(--color-text-muted); margin-top: 10px; }
+  @media (max-width: 420px) { .scan__gateFields { grid-template-columns: 1fr; } }
+
+  .scan__analyst { background: rgba(45,98,143,0.06); border: 1px solid rgba(45,98,143,0.25); border-radius: var(--radius-md); padding: 12px 14px; margin: 14px 0 18px; }
+  .scan__analystLabel { font-family: var(--font-mono); font-size: 9px; color: var(--color-ink-600); letter-spacing: 2px; margin-bottom: 3px; }
+  .scan__analystText { font-size: 13px; color: var(--color-text-soft); line-height: 1.65; transition: opacity 0.4s ease; }
+
+  .scan__cta { transition: opacity 0.6s ease, transform 0.6s ease; }
+  .scan__ctaNote { text-align: center; margin-bottom: 14px; }
+  .scan__ctaTop { font-family: var(--font-mono); font-size: 9px; color: var(--color-text-muted); letter-spacing: 2px; margin-bottom: 4px; }
+  .scan__ctaSub { font-size: 13px; color: var(--color-text-soft); line-height: 1.6; }
+  .scan__ctaFine { text-align: center; font-family: var(--font-mono); font-size: 10px; color: var(--color-text-muted); margin-top: 10px; }
+  .scan__disclaimer { text-align: center; margin-top: var(--space-2); }
+
+  /* ===== Booking modal ===== */
+  .scan-cal { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.75); z-index: 999; flex-direction: column; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
+  .scan-cal.active { display: flex; }
+  .scan-cal__box { background: var(--color-bg); border-radius: var(--radius-lg); width: 100%; max-width: 560px; max-height: 92vh; overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-lg); }
+  .scan-cal__header { padding: 14px 18px; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+  .scan-cal__title { font-weight: 700; font-size: var(--fs-sm); color: var(--color-ink-800); }
+  .scan-cal__close { color: var(--color-text-muted); font-size: 24px; line-height: 1; padding: 0 4px; }
+  .scan-cal__frame { flex: 1; border: none; width: 100%; min-height: 560px; }
+  .scan-cal__fallback { padding: 10px 18px; font-size: 12px; color: var(--color-text-muted); border-top: 1px solid var(--color-border); text-align: center; }
+</style>
+
+<script>
+  // The report is computed ENTIRELY in this component from the answers, so it
+  // renders complete even if the backend is unreachable. The Worker call only
+  // enhances the Analyst Note and routes the lead into HubSpot.
+  // TODO(deploy): set to the deployed Worker URL.
+  const PROXY_URL = 'https://inett-scan.nicholasdreyfus.workers.dev';
+  const BOOKING_URL = 'https://meetings-na2.hubspot.com/ndreyfus/initial_call';
+
+  type Q = { id: string; label: string; type: 'single' | 'multi'; note?: string; options: string[] };
+
+  const QUESTIONS: Q[] = [
+    { id: 'industry', label: 'What industry are you in?', type: 'single', options: ['Healthcare / Medical', 'Legal', 'Financial services', 'Professional services', 'Manufacturing', 'Retail / E-commerce', 'Real estate', 'Education / Schools', 'Nonprofit', 'Government / Public sector', 'Technology', 'Other'] },
+    { id: 'size', label: 'How many people work in the organization?', type: 'single', options: ['Just me', '2-10', '11-25', '26-100', '101-250', '250+'] },
+    { id: 'tools', label: 'Which AI tools is your team using today?', note: 'Select all that apply — skip if you’re not sure', type: 'multi', options: ['ChatGPT', 'Microsoft Copilot', 'Claude', 'Google Gemini', 'Perplexity', 'Grammarly AI', 'GitHub Copilot', 'Midjourney / DALL-E', 'Something custom / other', 'None that I know of'] },
+    { id: 'ai', label: 'How is AI being used for work?', type: 'single', options: ['With clear rules and company accounts', 'We have a policy mostly in place — still finishing it', 'We just started putting rules together', 'On personal accounts — no rules', 'Not that I know of', 'We’ve banned it'] },
+    { id: 'emppolicy', label: 'Do you have an AI & data policy every employee has signed?', type: 'single', options: ['Yes — every employee has signed one', 'We have one, but not everyone has signed', 'No signed policy yet', 'Not sure'] },
+    { id: 'coaching', label: 'How is your team learning to use AI well?', note: 'Skill with AI is the difference between a toy and a tool', type: 'single', options: ['Every employee gets structured coaching', 'Some ad-hoc training here and there', 'They’re self-taught — figuring it out alone', 'They mostly don’t use it yet'] },
+    { id: 'data', label: 'Does your organization handle any of the following?', note: 'Select all that apply', type: 'multi', options: ['Medical or health records', 'Card payments', 'Legal or financial documents', 'Government / CJIS / CMMC data', 'Children’s data', 'Personal data (PII) of customers', 'None of these'] },
+    { id: 'vendorterms', label: 'Do your outside vendors have a written AI agreement with you?', note: 'Bookkeeper, marketing, IT — anyone who touches your data', type: 'single', options: ['Yes — it’s in our vendor contracts', 'No — we’ve never asked', 'Not sure'] },
+    { id: 'insurance', label: 'Do you know whether your cyber insurance covers an AI-related incident?', type: 'single', options: ['Yes — we’ve confirmed it', 'We have cyber insurance but haven’t checked AI specifically', 'We don’t have cyber insurance', 'Not sure'] },
+    { id: 'busywork', label: 'How many hours a week does your team spend on repetitive admin?', note: 'Scheduling, data entry, follow-up, copy-paste between systems', type: 'single', options: ['Less than 5', '5-15', '15-40', 'More than 40', 'No idea'] },
+    { id: 'goal', label: 'What would make the biggest difference in the next 12 months?', type: 'single', options: ['Get governance & security right first', 'Roll AI out to the whole team', 'Build custom agents for our workflows', 'Cut time on repetitive work', 'Not sure yet'] },
+  ];
+
+  // Float the most-likely sensitive-data options to the top based on industry.
+  const DATA_PRIORITY: Record<string, string[]> = {
+    'Healthcare / Medical': ['Medical or health records', 'Personal data (PII) of customers'],
+    'Legal': ['Legal or financial documents', 'Personal data (PII) of customers'],
+    'Financial services': ['Legal or financial documents', 'Card payments'],
+    'Professional services': ['Legal or financial documents', 'Personal data (PII) of customers'],
+    'Manufacturing': ['Government / CJIS / CMMC data', 'Card payments'],
+    'Retail / E-commerce': ['Card payments', 'Personal data (PII) of customers'],
+    'Real estate': ['Legal or financial documents', 'Card payments'],
+    'Education / Schools': ['Children’s data', 'Personal data (PII) of customers'],
+    'Nonprofit': ['Personal data (PII) of customers', 'Card payments'],
+    'Government / Public sector': ['Government / CJIS / CMMC data', 'Personal data (PII) of customers'],
+    'Technology': ['Personal data (PII) of customers', 'Legal or financial documents'],
+  };
+  function orderedOptions(q: Q): string[] {
+    if (q.id !== 'data') return q.options;
+    const none = 'None of these';
+    const pri = (DATA_PRIORITY[answers.industry] || []).filter((o) => q.options.indexOf(o) >= 0);
+    const rest = q.options.filter((o) => pri.indexOf(o) < 0 && o !== none);
+    return pri.concat(rest).concat([none]);
+  }
+
+  // Prevalence estimates by segment (small / mid / enterprise) — framed as edge.
+  type Prev = { s: number; m: number; e: number; edge: string };
+  const PREV: Record<string, Prev> = {
+    'SHADOW AI': { s: 68, m: 55, e: 39, edge: 'Govern it and you’re ahead of two-thirds of organizations your size.' },
+    'COMPLIANCE': { s: 71, m: 57, e: 33, edge: 'Closing the gap before regulators or insurers look puts you ahead of most peers.' },
+    'EMPLOYEE POLICY': { s: 81, m: 63, e: 37, edge: 'A signed policy is standard at enterprises and rare at your size — an easy edge.' },
+    'ENABLEMENT': { s: 74, m: 61, e: 44, edge: 'Most teams never coach AISkill — the ones that do pull ahead fast.' },
+    'WORKFLOWS': { s: 79, m: 66, e: 48, edge: 'Almost no one shares AI wins across the team. Doing it compounds quietly.' },
+    'CUSTOM AGENTS': { s: 78, m: 66, e: 49, edge: 'Reclaiming these hours with agents is something most of your peers still haven’t done.' },
+    'VENDOR AI TERMS': { s: 92, m: 84, e: 63, edge: 'Almost nobody has this. Having it is a genuine differentiator.' },
+    'CYBER INSURANCE': { s: 74, m: 60, e: 34, edge: 'Knowing where you stand — and whether managed security can strengthen your coverage — beats most of the market.' },
+    'THIRD-PARTY ACCESS': { s: 70, m: 57, e: 41, edge: 'Most organizations never check this — you’d be ahead of them.' },
+  };
+  // (typo guard) fix the ENABLEMENT edge string cleanly
+  PREV['ENABLEMENT'].edge = 'Most teams never coach their people on AI — the ones that do pull ahead fast.';
+
+  const MSGS = [
+    { t: '[ INIT ] Connecting to Fortify AI scan engine...', c: 't-default' },
+    { t: '[ SCAN ] Profiling organizational AI exposure...', c: 't-default' },
+    { t: '[ SCAN ] Detecting shadow AI usage patterns...', c: 't-default' },
+    { t: '[ SCAN ] Mapping data sensitivity & compliance...', c: 't-default' },
+    { t: '[ SCAN ] Assessing team enablement & workflow spread...', c: 't-default' },
+    { t: '[ SCAN ] Estimating automation & agent opportunity...', c: 't-default' },
+    { t: '[ AI   ] Running readiness classification model...', c: 't-ai' },
+    { t: '[ AI   ] Drafting executive analyst note...', c: 't-ai' },
+    { t: '[ DONE ] Scan complete. Compiling findings...', c: 't-done' },
+  ];
+
+  type Finding = { w: number; sev: string; tag: string; head: string; detail: string; fix: string; locked?: boolean; prev?: Prev };
+  type Report = {
+    score: number; band: string; shadowLevel: string; shadowSub: string; flags: string[];
+    hoursVal: string; hoursSub: string; findings: Finding[]; fallbackNote: string;
+  };
+
+  const answers: Record<string, any> = {};
+  let currentQ = 0, scanProg = 0, blinkOn = true;
+  let scanTick: any = null;
+  let aiNote: string | null = null, unlocked = false;
+  let currentReport: Report | null = null;
+  const SHOWN_FINDINGS = 2;
+
+  const $ = (id: string) => document.getElementById(id);
+
+  // Blink
+  setInterval(() => {
+    blinkOn = !blinkOn;
+    const st = $('scanStatusLine'); if (!st) return;
+    const ph = st.dataset.phase || 'intro';
+    if (ph === 'intro') st.textContent = blinkOn ? 'System ready' : ' System ready';
+    const sh = $('scanHeader');
+    if (ph === 'scanning' && sh) sh.textContent = blinkOn ? 'Analysis in progress' : ' Analysis in progress';
+    const cu = $('cursor'); if (cu) cu.textContent = blinkOn ? '_' : ' ';
+  }, 600);
+
+  function show(id: string) {
+    ['introScreen', 'questionScreen', 'scanScreen', 'resultsScreen'].forEach((s) => {
+      const el = $(s); if (el) el.style.display = s === id ? 'block' : 'none';
+    });
+  }
+
+  function setPhase(p: string) { const st = $('scanStatusLine'); if (st) st.dataset.phase = p; }
+
+  $('startBtn')?.addEventListener('click', () => { setPhase('questions'); loadQ(); show('questionScreen'); });
+
+  // Booking modal
+  function openCal() {
+    const f = $('calFrame') as HTMLIFrameElement | null;
+    if (f && f.src === 'about:blank') {
+      f.src = BOOKING_URL + '?embed=true';
+    }
+    $('calOverlay')?.classList.add('active');
+  }
+  $('bookBtn')?.addEventListener('click', openCal);
+  $('calClose')?.addEventListener('click', () => $('calOverlay')?.classList.remove('active'));
+  $('calOverlay')?.addEventListener('click', function (this: HTMLElement, e) { if (e.target === this) this.classList.remove('active'); });
+
+  function loadQ() {
+    const q = QUESTIONS[currentQ];
+    ($('progressFill') as HTMLElement).style.width = ((currentQ / QUESTIONS.length) * 100) + '%';
+    ($('qCount') as HTMLElement).textContent = 'Q ' + (currentQ + 1) + ' / ' + QUESTIONS.length;
+    ($('qLabel') as HTMLElement).textContent = q.label;
+    const ne = $('qNote') as HTMLElement;
+    if (q.note) { ne.textContent = q.note; ne.style.display = 'block'; } else { ne.style.display = 'none'; }
+    ($('qDots') as HTMLElement).innerHTML = QUESTIONS.map((_, i) =>
+      '<div class="scan__qDot' + (i < currentQ ? ' done' : i === currentQ ? ' active' : '') + '"></div>').join('');
+    const sel = answers[q.id] || (q.type === 'multi' ? [] : '');
+    ($('optionsList') as HTMLElement).innerHTML = orderedOptions(q).map((opt) => {
+      const isSel = q.type === 'multi' ? sel.indexOf(opt) >= 0 : sel === opt;
+      return '<button class="scan__opt' + (isSel ? ' selected' : '') + '" data-val="' + encodeURIComponent(opt) + '">'
+        + '<span class="scan__optMark">' + (isSel ? '▪' : '○') + '</span>' + opt + '</button>';
+    }).join('');
+    document.querySelectorAll('#optionsList .scan__opt').forEach((btn) => {
+      btn.addEventListener('click', () => handleAnswer(decodeURIComponent((btn as HTMLElement).dataset.val || '')));
+    });
+    const nb = $('multiNextBtn') as HTMLElement;
+    if (q.type === 'multi') {
+      nb.style.display = 'flex';
+      nb.innerHTML = sel.length > 0 ? 'Continue (' + sel.length + ' selected) <span aria-hidden="true">→</span>' : 'Skip <span aria-hidden="true">→</span>';
+      nb.onclick = advanceQ;
+    } else { nb.style.display = 'none'; }
+  }
+
+  const EXCLUSIVE: Record<string, string> = { data: 'None of these', tools: 'None that I know of' };
+
+  function handleAnswer(val: string) {
+    const q = QUESTIONS[currentQ];
+    if (q.type === 'multi') {
+      let cur = answers[q.id] || [];
+      const none = EXCLUSIVE[q.id];
+      if (none && val === none) {
+        answers[q.id] = cur.indexOf(val) >= 0 ? [] : [none];
+      } else {
+        cur = cur.filter((v: string) => v !== none);
+        const idx = cur.indexOf(val);
+        answers[q.id] = idx >= 0 ? cur.filter((v: string) => v !== val) : cur.concat([val]);
+      }
+      loadQ();
+    } else {
+      answers[q.id] = val;
+      setTimeout(advanceQ, 200);
+    }
+  }
+
+  function advanceQ() {
+    if (currentQ < QUESTIONS.length - 1) { currentQ++; loadQ(); }
+    else { startScan(); }
+  }
+
+  /* ===== Deterministic report engine ===== */
+  const FLAG_MAP: Record<string, string> = {
+    'Medical or health records': 'HIPAA — health data',
+    'Card payments': 'PCI-DSS — card payments',
+    'Legal or financial documents': 'Confidentiality — legal & financial records',
+    'Government / CJIS / CMMC data': 'CMMC / CJIS — government work',
+    'Children’s data': 'COPPA / FERPA — children’s data',
+    'Personal data (PII) of customers': 'GDPR / CCPA — personal data',
+  };
+
+  function computeReport(a: Record<string, any>): Report {
+    const sensitive = (a.data || []).filter((d: string) => d !== 'None of these');
+    const flags = sensitive.map((d: string) => FLAG_MAP[d]).filter(Boolean);
+    const aiManaged = a.ai === 'With clear rules and company accounts';
+    const aiMostly = a.ai === 'We have a policy mostly in place — still finishing it';
+    const aiGoverned = aiManaged || aiMostly;
+    const toolList = (a.tools || []).filter((t: string) => t !== 'None that I know of');
+
+    // Shadow AI (0-30)
+    let shadow = a.ai === 'On personal accounts — no rules' ? 26
+      : a.ai === 'Not that I know of' ? 18
+      : a.ai === 'We just started putting rules together' ? 16
+      : aiMostly ? 9
+      : a.ai === 'We’ve banned it' ? 12
+      : aiManaged ? 5 : 14;
+    if (sensitive.length && !aiGoverned) shadow = Math.min(30, shadow + 4);
+    if (toolList.length >= 3 && !aiGoverned) shadow = Math.min(30, shadow + 2);
+    const empSigned = a.emppolicy === 'Yes — every employee has signed one';
+    const empNone = a.emppolicy === 'No signed policy yet' || a.emppolicy === 'Not sure';
+    if (empNone && !aiManaged) shadow = Math.min(30, shadow + 2);
+
+    // Compliance (0-18)
+    const compliance = flags.length ? (aiGoverned ? Math.min(9, flags.length * 3) : Math.min(18, flags.length * 5)) : 0;
+
+    // Enablement gap (0-16) — the coaching pillar
+    const enable = a.coaching === 'They mostly don’t use it yet' ? 14
+      : a.coaching === 'They’re self-taught — figuring it out alone' ? 12
+      : a.coaching === 'Some ad-hoc training here and there' ? 7
+      : 3;
+
+    // Insurance + vendor exposure (0-14)
+    let insureExp = a.insurance === 'We don’t have cyber insurance' ? 8
+      : a.insurance === 'We have cyber insurance but haven’t checked AI specifically' ? 6
+      : a.insurance === 'Not sure' ? 6 : 1;
+    insureExp += a.vendorterms === 'No — we’ve never asked' ? 4 : a.vendorterms === 'Not sure' ? 3 : 0;
+    insureExp = Math.min(14, insureExp);
+
+    // Agent / automation opportunity (0-12)
+    const agentOpp = a.busywork === 'More than 40' ? 12 : a.busywork === '15-40' ? 9 : a.busywork === '5-15' ? 6 : a.busywork === 'No idea' ? 6 : 2;
+
+    const score = Math.max(4, Math.min(100, shadow + compliance + enable + insureExp + agentOpp));
+    const band = score >= 70 ? 'HIGH' : score >= 45 ? 'ELEVATED' : score >= 25 ? 'MODERATE' : 'LOW';
+
+    const shadowLevel = shadow >= 22 ? 'HIGH' : shadow >= 12 ? 'MODERATE' : 'LOW';
+    const shadowSub = a.ai === 'On personal accounts — no rules' ? (toolList.length ? toolList.length + ' AI tools confirmed, on personal accounts with no rules' : 'AI in use on personal accounts with no usage rules')
+      : a.ai === 'We just started putting rules together' ? 'You’ve started on rules — finishing them is what closes the gap'
+      : aiMostly ? 'Policy mostly in place — finishing and enforcing it locks it in'
+      : a.ai === 'Not that I know of' ? 'Unmonitored — most teams are already using AI quietly'
+      : a.ai === 'We’ve banned it' ? 'Bans push AI use underground rather than stopping it'
+      : aiManaged ? 'Usage governed by clear rules — keep them current' : 'Unknown usage profile';
+
+    const hoursVal = a.busywork === 'Less than 5' ? '2–4 hrs' : a.busywork === '5-15' ? '5–12 hrs' : a.busywork === '15-40' ? '12–30 hrs' : a.busywork === 'More than 40' ? '30+ hrs' : 'Untracked';
+    const hoursSub = a.busywork === 'No idea' ? 'Not knowing this number is itself a cost' : 'Repetitive work a custom agent could take off your team';
+
+    const cands: Finding[] = [];
+
+    // ENABLEMENT / COACHING (pillar 1)
+    if (a.coaching && a.coaching !== 'Every employee gets structured coaching') {
+      cands.push({
+        w: enable + 5, sev: a.coaching === 'They mostly don’t use it yet' ? 'warn' : 'info', tag: 'ENABLEMENT',
+        head: a.coaching === 'They mostly don’t use it yet'
+          ? 'Your team barely uses AI — that’s money and time left on the table.'
+          : 'Your team is self-teaching AI, which means most of them are using it badly.',
+        detail: a.coaching === 'They mostly don’t use it yet'
+          ? 'The gap between a team that uses AI well and one that doesn’t is now a real competitive difference. Left alone, most people never get past copy-pasting into a chatbot.'
+          : 'Self-taught users write weak prompts, get mediocre output, and quietly give up — or worse, trust a bad answer. Skill with AI is what separates a toy from a tool.',
+        fix: 'A prompt coach for every employee lifts output quality and cuts wasted tokens — up to ~80% better prompts and considerably lower usage cost than teams left to figure it out alone.',
+      });
+    }
+
+    // SHADOW AI
+    if (!aiManaged) {
+      cands.push({
+        w: shadow, sev: (sensitive.length && !aiGoverned) ? 'danger' : 'warn', tag: 'SHADOW AI',
+        head: a.ai === 'We’ve banned it' ? 'Your AI ban isn’t stopping AI use — it’s hiding it from you.'
+          : a.ai === 'On personal accounts — no rules' ? (toolList.length ? 'Your team is already on ' + toolList.length + ' AI tools — through personal accounts, with no rules.' : 'Your team uses AI through personal accounts with no rules about what goes into it.')
+          : aiMostly ? 'Your AI rules are almost there — the win is finishing and enforcing them.'
+          : a.ai === 'We just started putting rules together' ? 'You’ve started on AI rules — until they’re finished, the exposure stays open.'
+          : 'AI is almost certainly in use at your organization — just not where you can see it.',
+        detail: (aiGoverned
+          ? 'Even a mostly-complete policy leaves gaps while it’s unfinished — employees still paste real work into free AI tools'
+          : 'Employees paste real work into free AI tools — customer details, pricing, contracts')
+          + (sensitive.length ? ', and in your case potentially ' + sensitive.join(', ').toLowerCase() : '')
+          + '. Public tools can retain and train on that data, outside any agreement that protects you.',
+        fix: (aiMostly || a.ai === 'We just started putting rules together')
+          ? 'We help you finish the AI usage policy and move the team onto governed, business-grade accounts — so the rules you started actually hold.'
+          : 'A one-page AI usage policy plus governed, business-grade AI accounts gives your team the productivity without the exposure.',
+      });
+    }
+
+    // COMPLIANCE
+    if (flags.length && !aiGoverned) {
+      cands.push({
+        w: flags.length * 7 + 4, sev: 'danger', tag: 'COMPLIANCE',
+        head: 'Your data obligations and your AI usage haven’t met each other yet.',
+        detail: 'You handle ' + sensitive.join(', ').toLowerCase() + ' — which puts you under ' + flags.map((f: string) => f.split(' — ')[0]).join(', ')
+          + '. Ungoverned AI use with this data is the gap regulators, insurers, and opposing counsel look for first.',
+        fix: 'Access controls, an approved-tools list, and monitoring close the gap — usually without slowing anyone down.',
+      });
+    }
+
+    // WORKFLOWS DON'T SPREAD (pillar 2)
+    if (toolList.length >= 2 || a.goal === 'Roll AI out to the whole team') {
+      cands.push({
+        w: 8, sev: 'info', tag: 'WORKFLOWS',
+        head: 'When one person figures out a great AI workflow, does everyone doing that job get it?',
+        detail: 'In most organizations, one sharp employee builds a genuinely useful AI workflow — and it dies on their laptop. Everyone else keeps doing it the slow way, and the win never compounds.',
+        fix: 'We capture the workflows and skills that work and spread them to everyone in that role — so one person’s win becomes the whole team’s baseline.',
+      });
+    }
+
+    // CUSTOM AGENTS (pillar 3)
+    const busyW = a.busywork === 'More than 40' ? 14 : a.busywork === '15-40' ? 10 : a.busywork === '5-15' ? 6 : a.busywork === 'No idea' ? 7 : 2;
+    if (busyW >= 6 || a.goal === 'Build custom agents for our workflows') {
+      cands.push({
+        w: busyW, sev: 'info', tag: 'CUSTOM AGENTS',
+        head: a.busywork === 'No idea' ? 'You can’t reclaim hours you aren’t counting.'
+          : 'Your team is spending ' + hoursVal + ' a week on work a custom agent should do.',
+        detail: 'Scheduling, data entry, follow-up, and copy-paste between systems are exactly the tasks a purpose-built agent removes first — and the tasks your best people resent most.',
+        fix: 'We build custom agents with you — starting with the task your team hates most — so the hours go back into work that actually earns.',
+      });
+    }
+
+    // EMPLOYEE POLICY
+    if (!empSigned && a.emppolicy) {
+      cands.push({
+        w: empNone ? 13 : 9, sev: empNone ? 'warn' : 'info', tag: 'EMPLOYEE POLICY',
+        head: empNone ? 'There’s no signed AI & data policy your team is actually held to.'
+          : 'You have a policy — but not everyone has signed it, so it’s hard to enforce.',
+        detail: 'A policy nobody signed is a suggestion, not a control. If an employee leaks data through an AI tool, “we told them not to” doesn’t hold up with a regulator, an insurer, or in court — a signed acknowledgment does.',
+        fix: 'We produce a plain-language AI & data use policy written for your organization, ready for every employee to sign — documented, acknowledged, and enforceable.',
+      });
+    }
+
+    // Universal findings
+    cands.push({
+      w: 8, sev: 'warn', tag: 'THIRD-PARTY ACCESS',
+      head: 'Your vendors touch your data — do you know if they run it through their own AI?',
+      detail: 'Your bookkeeper, marketing help, IT contractor, and software vendors all handle your data. Any one of them pasting it into their own AI tools is exposure you inherit but can’t see — and their mistake becomes your problem.',
+      fix: 'We map who can reach what, and help you set the expectation that your data never goes into anyone’s ungoverned AI — yours or theirs.',
+    });
+    cands.push({
+      w: 7, sev: 'info', tag: 'CYBER INSURANCE',
+      head: 'Even a clean setup: does your cyber policy actually cover an AI-related incident?',
+      detail: 'Many cyber policies written before the last renewal cycle have silent gaps or exclusions for AI-driven data exposure. As a Lloyd’s of London cyber-insurance partner, i-NETT can help you see where you stand — and because our managed security lowers risk, the organizations we manage can qualify for stronger coverage and better pricing.',
+      fix: 'We check your posture against how insurers now write AI exclusions, so you know exactly where you stand — and where managed security could strengthen your position — before you ever need to file.',
+    });
+
+    cands.sort((x, y) => y.w - x.w);
+    const findings = cands.slice(0, 5);
+
+    // Hero locked finding — always present, revealed only after the lead form.
+    const vendorYes = a.vendorterms === 'Yes — it’s in our vendor contracts';
+    findings.push({
+      w: 0, locked: true, sev: vendorYes ? 'warn' : 'danger', tag: 'VENDOR AI TERMS',
+      head: vendorYes
+        ? 'You have vendor agreements — but do they actually mention AI, or just data?'
+        : 'Have the vendors who touch your data signed anything about using AI with it?',
+      detail: vendorYes
+        ? 'Most vendor contracts signed before the last year or two govern data handling but say nothing about AI specifically. If your bookkeeper or agency runs your data through their own AI tools, an older data clause may not cover it — and the liability quietly drifts back to you.'
+        : 'This is the one almost nobody has covered. When a contractor or vendor runs your customer data, financials, or IP through an AI tool, whose liability is that? Without a signed agreement that specifically governs AI use of your data, the answer is usually you. It is the most overlooked exposure we find — and the easiest to close on paper.',
+      fix: 'We give you a plain-language AI data clause to add to your vendor agreements, so any third party handling your data is explicitly on the hook for how they use it. This is the first thing we’d put in front of you on a call.',
+    });
+
+    findings.forEach((f) => { if (PREV[f.tag]) f.prev = PREV[f.tag]; });
+
+    const industryPhrase = a.industry && a.industry !== 'Other' ? 'a ' + a.industry.toLowerCase() + ' organization' : 'an organization';
+    const fallbackNote = 'For ' + industryPhrase + ' your size, this profile is '
+      + (band === 'LOW' ? 'in good shape — the findings above are refinements, not alarms' : band === 'MODERATE' ? 'typical, and typical means fixable'
+        : 'carrying real, addressable exposure') + '. '
+      + (findings.length ? 'The place to start is the top finding: ' + findings[0].head.toLowerCase().replace(/\.$/, '') + '. ' : '')
+      + 'None of this requires a big IT project — the first Fortify AI deployment is usually live within 30 days, and a free 30-minute review turns this report into that plan.';
+
+    return { score, band, shadowLevel, shadowSub, flags, hoursVal, hoursSub, findings, fallbackNote };
+  }
+
+  /* ===== Scan theater + AI note ===== */
+  function startScan() {
+    setPhase('scanning');
+    show('scanScreen');
+    scanProg = 0;
+    scanTick = setInterval(() => {
+      scanProg = Math.min(scanProg + 1.6, 96);
+      ($('scanFill') as HTMLElement).style.width = scanProg + '%';
+      ($('scanPct') as HTMLElement).textContent = Math.round(scanProg) + '% complete';
+    }, 80);
+    MSGS.forEach((msg, i) => {
+      setTimeout(() => {
+        const term = $('terminal'); const cur = $('cursor');
+        if (!term || !cur) return;
+        const div = document.createElement('div');
+        div.className = msg.c; div.textContent = msg.t;
+        term.insertBefore(div, cur);
+      }, i * 550 + 400);
+    });
+
+    const report = computeReport(answers);
+    currentReport = report;
+    fetchAnalystNote(report);
+
+    setTimeout(() => {
+      clearInterval(scanTick);
+      ($('scanFill') as HTMLElement).style.width = '100%';
+      ($('scanPct') as HTMLElement).textContent = '100% complete';
+      setTimeout(() => showResults(report), 500);
+    }, MSGS.length * 550 + 900);
+  }
+
+  function fetchAnalystNote(report: Report) {
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    if (controller) setTimeout(() => controller.abort(), 12000);
+    fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller ? controller.signal : undefined,
+      body: JSON.stringify({
+        answers,
+        computed: {
+          score: report.score, band: report.band, shadowLevel: report.shadowLevel,
+          flags: report.flags, hours: report.hoursVal,
+          findings: report.findings.map((f) => ({ tag: f.tag, headline: f.head })),
+        },
+      }),
+    }).then((res) => { if (!res.ok) throw new Error('API ' + res.status); return res.json(); })
+      .then((data) => {
+        if (data && typeof data.analystNote === 'string' && data.analystNote.length > 40) {
+          aiNote = data.analystNote;
+          if (unlocked) {
+            const el = $('analystText') as HTMLElement;
+            el.style.opacity = '0';
+            setTimeout(() => { el.textContent = aiNote as string; el.style.opacity = '1'; }, 400);
+          }
+        }
+      }).catch(() => { /* fallback covers this */ });
+  }
+
+  function renderFinding(f: Finding, i: number): string {
+    const fc = f.sev === 'danger' ? 'scan__finding--danger' : f.sev === 'info' ? 'scan__finding--info' : 'scan__finding--warn';
+    const ft = f.sev === 'danger' ? 'scan-tag--danger' : f.sev === 'info' ? 'scan-tag--info' : 'scan-tag--warn';
+    return '<div class="scan__finding ' + fc + '">'
+      + '<div class="scan__findingTop"><span class="scan-tag ' + ft + '">' + f.tag + '</span><span class="scan__findingNum">FINDING 0' + (i + 1) + '</span></div>'
+      + '<div class="scan__findingHead">' + f.head + '</div>'
+      + '<div class="scan__findingDetail">' + f.detail + '</div>'
+      + '<div class="scan__findingFix"><strong>What to do:</strong> ' + f.fix + '</div>'
+      + (f.prev ? '<div class="scan__findingPrev"><span class="scan__fpLead">How common</span> — <b>' + f.prev.s + '%</b> of small organizations, <b>' + f.prev.m + '%</b> of mid-sized, and <b>' + f.prev.e + '%</b> of enterprises also miss this. ' + f.prev.edge + '</div>' : '')
+      + '</div>';
+  }
+
+  function showResults(r: Report) {
+    const color = r.band === 'HIGH' ? '#C13030' : r.band === 'ELEVATED' ? '#B86E00' : r.band === 'MODERATE' ? '#C99700' : '#0F8B5F';
+    const arcLen = 220, filled = (r.score / 100) * arcLen;
+    const angle = -180 + (r.score / 100) * 180, rad = angle * Math.PI / 180;
+    const cx = 82 + 70 * Math.cos(rad), cy = 88 + 70 * Math.sin(rad);
+    ($('meterArc') as any).style.stroke = color;
+    ($('meterArc') as any).setAttribute('stroke-dashoffset', String(arcLen - filled));
+    ($('meterDot') as any).setAttribute('cx', String(cx));
+    ($('meterDot') as any).setAttribute('cy', String(cy));
+    ($('meterDot') as any).style.fill = color;
+    ($('meterScore') as any).textContent = String(r.score);
+    ($('meterScore') as any).style.fill = color;
+    ($('meterLabel') as any).textContent = r.band;
+    ($('meterLabel') as any).style.fill = color;
+    const tc = r.band === 'HIGH' ? 'scan-tag--danger' : r.band === 'ELEVATED' ? 'scan-tag--warn' : r.band === 'MODERATE' ? 'scan-tag--warn' : 'scan-tag--ok';
+    const rt = $('riskTag') as HTMLElement; rt.className = 'scan-tag ' + tc; rt.textContent = r.band;
+
+    ($('shadowEst') as HTMLElement).textContent = r.shadowLevel;
+    ($('shadowSub') as HTMLElement).textContent = r.shadowSub;
+    ($('compFlags') as HTMLElement).textContent = String(r.flags.length);
+    ($('compSub') as HTMLElement).textContent = r.flags.length ? r.flags.join(' · ') : 'No regulated data categories reported';
+    ($('hoursVal') as HTMLElement).textContent = r.hoursVal;
+    ($('hoursSub') as HTMLElement).textContent = r.hoursSub;
+
+    const shown = r.findings.slice(0, SHOWN_FINDINGS);
+    const hidden = r.findings.slice(SHOWN_FINDINGS);
+    ($('findingsList') as HTMLElement).innerHTML = shown.map((f, i) => renderFinding(f, i)).join('');
+
+    ($('lockedLabel') as HTMLElement).textContent = hidden.length
+      ? ('+' + hidden.length + ' MORE FINDING' + (hidden.length > 1 ? 'S' : '') + ' IN YOUR FULL REPORT')
+      : 'YOUR ANALYST NOTE';
+    ($('lockedCards') as HTMLElement).innerHTML = hidden.map((f, i) => {
+      const ft = f.sev === 'danger' ? 'scan-tag--danger' : f.sev === 'info' ? 'scan-tag--info' : 'scan-tag--warn';
+      return '<div class="scan__locked"><div class="scan__lockedGhost">'
+        + '<div style="display:flex;justify-content:space-between;margin-bottom:7px"><span class="scan-tag ' + ft + '">' + f.tag + '</span><span class="scan__findingNum">FINDING 0' + (i + 1 + SHOWN_FINDINGS) + '</span></div>'
+        + '<div class="scan__ghostBar" style="width:72%"></div><div class="scan__ghostBar" style="width:88%"></div><div class="scan__ghostBar" style="width:55%"></div></div>'
+        + '<div class="scan__lockedOverlay"><span style="font-size:15px">🔒</span><span class="scan__lockLabel">UNLOCKS WITH YOUR FULL REPORT</span></div></div>';
+    }).join('');
+
+    show('resultsScreen');
+    const st = $('scanStatusLine') as HTMLElement; st.textContent = 'Scan complete'; st.dataset.phase = 'results';
+    setTimeout(() => {
+      const cta = $('ctaSection') as HTMLElement;
+      cta.style.opacity = '1'; cta.style.transform = 'translateY(0)';
+    }, 900);
+  }
+
+  /* ===== Lead gate ===== */
+  document.querySelectorAll('#leadChips .scan__chip').forEach((b) => {
+    b.addEventListener('click', () => (b as HTMLElement).classList.toggle('is-on'));
+  });
+
+  $('unlockBtn')?.addEventListener('click', () => {
+    const name = $('leadName') as HTMLInputElement, company = $('leadCompany') as HTMLInputElement,
+      website = $('leadWebsite') as HTMLInputElement, email = $('leadEmail') as HTMLInputElement, cell = $('leadCell') as HTMLInputElement;
+    const err = $('gateError') as HTMLElement;
+    [name, company, email, cell].forEach((el) => el.classList.remove('invalid'));
+    const problems: string[] = [];
+    if (!name.value.trim()) { problems.push('name'); name.classList.add('invalid'); }
+    if (!company.value.trim()) { problems.push('company'); company.classList.add('invalid'); }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.value.trim())) { problems.push('a valid email'); email.classList.add('invalid'); }
+    if (cell.value.replace(/\D/g, '').length < 7) { problems.push('cell phone'); cell.classList.add('invalid'); }
+    if (problems.length) {
+      err.textContent = 'Please add your ' + problems.join(', ').replace(/, ([^,]*)$/, ' and $1') + '.';
+      err.style.display = 'block';
+      return;
+    }
+    err.style.display = 'none';
+    const contact = Array.from(document.querySelectorAll('#leadChips .scan__chip.is-on')).map((b) => (b as HTMLElement).dataset.c);
+    const lead = { name: name.value.trim(), company: company.value.trim(), website: website.value.trim(), email: email.value.trim(), cell: cell.value.trim(), contact };
+    unlockReport();
+    submitLead(lead);
+  });
+
+  function unlockReport() {
+    unlocked = true;
+    const r = currentReport as Report;
+    ($('findingsList') as HTMLElement).innerHTML = r.findings.map((f, i) => renderFinding(f, i)).join('');
+    ($('shownLabel') as HTMLElement).textContent = 'YOUR FULL FINDINGS — AND WHAT TO DO ABOUT EACH';
+    ($('gateSection') as HTMLElement).style.display = 'none';
+    const box = $('analystBox') as HTMLElement;
+    ($('analystText') as HTMLElement).textContent = aiNote || r.fallbackNote;
+    box.style.display = 'block';
+    ($('findingsList') as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function submitLead(lead: any) {
+    const r = currentReport as Report;
+    fetch(PROXY_URL + '/lead', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        lead, answers,
+        computed: {
+          score: r.score, band: r.band, shadowLevel: r.shadowLevel, flags: r.flags, hours: r.hoursVal,
+          findings: r.findings.map((f) => ({ tag: f.tag, headline: f.head, detail: f.detail, fix: f.fix, sev: f.sev })),
+        },
+        analystNote: aiNote || r.fallbackNote,
+        pageUrl: location.href,
+      }),
+    }).catch(() => { /* best-effort; the visitor already has their report */ });
+  }
+</script>
