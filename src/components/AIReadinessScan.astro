@@ -394,7 +394,7 @@ import { SITE } from '../lib/site';
   .scan__ctaTop { font-family: var(--font-mono); font-size: 9px; color: var(--color-text-muted); letter-spacing: 2px; margin-bottom: 4px; }
   .scan__ctaSub { font-size: 13px; color: var(--color-text-soft); line-height: 1.6; }
   .scan__ctaFine { text-align: center; font-family: var(--font-mono); font-size: 10px; color: var(--color-text-muted); margin-top: 10px; }
-  .scan__disclaimer { text-align: center; margin-top: var(--space-2); }
+  .scan__disclaimer { text-align: center; margin: var(--space-2) auto 0; max-width: 68ch; }
 
   /* ===== Booking modal ===== */
   .scan-cal { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.75); z-index: 999; flex-direction: column; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
@@ -408,6 +408,8 @@ import { SITE } from '../lib/site';
 </style>
 
 <script>
+  import { jsPDF } from 'jspdf';
+
   // The report is computed ENTIRELY in this component from the answers, so it
   // renders complete even if the backend is unreachable. The Worker call only
   // enhances the Analyst Note and routes the lead into HubSpot.
@@ -939,8 +941,14 @@ import { SITE } from '../lib/site';
     ($('findingsList') as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  function submitLead(lead: any) {
+  async function submitLead(lead: any) {
     const r = currentReport as Report;
+    const note = aiNote || r.fallbackNote;
+    // Build the branded report documents client-side (best-effort — never blocks).
+    let reportHtml = '';
+    try { reportHtml = reportDocHtml(lead, r, note); } catch (e) { /* noop */ }
+    let pdfBase64: string | null = null;
+    try { pdfBase64 = buildPdf(lead, r, note); } catch (e) { pdfBase64 = null; }
     fetch(PROXY_URL + '/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -948,11 +956,191 @@ import { SITE } from '../lib/site';
         lead, answers,
         computed: {
           score: r.score, band: r.band, shadowLevel: r.shadowLevel, flags: r.flags, hours: r.hoursVal,
-          findings: r.findings.map((f) => ({ tag: f.tag, headline: f.head, detail: f.detail, fix: f.fix, sev: f.sev })),
+          findings: r.findings.map((f) => ({ tag: f.tag, headline: f.head, detail: f.detail, fix: f.fix, sev: f.sev, prev: f.prev })),
         },
-        analystNote: aiNote || r.fallbackNote,
+        analystNote: note,
+        reportHtml,
+        pdfBase64,
         pageUrl: location.href,
       }),
     }).catch(() => { /* best-effort; the visitor already has their report */ });
+  }
+
+  /* ===== Report documents (PDF + standalone HTML) ===== */
+  function esc(s: any): string {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as any)[c]);
+  }
+  function answerRows(): { label: string; value: string }[] {
+    return QUESTIONS.map((q) => {
+      const v = answers[q.id];
+      return { label: q.label, value: Array.isArray(v) ? (v.join(', ') || '(skipped)') : (v || '(skipped)') };
+    });
+  }
+  function bandHex(band: string): string {
+    return band === 'HIGH' ? '#C13030' : band === 'ELEVATED' ? '#B86E00' : band === 'MODERATE' ? '#C99700' : '#0F8B5F';
+  }
+
+  // Self-contained HTML report that mirrors the on-screen output. Opens
+  // pixel-faithful in any browser; attached to the notification email.
+  function reportDocHtml(lead: any, r: any, note: string): string {
+    const bc = bandHex(r.band);
+    const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const tile = (label: string, val: string, sub: string, color: string) =>
+      '<td style="width:33.33%;vertical-align:top;padding:5px;">'
+      + '<div style="border:1px solid ' + color + '55;border-radius:10px;padding:12px 14px;background:' + color + '0f;">'
+      + '<div style="font:700 9px/1 monospace;letter-spacing:1.5px;color:' + color + ';margin-bottom:6px;">' + esc(label) + '</div>'
+      + '<div style="font:700 15px/1.2 Arial,sans-serif;color:#0A2540;">' + esc(val) + '</div>'
+      + '<div style="font:12px/1.4 Arial,sans-serif;color:#4A5A6E;margin-top:4px;">' + esc(sub) + '</div></div></td>';
+    const bar = (label: string, pct: number, color: string) =>
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;font:12px Arial,sans-serif;">'
+      + '<span style="width:130px;color:#4A5A6E;">' + label + '</span>'
+      + '<span style="flex:1;height:9px;background:#ECF1F7;border-radius:99px;overflow:hidden;"><span style="display:block;height:100%;width:' + pct + '%;background:' + color + ';border-radius:99px;"></span></span>'
+      + '<span style="width:44px;text-align:right;font:700 13px monospace;color:' + color + ';">' + pct + '%</span></div>';
+    const findingHtml = (r.findings || []).map((f: any, i: number) => {
+      const c = f.sev === 'danger' ? '#C13030' : f.sev === 'info' ? '#00B4FF' : '#B86E00';
+      const prev = f.prev
+        ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #DDE5EE;">'
+          + '<div style="font:700 10px/1 monospace;letter-spacing:1.5px;color:#6B7A8E;text-transform:uppercase;margin-bottom:10px;">How common is this gap?</div>'
+          + bar('Small businesses', f.prev.s, '#B86E00') + bar('Mid-sized', f.prev.m, '#00B4FF') + bar('Enterprises', f.prev.e, '#0F8B5F')
+          + '<div style="margin-top:10px;padding-left:12px;border-left:2px solid #66D6FF;font:italic 12px/1.6 Arial,sans-serif;color:#4A5A6E;">' + esc(f.prev.edge) + '</div></div>'
+        : '';
+      return '<div style="border:1px solid #DDE5EE;border-left:4px solid ' + c + ';border-radius:10px;padding:16px 18px;margin-bottom:14px;background:#fff;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+        + '<span style="font:700 10px/1 monospace;letter-spacing:1px;color:' + c + ';border:1px solid ' + c + ';border-radius:3px;padding:3px 8px;">' + esc(f.tag) + '</span>'
+        + '<span style="font:10px monospace;color:#6B7A8E;">FINDING 0' + (i + 1) + '</span></div>'
+        + '<div style="font:700 17px/1.35 Arial,sans-serif;color:#0A2540;margin-bottom:8px;">' + esc(f.head) + '</div>'
+        + '<div style="font:14px/1.65 Arial,sans-serif;color:#4A5A6E;margin-bottom:12px;">' + esc(f.detail) + '</div>'
+        + '<div style="font:14px/1.6 Arial,sans-serif;color:#0E1B2C;background:#F6F8FB;border:1px solid #DDE5EE;border-radius:6px;padding:11px 13px;"><b style="color:#0F8B5F;">What to do:</b> ' + esc(f.fix) + '</div>'
+        + prev + '</div>';
+    }).join('');
+    const ansHtml = answerRows().map((a) =>
+      '<tr><td style="padding:6px 10px;border-bottom:1px solid #ECF1F7;font:13px Arial,sans-serif;color:#4A5A6E;width:55%;">' + esc(a.label) + '</td>'
+      + '<td style="padding:6px 10px;border-bottom:1px solid #ECF1F7;font:600 13px Arial,sans-serif;color:#0A2540;">' + esc(a.value) + '</td></tr>').join('');
+    return '<!doctype html><html><head><meta charset="utf-8"><title>Fortify AI Readiness & Risk Report</title></head>'
+      + '<body style="margin:0;background:#F6F8FB;font-family:Arial,Helvetica,sans-serif;color:#0E1B2C;">'
+      + '<div style="max-width:720px;margin:0 auto;padding:24px;">'
+      + '<div style="background:#050B14;border-radius:14px 14px 0 0;padding:22px 24px;color:#fff;">'
+      + '<div style="font:700 10px/1 monospace;letter-spacing:3px;color:#00E0FF;margin-bottom:6px;">FORTIFY AI &middot; i-NETT</div>'
+      + '<div style="font:800 22px/1.1 Arial,sans-serif;">AI Readiness &amp; Risk Report</div>'
+      + '<div style="font:13px Arial,sans-serif;color:#B7C6D8;margin-top:6px;">Prepared for ' + esc(lead.company || '—') + ' &middot; ' + date + '</div>'
+      + '<div style="font:12px Arial,sans-serif;color:#8ba0b5;margin-top:2px;">' + esc([lead.name, lead.email, lead.cell, lead.website].filter(Boolean).join('  ·  ')) + '</div></div>'
+      + '<div style="background:#fff;border:1px solid #DDE5EE;border-top:none;border-radius:0 0 14px 14px;padding:24px;">'
+      + '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;">'
+      + '<span style="font:800 40px/1 monospace;color:' + bc + ';">' + r.score + '</span>'
+      + '<span style="font:700 14px Arial;color:#0A2540;">/ 100</span>'
+      + '<span style="margin-left:auto;font:700 13px monospace;letter-spacing:2px;color:' + bc + ';border:1px solid ' + bc + ';border-radius:4px;padding:4px 10px;">' + esc(r.band) + '</span></div>'
+      + '<div style="height:10px;background:#ECF1F7;border-radius:99px;overflow:hidden;margin-bottom:20px;"><span style="display:block;height:100%;width:' + r.score + '%;background:' + bc + ';border-radius:99px;"></span></div>'
+      + '<table style="width:100%;border-collapse:collapse;margin-bottom:22px;"><tr>'
+      + tile('SHADOW AI EXPOSURE', r.shadowLevel, r.shadowSub, '#B86E00')
+      + tile('COMPLIANCE FLAGS', String(r.flags.length), r.flags.length ? r.flags.join(' · ') : 'No regulated data reported', '#C13030')
+      + tile('RECOVERABLE HRS / WK', r.hoursVal, r.hoursSub, '#0F8B5F')
+      + '</tr></table>'
+      + '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#6B7A8E;margin-bottom:12px;">FINDINGS — AND WHAT TO DO ABOUT EACH</div>'
+      + findingHtml
+      + '<div style="background:#0A2540;border-radius:10px;padding:16px 18px;margin:8px 0 22px;">'
+      + '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#66D6FF;margin-bottom:6px;">ANALYST NOTE</div>'
+      + '<div style="font:14px/1.65 Arial,sans-serif;color:#F4F8FC;">' + esc(note) + '</div></div>'
+      + '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#6B7A8E;margin-bottom:8px;">SCAN INPUTS</div>'
+      + '<table style="width:100%;border-collapse:collapse;">' + ansHtml + '</table>'
+      + '<div style="margin-top:22px;font:12px Arial;color:#6B7A8E;border-top:1px solid #DDE5EE;padding-top:12px;">i-NETT · i-nett.ai · (858) 337-2866 · hello@i-nett.com — Free 30-minute review at i-nett.ai/resources</div>'
+      + '</div></div></body></html>';
+  }
+
+  // jsPDF is bundled with the site (no external CDN), so the PDF always
+  // generates. Best-effort: returns null on any failure and the email still
+  // goes out with the HTML report + inputs.
+  function buildPdf(lead: any, r: any, note: string): string | null {
+    try { return renderPdf(lead, r, note); } catch (e) { return null; }
+  }
+  // Hand-drawn dark-header report PDF mirroring the on-screen look. Deterministic
+  // vector output, always compact. Returns base64 (no data-uri prefix) or null.
+  function renderPdf(lead: any, r: any, note: string): string | null {
+    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+    const PW = 210, PH = 297, M = 14; let y = 0;
+    const PANEL = [246, 248, 251], BORD = [221, 229, 238], INK = [10, 37, 64], MUT = [74, 90, 110], TEAL = [15, 139, 95], BLUE = [0, 180, 255], WARN = [184, 110, 0], DANG = [193, 48, 48], WHITE = [255, 255, 255];
+    const band = r.band === 'HIGH' ? DANG : r.band === 'ELEVATED' ? WARN : r.band === 'MODERATE' ? [201, 151, 0] : TEAL;
+    const CW = PW - 2 * M;
+    const fill = (c: number[]) => doc.setFillColor(c[0], c[1], c[2]);
+    const setT = (c: number[]) => doc.setTextColor(c[0], c[1], c[2]);
+    const wrap = (t: any, w: number, s: number, st?: string) => { doc.setFont('helvetica', st || 'normal'); doc.setFontSize(s); return doc.splitTextToSize(String(t || ''), w); };
+    const ensure = (h: number) => { if (y + h > PH - 14) { doc.addPage(); y = 16; } };
+
+    fill([5, 11, 20]); doc.rect(0, 0, PW, 34, 'F');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT([0, 224, 255]); doc.text('FORTIFY AI  ·  i-NETT', M, 13);
+    doc.setFontSize(19); setT(WHITE); doc.text('AI Readiness & Risk Report', M, 23);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); setT([183, 198, 216]);
+    const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    doc.text('Prepared for ' + (lead.company || '—') + '   ·   ' + date, M, 30);
+    y = 44;
+
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT(MUT); doc.text('EXPOSURE SCORE', M, y); y += 9;
+    doc.setFontSize(30); setT(band); doc.text(String(r.score), M, y);
+    const sw = doc.getTextWidth(String(r.score));
+    doc.setFontSize(12); setT([14, 27, 44]); doc.text('/ 100', M + sw + 3, y);
+    doc.setFontSize(13); setT(band); doc.text(r.band, PW - M, y, { align: 'right' }); y += 5;
+    fill(BORD); doc.roundedRect(M, y, CW, 3.4, 1.7, 1.7, 'F');
+    fill(band); doc.roundedRect(M, y, Math.max(4, CW * r.score / 100), 3.4, 1.7, 1.7, 'F'); y += 12;
+
+    const tiles = [['SHADOW AI', r.shadowLevel, r.shadowSub, WARN], ['COMPLIANCE FLAGS', String(r.flags.length), (r.flags.length ? r.flags.join(' · ') : 'None reported'), DANG], ['RECOVERABLE HRS / WK', r.hoursVal, r.hoursSub, TEAL]];
+    const tw = (CW - 2 * 4) / 3;
+    tiles.forEach((t: any, i: number) => {
+      const tx = M + i * (tw + 4); fill(PANEL); doc.roundedRect(tx, y, tw, 24, 2, 2, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(6); setT(t[3]); doc.text(t[0], tx + 3.5, y + 5);
+      doc.setFontSize(12); setT(INK); doc.text(String(t[1]), tx + 3.5, y + 11.5);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(6); setT(MUT); doc.text(doc.splitTextToSize(t[2] || '', tw - 7).slice(0, 2), tx + 3.5, y + 16.5);
+    });
+    y += 30;
+
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT(MUT); ensure(8); doc.text('FINDINGS — AND WHAT TO DO ABOUT EACH', M, y); y += 6;
+    (r.findings || []).forEach((f: any, i: number) => {
+      const sc = f.sev === 'danger' ? DANG : f.sev === 'info' ? BLUE : WARN;
+      const headL = wrap(f.head, CW - 12, 11, 'bold');
+      const detL = wrap(f.detail, CW - 12, 8.5, 'normal');
+      const fixL = wrap('What to do: ' + f.fix, CW - 12, 8.5, 'normal');
+      const prevH = f.prev ? 21 : 0;
+      const h = 8 + headL.length * 4.8 + detL.length * 3.9 + 3 + fixL.length * 3.9 + 5 + prevH;
+      ensure(h + 3);
+      fill(WHITE); doc.setDrawColor(BORD[0], BORD[1], BORD[2]); doc.setLineWidth(0.3); doc.roundedRect(M, y, CW, h, 2, 2, 'FD');
+      fill(sc); doc.rect(M, y, 1.6, h, 'F');
+      let cy = y + 6;
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); setT(sc); doc.text(f.tag, M + 6, cy);
+      doc.setFontSize(6.5); setT(MUT); doc.text('FINDING 0' + (i + 1), PW - M - 3, cy, { align: 'right' }); cy += 5.5;
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); setT(INK); doc.text(headL, M + 6, cy); cy += headL.length * 4.8;
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); setT(MUT); doc.text(detL, M + 6, cy); cy += detL.length * 3.9 + 3;
+      setT(TEAL); doc.text(fixL, M + 6, cy); cy += fixL.length * 3.9 + 5;
+      if (f.prev) {
+        const bars = [['Small businesses', f.prev.s, WARN], ['Mid-sized', f.prev.m, BLUE], ['Enterprises', f.prev.e, TEAL]];
+        bars.forEach((b: any) => {
+          doc.setFont('helvetica', 'normal'); doc.setFontSize(7); setT(MUT); doc.text(b[0], M + 6, cy);
+          const bx = M + 40, bw = CW - 40 - 20;
+          fill([236, 241, 247]); doc.roundedRect(bx, cy - 2.3, bw, 2.4, 1.2, 1.2, 'F');
+          fill(b[2]); doc.roundedRect(bx, cy - 2.3, Math.max(1, bw * b[1] / 100), 2.4, 1.2, 1.2, 'F');
+          doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); setT(b[2]); doc.text(b[1] + '%', PW - M - 4, cy, { align: 'right' });
+          cy += 5;
+        });
+      }
+      y += h + 3;
+    });
+
+    y += 2; ensure(14);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT([17, 53, 92]); doc.text('ANALYST NOTE', M, y); y += 5;
+    const noteL = wrap(note, CW - 11, 9, 'italic'); const nh = noteL.length * 4.4 + 9;
+    ensure(nh); fill(INK); doc.roundedRect(M, y, CW, nh, 2, 2, 'F');
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(9); setT([244, 248, 252]); doc.text(noteL, M + 5.5, y + 6); y += nh + 9;
+
+    ensure(12); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT(MUT); doc.text('SCAN INPUTS', M, y); y += 6;
+    answerRows().forEach((a) => {
+      const lL = wrap(a.label, CW * 0.54, 8, 'normal');
+      const vL = wrap(a.value, CW * 0.42, 8, 'bold');
+      const rh = Math.max(lL.length, vL.length) * 3.7 + 2.5;
+      ensure(rh);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setT(MUT); doc.text(lL, M, y);
+      doc.setFont('helvetica', 'bold'); setT(INK); doc.text(vL, M + CW * 0.56, y);
+      y += rh; doc.setDrawColor(236, 241, 247); doc.setLineWidth(0.2); doc.line(M, y - 1.5, PW - M, y - 1.5);
+    });
+
+    y += 6; ensure(8); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setT(MUT);
+    doc.text('i-NETT · i-nett.ai · (858) 337-2866 · hello@i-nett.com — Free 30-minute review at i-nett.ai/resources', M, y);
+    return doc.output('datauristring').split(',')[1] || null;
   }
 </script>
