@@ -398,10 +398,12 @@ import { SITE } from '../lib/site';
   .scan__lockList { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: var(--space-4); }
   @media (min-width: 560px) { .scan__lockList { grid-template-columns: 1fr 1fr; } }
   .scan__lockItem { display: flex; align-items: center; gap: 10px; padding: 11px 14px; background: var(--color-bg-soft); border: 1px solid var(--color-border); border-radius: var(--radius-md); }
-  .scan__lockRisk { font-size: 12px; font-weight: 700; margin-left: auto; white-space: nowrap; }
-  .scan__lockRisk--high { color: var(--color-danger); }
-  .scan__lockRisk--mid { color: var(--color-warning); }
-  .scan__lockRisk--low { color: var(--color-text-muted); }
+  .scan__lockMeta { margin-left: auto; display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+  .scan__lockRisk { font-size: 12px; font-weight: 700; }
+  .scan__lockPct { font-family: var(--font-mono); font-size: 13px; font-weight: 700; }
+  .scan__lockRisk--high, .scan__lockPct.scan__lockRisk--high { color: var(--color-danger); }
+  .scan__lockRisk--mid, .scan__lockPct.scan__lockRisk--mid { color: var(--color-warning); }
+  .scan__lockRisk--low, .scan__lockPct.scan__lockRisk--low { color: var(--color-ink-600); }
   .scan__lockIcon { font-size: 13px; opacity: 0.55; }
 
   /* Meeting gate — the rest is a working session */
@@ -751,12 +753,12 @@ import { SITE } from '../lib/site';
       cands.push({
         w: enable + 5, sev: a.coaching === 'They mostly don’t use it yet' ? 'warn' : 'info', tag: 'ENABLEMENT',
         head: a.coaching === 'They mostly don’t use it yet'
-          ? 'Your team barely uses AI — that’s money and time left on the table.'
-          : 'Your team is self-teaching AI, which means most of them are using it badly.',
+          ? 'Your team has room to get far more value from AI than it does today.'
+          : 'Your team is largely self-taught with AI, so it isn’t working nearly as effectively for them as it could.',
         detail: a.coaching === 'They mostly don’t use it yet'
-          ? 'The gap between a team that uses AI well and one that doesn’t is now a real competitive difference. Left alone, most people never get past copy-pasting into a chatbot.'
-          : 'Self-taught users write weak prompts, get mediocre output, and quietly give up — or worse, trust a bad answer. Skill with AI is what separates a toy from a tool.',
-        fix: 'A prompt coach for every employee lifts output quality and cuts wasted tokens — up to ~80% better prompts and considerably lower usage cost than teams left to figure it out alone.',
+          ? 'The gap between a team that uses AI well and one that doesn’t is becoming a real competitive difference. With the right guidance, employees move well beyond basic copy-paste use.'
+          : 'Self-taught users tend to write weaker prompts and receive poorer-quality responses, which can quietly lead to work being done incorrectly. Across large organizations — including 10,000+ employee enterprises — the majority of users experienced this before structured coaching was in place.',
+        fix: 'A prompt coach for every employee raises the quality and consistency of what AI produces. In enterprise deployments, organizations have seen up to a 74% reduction in poor-quality, rework-causing responses — alongside stronger prompts and lower usage cost.',
       });
     }
 
@@ -1044,7 +1046,8 @@ import { SITE } from '../lib/site';
     const rk = f.sev === 'danger' ? 'scan__lockRisk--high' : f.sev === 'warn' ? 'scan__lockRisk--mid' : 'scan__lockRisk--low';
     return '<div class="scan__lockItem">'
       + '<span class="scan-tag ' + ft + '">' + f.tag + '</span>'
-      + '<span class="scan__lockRisk ' + rk + '">' + riskLabel(f.sev) + '</span>'
+      + '<span class="scan__lockMeta"><span class="scan__lockRisk ' + rk + '">' + riskLabel(f.sev) + '</span>'
+      + '<span class="scan__lockPct ' + rk + '">' + riskScore(f) + '%</span></span>'
       + '<span class="scan__lockIcon" aria-hidden="true">🔒</span></div>';
   }
 
@@ -1113,6 +1116,14 @@ import { SITE } from '../lib/site';
   function riskLabel(sev: string): string {
     return sev === 'danger' ? 'High priority' : sev === 'warn' ? 'Elevated' : 'Worth reviewing';
   }
+  // Illustrative per-finding risk score (0-100). Higher = more worth addressing.
+  // Deterministic from severity + the finding's weight; capped so it stays sane.
+  function riskScore(f: Finding): number {
+    const base = f.sev === 'danger' ? 68 : f.sev === 'warn' ? 46 : 32;
+    const w = f.w || (f.sev === 'danger' ? 18 : f.sev === 'warn' ? 12 : 8);
+    const cap = f.sev === 'danger' ? 22 : f.sev === 'warn' ? 20 : 16;
+    return Math.max(28, Math.min(90, base + Math.min(cap, Math.round(w))));
+  }
 
   /* ===== Report documents (PDF + standalone HTML) ===== */
   function esc(s: any): string {
@@ -1149,10 +1160,13 @@ import { SITE } from '../lib/site';
       + '<span style="width:44px;text-align:right;font:700 13px monospace;color:' + color + ';">' + pct + '%</span></div>';
     const lockedHtml = locked.map((f: any) => {
       const tc = f.sev === 'danger' ? '#C13030' : f.sev === 'info' ? '#00B4FF' : '#B86E00';
+      const rc = f.sev === 'danger' ? '#C13030' : f.sev === 'warn' ? '#B86E00' : '#1B4A7A';
       const rk = f.sev === 'danger' ? 'High priority' : f.sev === 'warn' ? 'Elevated' : 'Worth reviewing';
       return '<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:#F6F8FB;border:1px solid #DDE5EE;border-radius:8px;margin-bottom:8px;">'
         + '<span style="font:700 10px/1 monospace;letter-spacing:1px;color:' + tc + ';border:1px solid ' + tc + ';border-radius:3px;padding:3px 8px;">' + esc(f.tag) + '</span>'
-        + '<span style="margin-left:auto;font:700 12px Arial,sans-serif;color:' + tc + ';">' + rk + '</span><span style="opacity:0.55;">&#128274;</span></div>';
+        + '<span style="margin-left:auto;font:700 12px Arial,sans-serif;color:' + rc + ';">' + rk + '</span>'
+        + '<span style="font:700 13px monospace;color:' + rc + ';">' + riskScore(f) + '%</span>'
+        + '<span style="opacity:0.55;">&#128274;</span></div>';
     }).join('');
     const teaserHtml = teasers.map((f: any) => {
       const tc = f.sev === 'danger' ? '#C13030' : f.sev === 'info' ? '#00B4FF' : '#B86E00';
@@ -1337,15 +1351,17 @@ import { SITE } from '../lib/site';
         doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setT(MUT); doc.text(footL, M + 6, cy);
         y += h + 3;
       });
-      // Locked rows: category + risk level only — no information.
+      // Locked rows: category + risk level + risk score — no information.
       locked.forEach((f: any) => {
         const sc = f.sev === 'danger' ? DANG : f.sev === 'info' ? BLUE : WARN;
+        const rc = f.sev === 'danger' ? DANG : f.sev === 'warn' ? WARN : [27, 74, 122];
         const rk = f.sev === 'danger' ? 'High priority' : f.sev === 'warn' ? 'Elevated' : 'Worth reviewing';
         ensure(11);
         fill(PANEL); doc.setDrawColor(BORD[0], BORD[1], BORD[2]); doc.setLineWidth(0.3); doc.roundedRect(M, y, CW, 9, 1.5, 1.5, 'FD');
         doc.setFont('helvetica', 'bold'); doc.setFontSize(7); setT(sc); doc.text(f.tag, M + 5, y + 5.7);
-        doc.setFontSize(7.5); doc.text(rk, PW - M - 20, y + 5.7, { align: 'right' });
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(7); setT([154, 167, 181]); doc.text('LOCKED', PW - M - 5, y + 5.7, { align: 'right' });
+        setT(rc); doc.setFontSize(7.5); doc.text(rk, PW - M - 32, y + 5.7, { align: 'right' });
+        doc.text(riskScore(f) + '%', PW - M - 18, y + 5.7, { align: 'right' });
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(7); setT([154, 167, 181]); doc.text('LOCKED', PW - M - 4, y + 5.7, { align: 'right' });
         y += 11;
       });
       // Meeting prompt
