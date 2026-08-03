@@ -37,9 +37,10 @@ import { SITE } from '../lib/site';
           </div>
           <h2 class="scan__introTitle">Is your organization getting the upside of AI &mdash; without the exposure?</h2>
           <p class="scan__introSub">
-            A short, no-jargon scan any leader can finish in about 90 seconds. See where AI is
-            already in use across your team, where it&rsquo;s quietly exposing you, and where a
-            governed rollout would give you the biggest lift. No IT knowledge needed.
+            A short, no-jargon scan any leader can finish in about 90 seconds. It points to where AI is
+            already in use across your team, where it may be exposing you, and where a governed rollout
+            could help most. It&rsquo;s a starting point for a conversation with our team &mdash; general
+            information, not a formal audit or advice. No IT knowledge needed.
           </p>
           <div class="scan__checklist">
             <div class="scan__checklistLabel">WHAT YOU GET INSTANTLY</div>
@@ -128,11 +129,11 @@ import { SITE } from '../lib/site';
               <div class="scan__findingsLabel" id="lockedLabel"></div>
               <div id="lockedCards"></div>
               <div class="scan__gate">
-                <div class="scan__gateTitle">Unlock your full report</div>
+                <div class="scan__gateTitle">See your top priorities</div>
                 <div class="scan__gateSub">
-                  Every remaining finding with what to do about it, plus your analyst note &mdash; on
-                  screen immediately. A senior i-NETT analyst also gets a copy to prepare
-                  recommendations before we reach out.
+                  Enter your details to see your three highest-priority findings and what to do about
+                  each, plus a short analyst note &mdash; on screen and emailed to you as a PDF. A
+                  member of the i-NETT team also gets a copy so we can prepare before we talk.
                 </div>
                 <div class="scan__gateFields">
                   <input class="scan__input" id="leadName" type="text" autocomplete="name" placeholder="Your name">
@@ -150,8 +151,23 @@ import { SITE } from '../lib/site';
                   </div>
                 </div>
                 <div class="scan__gateError" id="gateError" style="display:none"></div>
-                <button class="btn btn-accent btn-block" id="unlockBtn">Unlock my full report <span aria-hidden="true">&rarr;</span></button>
+                <button class="btn btn-accent btn-block" id="unlockBtn">Show my top priorities <span aria-hidden="true">&rarr;</span></button>
                 <div class="scan__gateFine">No spam. One follow-up from a real person &mdash; usually with something useful.</div>
+              </div>
+            </div>
+
+            <!-- MEETING GATE: remaining findings are reviewed in a working session -->
+            <div id="meetingGate" style="display:none">
+              <div class="scan__findingsLabel" id="meetingLabel"></div>
+              <div id="meetingCards"></div>
+              <div class="scan__meeting">
+                <div class="scan__meetingTitle">The rest is a conversation, not a form.</div>
+                <div class="scan__meetingSub">
+                  A scan can only go so far. In a free 30-minute working session we go through the
+                  remaining findings in detail against your actual environment, separate what matters
+                  from what doesn&rsquo;t, and map what to do first. It&rsquo;s a working session, not a pitch.
+                </div>
+                <button class="btn btn-accent btn-lg btn-block" id="meetingBookBtn">Book your 30-minute working session <span aria-hidden="true">&rarr;</span></button>
               </div>
             </div>
 
@@ -177,8 +193,11 @@ import { SITE } from '../lib/site';
       </div>
 
       <p class="disclaimer scan__disclaimer">
-        Estimates are industry-informed, for discussion &mdash; not a specific study, audit, or legal or
-        insurance advice. By unlocking your full report you consent to i-NETT contacting you about your
+        This scan is for general information only and is meant to be reviewed together with the i-NETT
+        team. It is not a formal audit or assessment of your organization, and it is not legal,
+        compliance, security, or insurance advice. Scores and estimates are illustrative and
+        industry-informed, not a study of your specific situation, and any regulations named may or may
+        not apply to you. By submitting your details you consent to i-NETT contacting you about your
         results. See our <a href="/privacy">privacy policy</a>.
       </p>
     </div>
@@ -352,13 +371,14 @@ import { SITE } from '../lib/site';
   .scan__prevLabel { font-size: 12px; color: var(--color-text-soft); }
   .scan__prevBar { height: 9px; background: var(--color-bg-muted); border-radius: 999px; overflow: hidden; }
   .scan__prevFill { display: block; height: 100%; border-radius: 999px; transition: width 0.6s var(--ease-out); }
-  .scan__prevFill--sm { background: var(--color-warning); }
+  /* Sequential brand ramp (light cyan -> deep navy) — one hue family, distinct per row */
+  .scan__prevFill--sm { background: var(--color-accent-300); }
   .scan__prevFill--mid { background: var(--color-accent-500); }
-  .scan__prevFill--ent { background: var(--color-success); }
+  .scan__prevFill--ent { background: var(--color-ink-700); }
   .scan__prevPct { font-family: var(--font-mono); font-size: 13px; font-weight: 700; text-align: right; }
-  .scan__prevPct--sm { color: var(--color-warning); }
+  .scan__prevPct--sm { color: var(--color-ink-600); }
   .scan__prevPct--mid { color: var(--color-ink-700); }
-  .scan__prevPct--ent { color: var(--color-success); }
+  .scan__prevPct--ent { color: var(--color-ink-800); }
   .scan__prevEdge { font-size: 12px; color: var(--color-text-soft); line-height: 1.6; margin-top: 12px; padding-left: 12px; border-left: 2px solid var(--color-accent-300); font-style: italic; }
   @media (max-width: 480px) { .scan__prevRow { grid-template-columns: 92px 1fr 42px; gap: 8px; } }
 
@@ -367,6 +387,17 @@ import { SITE } from '../lib/site';
   .scan__ghostBar { height: 7px; background: var(--color-border-strong); border-radius: 4px; margin-bottom: 6px; }
   .scan__lockedOverlay { position: absolute; inset: 0; background: rgba(246,248,251,0.82); display: flex; align-items: center; justify-content: center; gap: 8px; }
   .scan__lockLabel { font-family: var(--font-mono); font-size: 10px; color: var(--color-text-muted); letter-spacing: 1px; }
+
+  /* Teaser cards (the 4th finding: headline visible, substance withheld) */
+  .scan__teaser { position: relative; border: 1px dashed var(--color-border-strong); border-left: 4px solid var(--color-accent-400); border-radius: var(--radius-md); padding: var(--space-4) var(--space-5); margin-bottom: var(--space-3); background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-soft) 100%); }
+  .scan__teaserLock { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.5px; color: var(--color-accent-500); white-space: nowrap; }
+  .scan__teaserHead { font-weight: 700; font-size: var(--fs-md); line-height: 1.35; color: var(--color-ink-800); margin-bottom: 6px; }
+  .scan__teaserFoot { font-size: 12px; color: var(--color-text-muted); line-height: 1.55; }
+
+  /* Meeting gate — the rest is a working session */
+  .scan__meeting { background: var(--color-ink-900); color: var(--color-text-on-dark); border-radius: var(--radius-lg); padding: var(--space-6); margin: var(--space-4) 0 var(--space-5); text-align: center; }
+  .scan__meetingTitle { font-size: var(--fs-lg); font-weight: 800; color: #fff; margin-bottom: var(--space-3); }
+  .scan__meetingSub { font-size: var(--fs-sm); line-height: var(--lh-loose); color: var(--color-text-on-dark-soft); max-width: 56ch; margin: 0 auto var(--space-5); }
 
   .scan__gate { background: rgba(0,180,255,0.05); border: 1px solid rgba(0,180,255,0.35); border-radius: var(--radius-md); padding: 20px 18px; margin: 14px 0 18px; }
   .scan__gateTitle { font-size: var(--fs-md); font-weight: 800; margin-bottom: 6px; color: var(--color-ink-800); }
@@ -524,7 +555,9 @@ import { SITE } from '../lib/site';
   let scanTick: any = null;
   let aiNote: string | null = null, unlocked = false;
   let currentReport: Report | null = null;
-  const SHOWN_FINDINGS = 2;
+  const SHOWN_FINDINGS = 2;   // shown free, before the details form
+  const FULL_FINDINGS = 3;    // full findings the client ever sees (rest need a meeting)
+  const TEASE_FINDINGS = 4;   // one extra finding is teased (headline only) as a hook
 
   const $ = (id: string) => document.getElementById(id);
 
@@ -572,6 +605,7 @@ import { SITE } from '../lib/site';
     $('calOverlay')?.classList.add('active');
   }
   $('bookBtn')?.addEventListener('click', openCal);
+  $('meetingBookBtn')?.addEventListener('click', openCal);
   $('calClose')?.addEventListener('click', () => $('calOverlay')?.classList.remove('active'));
   $('calOverlay')?.addEventListener('click', function (this: HTMLElement, e) { if (e.target === this) this.classList.remove('active'); });
 
@@ -732,8 +766,8 @@ import { SITE } from '../lib/site';
       cands.push({
         w: flags.length * 7 + 4, sev: 'danger', tag: 'COMPLIANCE',
         head: 'Your data obligations and your AI usage haven’t met each other yet.',
-        detail: 'You handle ' + sensitive.join(', ').toLowerCase() + ' — which puts you under ' + flags.map((f: string) => f.split(' — ')[0]).join(', ')
-          + '. Ungoverned AI use with this data is the gap regulators, insurers, and opposing counsel look for first.',
+        detail: 'You handle ' + sensitive.join(', ').toLowerCase() + ', which commonly brings obligations under frameworks like ' + flags.map((f: string) => f.split(' — ')[0]).join(', ')
+          + '. Where those apply, ungoverned AI use with this kind of data is often the first gap regulators, insurers, and opposing counsel look at.',
         fix: 'Access controls, an approved-tools list, and monitoring close the gap — usually without slowing anyone down.',
       });
     }
@@ -974,12 +1008,29 @@ import { SITE } from '../lib/site';
     submitLead(lead);
   });
 
+  function renderTeaser(f: Finding): string {
+    const ft = f.sev === 'danger' ? 'scan-tag--danger' : f.sev === 'info' ? 'scan-tag--info' : 'scan-tag--warn';
+    return '<div class="scan__teaser">'
+      + '<div class="scan__findingTop"><span class="scan-tag ' + ft + '">' + f.tag + '</span><span class="scan__teaserLock">🔒 In your session</span></div>'
+      + '<div class="scan__teaserHead">' + f.head + '</div>'
+      + '<div class="scan__teaserFoot">The full detail, what to do about it, and how you compare to peers &mdash; walked through with you.</div>'
+      + '</div>';
+  }
+
   function unlockReport() {
     unlocked = true;
     const r = currentReport as Report;
-    ($('findingsList') as HTMLElement).innerHTML = r.findings.map((f, i) => renderFinding(f, i)).join('');
-    ($('shownLabel') as HTMLElement).textContent = 'YOUR FULL FINDINGS — AND WHAT TO DO ABOUT EACH';
+    const full = r.findings.slice(0, FULL_FINDINGS);
+    const teased = r.findings.slice(FULL_FINDINGS, TEASE_FINDINGS); // just the 4th
+    ($('findingsList') as HTMLElement).innerHTML = full.map((f, i) => renderFinding(f, i)).join('');
+    ($('shownLabel') as HTMLElement).textContent = 'YOUR TOP ' + full.length + ' PRIORITIES — AND WHAT TO DO ABOUT EACH';
     ($('gateSection') as HTMLElement).style.display = 'none';
+    if (teased.length) {
+      ($('meetingLabel') as HTMLElement).textContent = 'ONE MORE WORTH YOUR ATTENTION — AND THERE ARE OTHERS';
+      ($('meetingCards') as HTMLElement).innerHTML = teased.map((f) => renderTeaser(f)).join('');
+      ($('meetingGate') as HTMLElement).style.display = 'block';
+      ($('ctaSection') as HTMLElement).style.display = 'none'; // meeting gate replaces the bottom CTA
+    }
     const box = $('analystBox') as HTMLElement;
     ($('analystText') as HTMLElement).textContent = aiNote || r.fallbackNote;
     box.style.display = 'block';
@@ -989,11 +1040,16 @@ import { SITE } from '../lib/site';
   async function submitLead(lead: any) {
     const r = currentReport as Report;
     const note = aiNote || r.fallbackNote;
-    // Build the branded report documents client-side (best-effort — never blocks).
-    let reportHtml = '';
-    try { reportHtml = reportDocHtml(lead, r, note); } catch (e) { /* noop */ }
-    let pdfBase64: string | null = null;
-    try { pdfBase64 = buildPdf(lead, r, note); } catch (e) { pdfBase64 = null; }
+    // Two versions (best-effort — never blocks):
+    //   full   → the team (nickd@i-nett.com): every finding
+    //   client → the scan-taker: top 3 full + a single teased 4th, nothing more
+    const fullOpts: ReportOpts = { findings: r.findings, teasers: [] };
+    const clientOpts: ReportOpts = { findings: r.findings.slice(0, FULL_FINDINGS), teasers: r.findings.slice(FULL_FINDINGS, TEASE_FINDINGS) };
+    let reportHtmlFull = '';
+    try { reportHtmlFull = reportDocHtml(lead, r, note, fullOpts); } catch (e) { /* noop */ }
+    let pdfFull: string | null = null, pdfClient: string | null = null;
+    try { pdfFull = buildPdf(lead, r, note, fullOpts); } catch (e) { pdfFull = null; }
+    try { pdfClient = buildPdf(lead, r, note, clientOpts); } catch (e) { pdfClient = null; }
     fetch(PROXY_URL + '/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1004,12 +1060,14 @@ import { SITE } from '../lib/site';
           findings: r.findings.map((f) => ({ tag: f.tag, headline: f.head, detail: f.detail, fix: f.fix, sev: f.sev, prev: f.prev })),
         },
         analystNote: note,
-        reportHtml,
-        pdfBase64,
+        reportHtml: reportHtmlFull,
+        pdfFull, pdfClient,
         pageUrl: location.href,
       }),
     }).catch(() => { /* best-effort; the visitor already has their report */ });
   }
+
+  type ReportOpts = { findings: Finding[]; teasers: Finding[] };
 
   /* ===== Report documents (PDF + standalone HTML) ===== */
   function esc(s: any): string {
@@ -1027,7 +1085,9 @@ import { SITE } from '../lib/site';
 
   // Self-contained HTML report that mirrors the on-screen output. Opens
   // pixel-faithful in any browser; attached to the notification email.
-  function reportDocHtml(lead: any, r: any, note: string): string {
+  function reportDocHtml(lead: any, r: any, note: string, opts?: ReportOpts): string {
+    const findings = opts ? opts.findings : r.findings;
+    const teasers = opts ? opts.teasers : [];
     const bc = bandHex(r.band);
     const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
     const tile = (label: string, val: string, sub: string, color: string) =>
@@ -1041,12 +1101,19 @@ import { SITE } from '../lib/site';
       + '<span style="width:130px;color:#4A5A6E;">' + label + '</span>'
       + '<span style="flex:1;height:9px;background:#ECF1F7;border-radius:99px;overflow:hidden;"><span style="display:block;height:100%;width:' + pct + '%;background:' + color + ';border-radius:99px;"></span></span>'
       + '<span style="width:44px;text-align:right;font:700 13px monospace;color:' + color + ';">' + pct + '%</span></div>';
-    const findingHtml = (r.findings || []).map((f: any, i: number) => {
+    const teaserHtml = teasers.map((f: any) => {
+      const tc = f.sev === 'danger' ? '#C13030' : f.sev === 'info' ? '#00B4FF' : '#B86E00';
+      return '<div style="border:1px dashed #B5C2D2;border-left:4px solid #33C5FF;border-radius:10px;padding:16px 18px;margin-bottom:14px;background:#F6F8FB;">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font:700 10px/1 monospace;letter-spacing:1px;color:' + tc + ';border:1px solid ' + tc + ';border-radius:3px;padding:3px 8px;">' + esc(f.tag) + '</span><span style="font:10px monospace;color:#0091D5;">&#128274; IN YOUR SESSION</span></div>'
+        + '<div style="font:700 16px/1.35 Arial,sans-serif;color:#0A2540;margin-bottom:6px;">' + esc(f.head) + '</div>'
+        + '<div style="font:13px/1.55 Arial,sans-serif;color:#6B7A8E;">The full detail, what to do about it, and how you compare to peers &mdash; walked through with you in a working session.</div></div>';
+    }).join('');
+    const findingHtml = findings.map((f: any, i: number) => {
       const c = f.sev === 'danger' ? '#C13030' : f.sev === 'info' ? '#00B4FF' : '#B86E00';
       const prev = f.prev
         ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #DDE5EE;">'
           + '<div style="font:700 10px/1 monospace;letter-spacing:1.5px;color:#6B7A8E;text-transform:uppercase;margin-bottom:10px;">How common is this gap?</div>'
-          + bar('Small businesses', f.prev.s, '#B86E00') + bar('Mid-sized', f.prev.m, '#00B4FF') + bar('Enterprises', f.prev.e, '#0F8B5F')
+          + bar('Small businesses', f.prev.s, '#0EA5E9') + bar('Mid-sized', f.prev.m, '#0369A1') + bar('Enterprises', f.prev.e, '#0A2540')
           + '<div style="margin-top:10px;padding-left:12px;border-left:2px solid #66D6FF;font:italic 12px/1.6 Arial,sans-serif;color:#4A5A6E;">' + esc(f.prev.edge) + '</div></div>'
         : '';
       return '<div style="border:1px solid #DDE5EE;border-left:4px solid ' + c + ';border-radius:10px;padding:16px 18px;margin-bottom:14px;background:#fff;">'
@@ -1080,29 +1147,40 @@ import { SITE } from '../lib/site';
       + tile('COMPLIANCE FLAGS', String(r.flags.length), r.flags.length ? r.flags.join(' · ') : 'No regulated data reported', '#C13030')
       + tile('RECOVERABLE HRS / WK', r.hoursVal, r.hoursSub, '#0F8B5F')
       + '</tr></table>'
-      + '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#6B7A8E;margin-bottom:12px;">FINDINGS — AND WHAT TO DO ABOUT EACH</div>'
+      + '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#6B7A8E;margin-bottom:12px;">' + (teasers.length ? 'YOUR TOP PRIORITIES — AND WHAT TO DO ABOUT EACH' : 'FINDINGS — AND WHAT TO DO ABOUT EACH') + '</div>'
       + findingHtml
+      + (teasers.length
+        ? '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#6B7A8E;margin:6px 0 10px;">ONE MORE WORTH YOUR ATTENTION</div>'
+          + teaserHtml
+          + '<div style="background:#050B14;border-radius:12px;padding:18px 20px;margin:0 0 22px;text-align:center;"><div style="font:800 16px Arial,sans-serif;color:#fff;margin-bottom:6px;">The rest is a conversation, not a form.</div><div style="font:13px/1.6 Arial,sans-serif;color:#B7C6D8;margin-bottom:14px;">In a free 30-minute working session we go through the remaining findings against your actual environment and map what to do first.</div><a href="' + esc(BOOKING_URL) + '" style="display:inline-block;background:#00B4FF;color:#050B14;font-weight:700;text-decoration:none;padding:12px 20px;border-radius:8px;">Book your working session &rarr;</a></div>'
+        : '')
       + '<div style="background:#0A2540;border-radius:10px;padding:16px 18px;margin:8px 0 22px;">'
       + '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#66D6FF;margin-bottom:6px;">ANALYST NOTE</div>'
       + '<div style="font:14px/1.65 Arial,sans-serif;color:#F4F8FC;">' + esc(note) + '</div></div>'
       + '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#6B7A8E;margin-bottom:8px;">SCAN INPUTS</div>'
       + '<table style="width:100%;border-collapse:collapse;">' + ansHtml + '</table>'
-      + '<div style="margin-top:22px;font:12px Arial;color:#6B7A8E;border-top:1px solid #DDE5EE;padding-top:12px;">i-NETT · i-nett.ai · (858) 337-2866 · hello@i-nett.com — Free 30-minute review at i-nett.ai/resources</div>'
+      + '<div style="margin-top:20px;border-top:1px solid #DDE5EE;padding-top:14px;"><div style="font:12px Arial,sans-serif;color:#6B7A8E;">Prepared and reviewed by</div><div style="font:italic 700 18px Arial,sans-serif;color:#0A2540;margin-top:2px;">Nick Dreyfus</div><div style="font:13px Arial,sans-serif;color:#6B7A8E;">Vice President, Business Development &middot; i-NETT / Fortify AI</div></div>'
+      + '<div style="margin-top:16px;font:11px/1.55 Arial,sans-serif;color:#9AA7B5;">This report is for general information only and is meant to be reviewed together with the i-NETT team. It is not a formal audit or assessment, and not legal, compliance, security, or insurance advice. Scores and estimates are illustrative and industry-informed; any frameworks named may or may not apply to your organization.</div>'
+      + '<div style="margin-top:14px;font:12px Arial,sans-serif;color:#6B7A8E;">i-NETT · i-nett.ai · (858) 337-2866 · hello@i-nett.com</div>'
       + '</div></div></body></html>';
   }
 
   // jsPDF is bundled with the site (no external CDN), so the PDF always
   // generates. Best-effort: returns null on any failure and the email still
   // goes out with the HTML report + inputs.
-  function buildPdf(lead: any, r: any, note: string): string | null {
-    try { return renderPdf(lead, r, note); } catch (e) { return null; }
+  function buildPdf(lead: any, r: any, note: string, opts?: ReportOpts): string | null {
+    try { return renderPdf(lead, r, note, opts); } catch (e) { return null; }
   }
   // Hand-drawn dark-header report PDF mirroring the on-screen look. Deterministic
   // vector output, always compact. Returns base64 (no data-uri prefix) or null.
-  function renderPdf(lead: any, r: any, note: string): string | null {
+  function renderPdf(lead: any, r: any, note: string, opts?: ReportOpts): string | null {
+    const findings = opts ? opts.findings : r.findings;
+    const teasers = opts ? opts.teasers : [];
     const doc = new jsPDF({ unit: 'mm', format: 'a4' });
     const PW = 210, PH = 297, M = 14; let y = 0;
     const PANEL = [246, 248, 251], BORD = [221, 229, 238], INK = [10, 37, 64], MUT = [74, 90, 110], TEAL = [15, 139, 95], BLUE = [0, 180, 255], WARN = [184, 110, 0], DANG = [193, 48, 48], WHITE = [255, 255, 255];
+    // Sequential ramp for the prevalence bars (light cyan -> deep navy)
+    const RSM = [14, 165, 233], RMID = [3, 105, 161], RENT = [10, 37, 64];
     const band = r.band === 'HIGH' ? DANG : r.band === 'ELEVATED' ? WARN : r.band === 'MODERATE' ? [201, 151, 0] : TEAL;
     const CW = PW - 2 * M;
     const fill = (c: number[]) => doc.setFillColor(c[0], c[1], c[2]);
@@ -1154,8 +1232,9 @@ import { SITE } from '../lib/site';
     });
     y += 30;
 
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT(MUT); ensure(8); doc.text('FINDINGS — AND WHAT TO DO ABOUT EACH', M, y); y += 6;
-    (r.findings || []).forEach((f: any, i: number) => {
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT(MUT); ensure(8);
+    doc.text(teasers.length ? 'YOUR TOP PRIORITIES — AND WHAT TO DO ABOUT EACH' : 'FINDINGS — AND WHAT TO DO ABOUT EACH', M, y); y += 6;
+    findings.forEach((f: any, i: number) => {
       const sc = f.sev === 'danger' ? DANG : f.sev === 'info' ? BLUE : WARN;
       const headL = wrap(f.head, CW - 12, 11, 'bold');
       const detL = wrap(f.detail, CW - 12, 8.5, 'normal');
@@ -1172,7 +1251,7 @@ import { SITE } from '../lib/site';
       doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); setT(MUT); doc.text(detL, M + 6, cy); cy += detL.length * 3.9 + 3;
       setT(TEAL); doc.text(fixL, M + 6, cy); cy += fixL.length * 3.9 + 5;
       if (f.prev) {
-        const bars = [['Small businesses', f.prev.s, WARN], ['Mid-sized', f.prev.m, BLUE], ['Enterprises', f.prev.e, TEAL]];
+        const bars = [['Small businesses', f.prev.s, RSM], ['Mid-sized', f.prev.m, RMID], ['Enterprises', f.prev.e, RENT]];
         bars.forEach((b: any) => {
           doc.setFont('helvetica', 'normal'); doc.setFontSize(7); setT(MUT); doc.text(b[0], M + 6, cy);
           const bx = M + 40, bw = CW - 40 - 20;
@@ -1184,6 +1263,36 @@ import { SITE } from '../lib/site';
       }
       y += h + 3;
     });
+
+    // --- Teased finding(s) + meeting prompt (client version only) ---
+    if (teasers.length) {
+      y += 2; ensure(10);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT(MUT); doc.text('ONE MORE WORTH YOUR ATTENTION', M, y); y += 6;
+      teasers.forEach((f: any) => {
+        const sc = f.sev === 'danger' ? DANG : f.sev === 'info' ? BLUE : WARN;
+        const headL = wrap(f.head, CW - 12, 11, 'bold');
+        const footL = wrap('The full detail, what to do about it, and how you compare to peers — walked through with you in a working session.', CW - 12, 8, 'normal');
+        const h = 9 + headL.length * 4.8 + footL.length * 3.6 + 4;
+        ensure(h + 3);
+        fill([246, 248, 251]); doc.setDrawColor(181, 194, 210); doc.setLineWidth(0.4); doc.roundedRect(M, y, CW, h, 2, 2, 'FD');
+        fill([51, 197, 255]); doc.rect(M, y, 1.6, h, 'F');
+        let cy = y + 6;
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); setT(sc); doc.text(f.tag, M + 6, cy);
+        setT([0, 145, 213]); doc.text('IN YOUR SESSION', PW - M - 3, cy, { align: 'right' }); cy += 5.5;
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(11); setT(INK); doc.text(headL, M + 6, cy); cy += headL.length * 4.8 + 1.5;
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setT(MUT); doc.text(footL, M + 6, cy);
+        y += h + 3;
+      });
+      ensure(24);
+      fill([5, 11, 20]); doc.roundedRect(M, y, CW, 21, 2, 2, 'F');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); setT(WHITE); doc.text('The rest is a conversation, not a form.', M + 6, y + 8);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); setT([183, 198, 216]);
+      doc.text('Book a free 30-minute working session to review the remaining findings against your environment.', M + 6, y + 13.5);
+      doc.setFontSize(8.5); setT([102, 214, 255]);
+      try { doc.textWithLink('Book your session at i-nett.ai/resources', M + 6, y + 18.5, { url: BOOKING_URL }); }
+      catch (e) { doc.text('Book your session at i-nett.ai/resources', M + 6, y + 18.5); }
+      y += 25;
+    }
 
     y += 2; ensure(14);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT([17, 53, 92]); doc.text('ANALYST NOTE', M, y); y += 5;
@@ -1209,8 +1318,12 @@ import { SITE } from '../lib/site';
     doc.setFont('helvetica', 'bolditalic'); doc.setFontSize(17); setT(INK); doc.text('Nick Dreyfus', M, y); y += 6;
     doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); setT(MUT); doc.text('Vice President, Business Development  ·  i-NETT / Fortify AI', M, y); y += 10;
 
-    ensure(8); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setT(MUT);
-    doc.text('i-NETT · i-nett.ai · (858) 337-2866 · hello@i-nett.com — Free 30-minute review at i-nett.ai/resources', M, y);
+    ensure(22);
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(7); setT([154, 167, 181]);
+    const discL = doc.splitTextToSize('This report is for general information only and is meant to be reviewed together with the i-NETT team. It is not a formal audit or assessment, and not legal, compliance, security, or insurance advice. Scores and estimates are illustrative and industry-informed; any frameworks named may or may not apply to your organization.', CW);
+    doc.text(discL, M, y); y += discL.length * 3 + 5;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setT(MUT);
+    doc.text('i-NETT · i-nett.ai · (858) 337-2866 · hello@i-nett.com', M, y);
     return doc.output('datauristring').split(',')[1] || null;
   }
 </script>
