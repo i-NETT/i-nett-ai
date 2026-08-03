@@ -561,9 +561,11 @@ import { SITE } from '../lib/site';
   // Genericness: higher = safe / plain to reveal publicly; lower = the specific,
   // higher-value analysis we keep behind a booked working session (so competitors
   // can't mine real insight from the public tool). Drives the CLIENT view only.
+  // ENABLEMENT is a value proposition (a capability claim, not analysis of the
+  // client's org), so it's safe — and good marketing — to reveal it in full.
   const GEN_BY_TAG: Record<string, number> = {
-    'THIRD-PARTY ACCESS': 9, 'CYBER INSURANCE': 8, 'EMPLOYEE POLICY': 7,
-    'ENABLEMENT': 6, 'WORKFLOWS': 5, 'CUSTOM AGENTS': 3, 'SHADOW AI': 3,
+    'ENABLEMENT': 10, 'THIRD-PARTY ACCESS': 9, 'CYBER INSURANCE': 8, 'EMPLOYEE POLICY': 7,
+    'WORKFLOWS': 5, 'CUSTOM AGENTS': 3, 'SHADOW AI': 3,
     'COMPLIANCE': 2, 'VENDOR AI TERMS': 1,
   };
   type Report = {
