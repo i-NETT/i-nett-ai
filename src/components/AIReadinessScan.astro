@@ -417,6 +417,36 @@ import { SITE } from '../lib/site';
   const PROXY_URL = 'https://inett-scan.nicholasdreyfus.workers.dev';
   const BOOKING_URL = 'https://meetings-na2.hubspot.com/ndreyfus/initial_call';
 
+  // Brand logos for the PDF, preloaded to data URLs on init (same-origin, so
+  // they embed cleanly into jsPDF). Null until loaded / on failure.
+  type Logo = { data: string; w: number; h: number };
+  let LOGO_FORTIFY: Logo | null = null;
+  let LOGO_INETT: Logo | null = null;
+  // Downscale to a print-appropriate size for the PDF header (the logos display
+  // at ~19mm, so ~260px on the long edge is crisp) — keeps the PDF email-light.
+  function preloadLogo(src: string, maxLong = 260): Promise<Logo | null> {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const scale = Math.min(1, maxLong / Math.max(img.naturalWidth, img.naturalHeight));
+          const w = Math.max(1, Math.round(img.naturalWidth * scale));
+          const h = Math.max(1, Math.round(img.naturalHeight * scale));
+          const c = document.createElement('canvas'); c.width = w; c.height = h;
+          const ctx = c.getContext('2d') as CanvasRenderingContext2D;
+          ctx.imageSmoothingEnabled = true; (ctx as any).imageSmoothingQuality = 'high';
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve({ data: c.toDataURL('image/png'), w, h });
+        } catch (e) { resolve(null); }
+      };
+      img.onerror = () => resolve(null);
+      img.src = src;
+    });
+  }
+  preloadLogo('/assets/brand/fortify-ai-logo.png').then((v) => { LOGO_FORTIFY = v; });
+  preloadLogo('/assets/brand/inett-logo.png').then((v) => { LOGO_INETT = v; });
+  let capturedLead: any = null; // for booking prefill after unlock
+
   type Q = { id: string; label: string; type: 'single' | 'multi'; note?: string; options: string[] };
 
   const QUESTIONS: Q[] = [
@@ -520,11 +550,25 @@ import { SITE } from '../lib/site';
   $('startBtn')?.addEventListener('click', () => { setPhase('questions'); loadQ(); show('questionScreen'); });
 
   // Booking modal
+  function bookingUrl(): string {
+    let url = BOOKING_URL + '?embed=true';
+    const l = capturedLead;
+    if (l) {
+      const parts = String(l.name || '').trim().split(/\s+/);
+      const first = parts.shift() || '';
+      const last = parts.join(' ');
+      const p = new URLSearchParams();
+      if (first) p.set('firstName', first);
+      if (last) p.set('lastName', last);
+      if (l.email) p.set('email', l.email);
+      const qs = p.toString();
+      if (qs) url += '&' + qs;
+    }
+    return url;
+  }
   function openCal() {
     const f = $('calFrame') as HTMLIFrameElement | null;
-    if (f && f.src === 'about:blank') {
-      f.src = BOOKING_URL + '?embed=true';
-    }
+    if (f) f.src = bookingUrl();
     $('calOverlay')?.classList.add('active');
   }
   $('bookBtn')?.addEventListener('click', openCal);
@@ -925,6 +969,7 @@ import { SITE } from '../lib/site';
     err.style.display = 'none';
     const contact = Array.from(document.querySelectorAll('#leadChips .scan__chip.is-on')).map((b) => (b as HTMLElement).dataset.c);
     const lead = { name: name.value.trim(), company: company.value.trim(), website: website.value.trim(), email: email.value.trim(), cell: cell.value.trim(), contact };
+    capturedLead = lead;
     unlockReport();
     submitLead(lead);
   });
@@ -1065,13 +1110,31 @@ import { SITE } from '../lib/site';
     const wrap = (t: any, w: number, s: number, st?: string) => { doc.setFont('helvetica', st || 'normal'); doc.setFontSize(s); return doc.splitTextToSize(String(t || ''), w); };
     const ensure = (h: number) => { if (y + h > PH - 14) { doc.addPage(); y = 16; } };
 
-    fill([5, 11, 20]); doc.rect(0, 0, PW, 34, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT([0, 224, 255]); doc.text('FORTIFY AI  ·  i-NETT', M, 13);
-    doc.setFontSize(19); setT(WHITE); doc.text('AI Readiness & Risk Report', M, 23);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); setT([183, 198, 216]);
     const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    doc.text('Prepared for ' + (lead.company || '—') + '   ·   ' + date, M, 30);
-    y = 44;
+    // --- Co-branded header band: Fortify AI (light logo) left, i-NETT (dark
+    //     logo on a white chip) right ---
+    const HB = 30;
+    fill([5, 11, 20]); doc.rect(0, 0, PW, HB, 'F');
+    if (LOGO_FORTIFY) {
+      const h = 22, w = h * LOGO_FORTIFY.w / LOGO_FORTIFY.h;
+      doc.addImage(LOGO_FORTIFY.data, 'PNG', M, (HB - h) / 2, w, h, 'fortify', 'SLOW');
+    } else { doc.setFont('helvetica', 'bold'); doc.setFontSize(15); setT(WHITE); doc.text('FORTIFY AI', M, HB / 2 + 2); }
+    if (LOGO_INETT) {
+      const lh = 8.5, lw = lh * LOGO_INETT.w / LOGO_INETT.h, pad = 2.5;
+      const cw = lw + pad * 2, ch = lh + pad * 2, cx = PW - M - cw, cy = (HB - ch) / 2;
+      fill(WHITE); doc.roundedRect(cx, cy, cw, ch, 2, 2, 'F');
+      doc.addImage(LOGO_INETT.data, 'PNG', cx + pad, cy + pad, lw, lh, 'inett', 'SLOW');
+    } else { doc.setFont('helvetica', 'bold'); doc.setFontSize(13); setT(WHITE); doc.text('i-NETT', PW - M, HB / 2 + 2, { align: 'right' }); }
+    y = HB + 12;
+    // --- Title + prepared-for ---
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); setT(BLUE); doc.text('AI READINESS & RISK REPORT', M, y); y += 8;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); setT(INK); doc.text('Your Fortify AI Scan Results', M, y); y += 7;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); setT(MUT);
+    doc.text('Prepared for ' + (lead.name || lead.company || '—') + (lead.name && lead.company ? ', ' + lead.company : '') + '   ·   ' + date, M, y); y += 4.5;
+    doc.setFontSize(8.5);
+    const pl = [lead.email, lead.cell ? 'cell ' + lead.cell : '', lead.website].filter(Boolean).join('   ·   ');
+    if (pl) { doc.text(pl, M, y); y += 3; }
+    y += 5; doc.setDrawColor(BORD[0], BORD[1], BORD[2]); doc.setLineWidth(0.3); doc.line(M, y, PW - M, y); y += 10;
 
     doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT(MUT); doc.text('EXPOSURE SCORE', M, y); y += 9;
     doc.setFontSize(30); setT(band); doc.text(String(r.score), M, y);
@@ -1139,7 +1202,14 @@ import { SITE } from '../lib/site';
       y += rh; doc.setDrawColor(236, 241, 247); doc.setLineWidth(0.2); doc.line(M, y - 1.5, PW - M, y - 1.5);
     });
 
-    y += 6; ensure(8); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setT(MUT);
+    // --- Sign-off ---
+    y += 10; ensure(30);
+    doc.setDrawColor(BORD[0], BORD[1], BORD[2]); doc.setLineWidth(0.3); doc.line(M, y, PW - M, y); y += 8;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); setT(MUT); doc.text('Prepared and reviewed by', M, y); y += 9;
+    doc.setFont('helvetica', 'bolditalic'); doc.setFontSize(17); setT(INK); doc.text('Nick Dreyfus', M, y); y += 6;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); setT(MUT); doc.text('Vice President, Business Development  ·  i-NETT / Fortify AI', M, y); y += 10;
+
+    ensure(8); doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setT(MUT);
     doc.text('i-NETT · i-nett.ai · (858) 337-2866 · hello@i-nett.com — Free 30-minute review at i-nett.ai/resources', M, y);
     return doc.output('datauristring').split(',')[1] || null;
   }
