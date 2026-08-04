@@ -11,7 +11,7 @@ export const SITE = {
     'Fortify AI is the managed AI offering from i-NETT. We deploy secure, compliance-ready AI for organizations of any size across Southern California, the United States, and Canada. Built for HIPAA, GDPR, SOC, and CCPA. Discounted cyber insurance through our Lloyd’s of London partnership.',
   shortDescription:
     'Managed AI for organizations of any size. HIPAA, GDPR, SOC, and CCPA ready. Discounted cyber insurance through our Lloyd’s of London partnership.',
-  email: 'hello@i-nett.com',
+  email: 'nickd@i-nett.com',
   phone: '+1-858-337-2866',
   phoneDisplay: '(858) 337-2866',
   bookingUrl: 'https://meetings-na2.hubspot.com/ndreyfus/initial_call',
