@@ -53,6 +53,7 @@ const C = {
   white: '#FFFFFF', tint: '#F2F6F9', border: '#DCE4EA', hairline: '#EDF1F4', track: '#E4EAEF',
   red: '#B3261E', amber: '#C77A0A', warnDark: '#FFC46B',
 };
+export const REPORT_COLORS = C;
 const MAST = `linear-gradient(103deg,${C.deepest} 0%,${C.navy} 55%,${C.navy3} 100%)`;
 const RULE = `linear-gradient(90deg,${C.navy},${C.cyan})`;
 
@@ -75,7 +76,7 @@ function peerRows(peers: Peer[]): string {
   ).join('');
 }
 
-function findingCard(f: ReportFinding, glow: boolean): string {
+export function findingCard(f: ReportFinding, glow: boolean): string {
   return `<article class="fa-card${glow ? ' fa-glow-card' : ''}" style="border:1px solid ${C.border};border-top:3px solid ${C.navy};padding:0.2in 0.22in;background:${C.white};">
     <div style="display:flex;align-items:baseline;justify-content:space-between;gap:0.2in;margin-bottom:8px;">
       <span style="${mono};font-size:7pt;letter-spacing:0.16em;color:${C.link};">${esc(f.category)}</span>
@@ -96,7 +97,7 @@ function findingCard(f: ReportFinding, glow: boolean): string {
   </article>`;
 }
 
-function metricTile(m: { label: string; value: string; accent: string; valueColor: string; blurb: string }, glow: boolean): string {
+export function metricTile(m: { label: string; value: string; accent: string; valueColor: string; blurb: string }, glow: boolean): string {
   const high = m.accent === C.red;
   return `<div class="${glow && high ? 'fa-glow-high' : ''}" style="border:1px solid ${C.border};border-left:3px solid ${m.accent};padding:0.13in 0.17in;display:grid;grid-template-columns:1.55in 1fr;align-items:center;gap:0.16in;background:${C.white};">
     <div style="display:flex;flex-direction:column;gap:3px;">
@@ -107,7 +108,7 @@ function metricTile(m: { label: string; value: string; accent: string; valueColo
   </div>`;
 }
 
-function lockedRow(a: LockedArea, last: boolean): string {
+export function lockedRow(a: LockedArea, last: boolean): string {
   const aColor = a.priority === 'high' ? C.red : C.body;
   const aWeight = a.priority === 'high' ? '500' : '400';
   return `<div style="display:grid;grid-template-columns:1.55in 1fr 0.75in 0.62in;align-items:center;gap:0.16in;padding:0.09in 0.17in;${last ? '' : `border-bottom:1px solid ${C.hairline};`}">
@@ -118,7 +119,7 @@ function lockedRow(a: LockedArea, last: boolean): string {
   </div>`;
 }
 
-function scanInputCell(q: string, ans: string, last: boolean): string {
+export function scanInputCell(q: string, ans: string, last: boolean): string {
   return `<div style="display:grid;grid-template-columns:1fr 1.35in;gap:0.1in;align-items:baseline;padding:${last ? '0.07in 0' : '0.095in 0'};${last ? '' : `border-bottom:1px solid ${C.hairline};`}">
     <span style="font-size:8.2pt;color:${C.body};">${esc(q)}</span>
     <span style="font-size:8.2pt;font-weight:500;color:${C.ink};">${esc(ans)}</span>
@@ -264,6 +265,121 @@ export function renderReport(d: ReportData, opts: RenderOpts = {}): string {
   </section>`;
 
   return page1 + page2 + page3;
+}
+
+// ---- Internal team report: every finding gets a full card, not just the top 3.
+// Same visual language as renderReport (masthead, scorecard, finding cards,
+// analyst note, scan inputs, sign-off) but paginated to fit an arbitrary number
+// of findings — no locked-areas table, no CTA, no client-facing gating.
+export function renderInternalReport(d: ReportData, allFindings: ReportFinding[], opts: RenderOpts = {}): string {
+  const glow = !!opts.glow;
+  const fortify = opts.logoFortify || '/assets/brand/fortify-ai-logo.png';
+  const inett = opts.logoInett || '/assets/brand/inett-logo.png';
+  const scorePct = Math.max(0, Math.min(100, d.exposureScore));
+  const company = d.preparedFor.company || '—';
+  const findings = allFindings.length ? allFindings : d.findings;
+
+  // Pair up findings for the middle pages (2 per page); the first finding
+  // rides along on the cover page under the scorecard, like the client report.
+  const rest = findings.slice(1);
+  const pairs: ReportFinding[][] = [];
+  for (let i = 0; i < rest.length; i += 2) pairs.push(rest.slice(i, i + 2));
+  const totalPages = 1 + pairs.length + 1;
+
+  const foot = (n: number) => `<footer style="margin-top:auto;padding:0.22in 0.55in 0.3in;display:flex;align-items:center;justify-content:space-between;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
+    <span>i-NETT · FORTIFY AI · INTERNAL</span><span>FULL REPORT — ${esc(company.toUpperCase())}</span><span>0${n} / 0${totalPages}</span>
+  </footer>`;
+
+  const page1 = `<section class="fa-page" data-p="01" style="display:flex;flex-direction:column;background:${C.white};color:${C.ink};">
+    <header class="${glow ? 'fa-glow-mast' : ''}" style="background:${MAST};color:#fff;padding:0.46in 0.55in 0.4in;display:flex;align-items:flex-start;justify-content:space-between;gap:0.4in;">
+      <div style="display:flex;align-items:center;gap:0.28in;">
+        <img src="${esc(fortify)}" alt="i-NETT Fortify AI" style="height:1.02in;width:auto;display:block;">
+        <div style="display:flex;flex-direction:column;gap:7px;border-left:1px solid rgba(255,255,255,0.22);padding-left:0.28in;">
+          <div style="${mono};font-size:7.6pt;letter-spacing:0.19em;color:${C.lightCyan};">AI READINESS &amp; RISK REPORT — FULL</div>
+          <h1 style="${arch};font-weight:700;font-size:25pt;line-height:1.05;letter-spacing:-0.015em;margin:0;">Fortify AI<br>Scan — Complete Findings</h1>
+          <div style="font-size:8.6pt;color:rgba(255,255,255,0.66);">Prepared for ${esc(d.preparedFor.name)} · ${esc(company)} · ${esc(d.date)}</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-top:4px;">
+        <div style="${mono};font-size:7pt;letter-spacing:0.16em;color:${C.navy};background:${C.lightCyan};padding:4px 9px;">INTERNAL — DO NOT SEND</div>
+        <div style="${mono};font-size:7pt;letter-spacing:0.13em;color:rgba(255,255,255,0.5);">SCAN ${esc(d.scanId)}</div>
+      </div>
+    </header>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);background:${C.tint};border-bottom:1px solid ${C.border};padding:0.14in 0.55in;">
+      <div style="display:flex;flex-direction:column;gap:2px;"><span style="${mono};font-size:6.6pt;letter-spacing:0.15em;color:${C.muted};">CONTACT</span><span style="font-size:8.4pt;color:${C.ink};">${esc(d.preparedFor.email)}</span></div>
+      <div style="display:flex;flex-direction:column;gap:2px;"><span style="${mono};font-size:6.6pt;letter-spacing:0.15em;color:${C.muted};">CELL</span><span style="font-size:8.4pt;color:${C.ink};">${esc(d.preparedFor.phone)}</span></div>
+      <div style="display:flex;flex-direction:column;gap:2px;"><span style="${mono};font-size:6.6pt;letter-spacing:0.15em;color:${C.muted};">ORGANIZATION</span><span style="font-size:8.4pt;color:${C.ink};">${esc([d.preparedFor.website, d.preparedFor.industry, d.preparedFor.sizeBand].filter(Boolean).join(' · '))}</span></div>
+    </div>
+
+    <div style="padding:0.32in 0.55in 0;display:grid;grid-template-columns:2.45in 1fr;gap:0.3in;align-items:stretch;">
+      <div class="fa-score${glow ? ' fa-glow-score' : ''}" style="border:1px solid ${C.navy};background:${C.navy};color:#fff;padding:0.2in 0.22in;display:flex;flex-direction:column;gap:10px;">
+        <div style="${mono};font-size:7pt;letter-spacing:0.17em;color:${C.lightCyan};">EXPOSURE SCORE</div>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span style="${arch};font-weight:700;font-size:44pt;line-height:0.85;letter-spacing:-0.03em;">${scorePct}</span>
+          <span style="${arch};font-weight:500;font-size:13pt;color:rgba(255,255,255,0.55);">/ 100</span>
+        </div>
+        <div style="height:6px;background:rgba(255,255,255,0.16);position:relative;"><div class="${glow ? 'fa-glow-bar' : ''}" style="position:absolute;inset:0 auto 0 0;width:${scorePct}%;background:linear-gradient(90deg,${C.cyan},${C.lightCyan});"></div></div>
+        <div style="display:flex;justify-content:space-between;${mono};font-size:6.4pt;letter-spacing:0.12em;color:rgba(255,255,255,0.45);"><span>LOW</span><span>MODERATE</span><span>ELEVATED</span><span>SEVERE</span></div>
+        <div style="margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,0.16);display:flex;align-items:center;gap:8px;">
+          <span style="${arch};font-weight:600;font-size:10pt;letter-spacing:0.08em;color:${bandColor(d.severityBand)};">${esc(d.severityBand)}</span>
+          <span style="font-size:7.8pt;color:rgba(255,255,255,0.6);line-height:1.3;">${esc(d.severityNote)}</span>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-rows:repeat(3,1fr);gap:0.11in;">${d.metrics.map((m) => metricTile(m, glow)).join('')}</div>
+    </div>
+
+    <div style="padding:0.3in 0.55in 0;">
+      <div style="display:flex;align-items:center;gap:0.16in;border-bottom:2px solid ${C.navy};padding-bottom:7px;">
+        <h2 style="${arch};font-weight:700;font-size:12.5pt;letter-spacing:0.02em;margin:0;color:${C.navy};">Every finding — and what to do about each</h2>
+        <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.muted};margin-left:auto;white-space:nowrap;">${findings.length} FINDINGS</span>
+      </div>
+    </div>
+
+    <div style="margin:0.2in 0.55in 0;">${findings[0] ? findingCard(findings[0], glow) : ''}</div>
+    ${foot(1)}
+  </section>`;
+
+  const midPages = pairs.map((pair, i) => `<section class="fa-page" data-p="${String(i + 2).padStart(2, '0')}" style="display:flex;flex-direction:column;background:${C.white};color:${C.ink};">
+    <div style="height:0.16in;background:${RULE};"></div>
+    <div style="margin:0.4in 0.55in 0;">${pair[0] ? findingCard(pair[0], glow) : ''}</div>
+    ${pair[1] ? `<div style="margin:0.2in 0.55in 0;">${findingCard(pair[1], glow)}</div>` : ''}
+    ${foot(i + 2)}
+  </section>`).join('');
+
+  const inputs = d.scanInputs;
+  const inputCells = inputs.map((q, i) => scanInputCell(q.question, q.answer, i >= inputs.length - 1)).join('') + (inputs.length % 2 === 1 ? '<div style="padding:0.07in 0;"></div>' : '');
+  const lastPage = `<section class="fa-page" data-p="${String(totalPages).padStart(2, '0')}" style="display:flex;flex-direction:column;background:${C.white};color:${C.ink};">
+    <div style="height:0.16in;background:${RULE};"></div>
+    <div class="${glow ? 'fa-glow-note' : ''}" style="margin:0.4in 0.55in 0;background:${MAST};color:#fff;padding:0.3in 0.32in;display:flex;flex-direction:column;gap:11px;">
+      <div style="${mono};font-size:7pt;letter-spacing:0.17em;color:${C.lightCyan};">ANALYST NOTE</div>
+      <p style="font-size:9.6pt;line-height:1.55;margin:0;color:rgba(255,255,255,0.9);text-wrap:pretty;">${esc(d.analystNote)}</p>
+    </div>
+    <div style="padding:0.32in 0.55in 0;">
+      <div style="display:flex;align-items:center;gap:0.16in;border-bottom:2px solid ${C.navy};padding-bottom:7px;">
+        <h2 style="${arch};font-weight:700;font-size:12.5pt;letter-spacing:0.02em;margin:0;color:${C.navy};">Scan inputs</h2>
+        <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.muted};margin-left:auto;white-space:nowrap;">AS ANSWERED · ${esc(d.date.toUpperCase())}</span>
+      </div>
+      <div style="margin-top:0.14in;display:grid;grid-template-columns:1fr 1fr;gap:0 0.3in;">${inputCells}</div>
+    </div>
+    <div style="margin:0.34in 0.55in 0;padding-top:0.2in;border-top:1px solid ${C.border};display:grid;grid-template-columns:1fr auto;align-items:center;gap:0.3in;">
+      <div style="display:flex;flex-direction:column;gap:3px;">
+        <span style="${mono};font-size:6.6pt;letter-spacing:0.14em;color:${C.muted};">PREPARED AND REVIEWED BY</span>
+        <span style="${arch};font-weight:700;font-size:12pt;color:${C.ink};">${esc(d.preparedBy.name)}</span>
+        <span style="font-size:8.4pt;color:${C.body};">${esc(d.preparedBy.title)}</span>
+        <span style="font-size:8.4pt;color:${C.body};">${esc(d.preparedBy.contactLine)}</span>
+      </div>
+      <img src="${esc(inett)}" alt="i-NETT" style="height:0.56in;width:auto;display:block;">
+    </div>
+    <footer style="margin-top:auto;padding:0.2in 0.55in 0.3in;display:flex;flex-direction:column;gap:9px;">
+      <p style="font-size:6.9pt;line-height:1.5;margin:0;color:${C.faint};">${esc(d.disclaimer)}</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
+        <span>i-NETT · FORTIFY AI · INTERNAL</span><span>FULL REPORT — ${esc(company.toUpperCase())}</span><span>0${totalPages} / 0${totalPages}</span>
+      </div>
+    </footer>
+  </section>`;
+
+  return page1 + midPages + lastPage;
 }
 
 // Page geometry, web desk background, screen-only glow, and print rules.

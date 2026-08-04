@@ -132,8 +132,9 @@ import { SITE } from '../lib/site';
                 <div class="scan__gateTitle">See your top priorities</div>
                 <div class="scan__gateSub">
                   Enter your details to see your three highest-priority findings and what to do about
-                  each, plus a short analyst note &mdash; on screen and emailed to you as a PDF. A
-                  member of the i-NETT team also gets a copy so we can prepare before we talk.
+                  each, plus a short analyst note &mdash; right here on screen, with a private link to
+                  your full report emailed to you. A member of the i-NETT team also gets a copy so we
+                  can prepare before we talk.
                 </div>
                 <div class="scan__gateFields">
                   <input class="scan__input" id="leadName" type="text" autocomplete="name" placeholder="Your name">
@@ -452,6 +453,8 @@ import { SITE } from '../lib/site';
 
 <script>
   import { jsPDF } from 'jspdf';
+  import html2canvas from 'html2canvas';
+  import { renderInternalReport, reportCss, encodeReport, type ReportData, type ReportFinding, type Peer } from '../lib/report';
 
   // The report is computed ENTIRELY in this component from the answers, so it
   // renders complete even if the backend is unreachable. The Worker call only
@@ -460,34 +463,6 @@ import { SITE } from '../lib/site';
   const PROXY_URL = 'https://inett-scan.nicholasdreyfus.workers.dev';
   const BOOKING_URL = 'https://meetings-na2.hubspot.com/ndreyfus/initial_call';
 
-  // Brand logos for the PDF, preloaded to data URLs on init (same-origin, so
-  // they embed cleanly into jsPDF). Null until loaded / on failure.
-  type Logo = { data: string; w: number; h: number };
-  let LOGO_FORTIFY: Logo | null = null;
-  let LOGO_INETT: Logo | null = null;
-  // Downscale to a print-appropriate size for the PDF header (the logos display
-  // at ~19mm, so ~260px on the long edge is crisp) — keeps the PDF email-light.
-  function preloadLogo(src: string, maxLong = 260): Promise<Logo | null> {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const scale = Math.min(1, maxLong / Math.max(img.naturalWidth, img.naturalHeight));
-          const w = Math.max(1, Math.round(img.naturalWidth * scale));
-          const h = Math.max(1, Math.round(img.naturalHeight * scale));
-          const c = document.createElement('canvas'); c.width = w; c.height = h;
-          const ctx = c.getContext('2d') as CanvasRenderingContext2D;
-          ctx.imageSmoothingEnabled = true; (ctx as any).imageSmoothingQuality = 'high';
-          ctx.drawImage(img, 0, 0, w, h);
-          resolve({ data: c.toDataURL('image/png'), w, h });
-        } catch (e) { resolve(null); }
-      };
-      img.onerror = () => resolve(null);
-      img.src = src;
-    });
-  }
-  preloadLogo('/assets/brand/fortify-ai-logo.png').then((v) => { LOGO_FORTIFY = v; });
-  preloadLogo('/assets/brand/inett-logo.png').then((v) => { LOGO_INETT = v; });
   let capturedLead: any = null; // for booking prefill after unlock
 
   type Q = { id: string; label: string; type: 'single' | 'multi'; note?: string; options: string[] };
@@ -1075,19 +1050,137 @@ import { SITE } from '../lib/site';
     ($('findingsList') as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
+  // ---- Map a scan Finding to the design-handoff ReportFinding shape ----
+  function toReportFinding(f: Finding, idx: number): ReportFinding {
+    const peers: Peer[] = f.prev
+      ? [{ label: 'Small business', pct: f.prev.s }, { label: 'Mid-sized', pct: f.prev.m }, { label: 'Enterprise', pct: f.prev.e }]
+      : [{ label: 'Small business', pct: 0 }, { label: 'Mid-sized', pct: 0 }, { label: 'Enterprise', pct: 0 }];
+    return {
+      category: f.tag,
+      index: 'FINDING 0' + (idx + 1),
+      headline: f.head,
+      body: f.detail,
+      action: f.fix.replace(/(\d+%)/g, '<strong style="font-weight:600;">$1</strong>'),
+      peers,
+    };
+  }
+
+  function severityBandFor(band: string): string {
+    return band === 'HIGH' ? 'SEVERE' : band; // ELEVATED | MODERATE | LOW pass through
+  }
+  function severityNoteFor(band: string): string {
+    return band === 'HIGH' ? 'Action recommended now' : band === 'ELEVATED' ? 'Action recommended this quarter'
+      : band === 'MODERATE' ? 'Worth addressing in the next few months' : 'In good shape — keep monitoring';
+  }
+  function scanIdFor(lead: any): string {
+    const d = new Date();
+    const yyyy = d.getFullYear(), mm = String(d.getMonth() + 1).padStart(2, '0'), dd = String(d.getDate()).padStart(2, '0');
+    const initials = String(lead.company || 'SCN').toUpperCase().replace(/[^A-Z ]/g, '').split(/\s+/).filter(Boolean).map((w: string) => w[0]).slice(0, 3).join('') || 'SCN';
+    return `${yyyy}-${mm}${dd}-${initials}`;
+  }
+
+  // Base ReportData shared by the client link and the internal PDF — only the
+  // findings/lockedAreas differ between the two views.
+  function baseReportData(lead: any, r: Report, note: string): ReportData {
+    const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    const shadowRed = r.shadowLevel === 'HIGH';
+    return {
+      scanId: scanIdFor(lead),
+      preparedFor: { name: lead.name || '', company: lead.company || '', email: lead.email || '', phone: lead.cell || '', website: lead.website || '', industry: answers.industry || '', sizeBand: answers.size || '' },
+      date,
+      exposureScore: r.score,
+      severityBand: severityBandFor(r.band),
+      severityNote: severityNoteFor(r.band),
+      metrics: [
+        { label: 'SHADOW AI', value: r.shadowLevel, accent: shadowRed ? '#B3261E' : '#C77A0A', valueColor: shadowRed ? '#B3261E' : '#C77A0A', blurb: r.shadowSub },
+        { label: 'COMPLIANCE FLAGS', value: String(r.flags.length), accent: r.flags.length ? '#C77A0A' : '#12A5DB', valueColor: r.flags.length ? '#C77A0A' : '#0B2440', blurb: r.flags.length ? r.flags.join(' · ') : 'No regulated data categories reported' },
+        { label: 'RECOVERABLE HRS / WK', value: r.hoursVal, accent: '#12A5DB', valueColor: '#0B2440', blurb: r.hoursSub },
+      ],
+      findings: [],
+      lockedAreas: [],
+      analystNote: note,
+      cta: { headline: 'These need to be walked through, not skimmed.', body: 'In a free 30-minute working session we go through each finding, what it means for you, and what to do first.', url: bookingUrl(), company: lead.company || '' },
+      scanInputs: answerRows().map((a) => ({ question: a.label, answer: a.value })),
+      preparedBy: { name: 'Nick Dreyfus', title: 'Vice President, Business Development · i-NETT / Fortify AI', contactLine: 'i-nett.ai · (858) 337-2866 · nickd@i-nett.com' },
+      disclaimer: 'This report is for general information only and is meant to be reviewed together with the i-NETT team. It is not a formal audit or assessment, and not legal, compliance, security, or insurance advice. Scores and estimates are illustrative and industry-informed; any frameworks named may or may not apply to your organization.',
+    };
+  }
+
+  // Client view: 3 generic findings in full + everything else as a locked
+  // category/priority/confidence row — no detail, per the IP-protection design.
+  function buildClientReportData(lead: any, r: Report, note: string, opts: ReportOpts): ReportData {
+    const d = baseReportData(lead, r, note);
+    d.findings = opts.findings.map((f, i) => toReportFinding(f, i));
+    d.lockedAreas = [...opts.teasers, ...opts.locked].map((f) => ({
+      area: f.tag, assessment: riskLabel(f.sev), priority: f.sev === 'danger' ? 'high' as const : 'normal' as const, confidence: riskScore(f),
+    }));
+    return d;
+  }
+
+  // Internal view: every finding gets a full card, nothing locked.
+  function buildInternalReportData(lead: any, r: Report, note: string): { data: ReportData; findings: ReportFinding[] } {
+    const d = baseReportData(lead, r, note);
+    const findings = r.findings.map((f, i) => toReportFinding(f, i));
+    d.findings = findings.slice(0, 3);
+    return { data: d, findings };
+  }
+
+  // Renders report HTML off-screen (fonts + images loaded), captures each
+  // .fa-page with html2canvas, and assembles a pixel-accurate Letter PDF.
+  // Client-side only — no server-side rendering needed.
+  async function htmlPagesToPdf(html: string): Promise<string | null> {
+    let style: HTMLStyleElement | null = null, host: HTMLDivElement | null = null;
+    try {
+      if (!document.getElementById('fa-report-fonts')) {
+        const link = document.createElement('link');
+        link.id = 'fa-report-fonts'; link.rel = 'stylesheet';
+        link.href = "https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap";
+        document.head.appendChild(link);
+      }
+      style = document.createElement('style');
+      style.textContent = reportCss();
+      host = document.createElement('div');
+      host.className = 'fa-desk';
+      host.style.cssText = 'position:fixed;left:-99999px;top:0;background:#0a0f16;';
+      host.innerHTML = html;
+      document.head.appendChild(style);
+      document.body.appendChild(host);
+
+      if ((document as any).fonts && (document as any).fonts.ready) { try { await (document as any).fonts.ready; } catch (e) {} }
+      const imgs = Array.from(host.querySelectorAll('img'));
+      await Promise.all(imgs.map((img: any) => img.complete ? Promise.resolve() : new Promise((res) => { img.onload = res; img.onerror = res; })));
+      await new Promise((res) => setTimeout(res, 60));
+
+      const pages = Array.from(host.querySelectorAll('.fa-page')) as HTMLElement[];
+      const doc = new jsPDF({ unit: 'in', format: 'letter' });
+      for (let i = 0; i < pages.length; i++) {
+        const canvas = await html2canvas(pages[i], { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+        const imgData = canvas.toDataURL('image/jpeg', 0.92);
+        if (i > 0) doc.addPage('letter');
+        doc.addImage(imgData, 'JPEG', 0, 0, 8.5, 11, undefined, 'FAST');
+      }
+      return doc.output('datauristring').split(',')[1] || null;
+    } catch (e) { return null; }
+    finally {
+      if (host && host.parentNode) host.parentNode.removeChild(host);
+      if (style && style.parentNode) style.parentNode.removeChild(style);
+    }
+  }
+
   async function submitLead(lead: any) {
     const r = currentReport as Report;
     const note = aiNote || r.fallbackNote;
-    // Two versions (best-effort — never blocks):
-    //   full   → the team (nickd@i-nett.com): every finding
-    //   client → the scan-taker: top 3 full + a single teased 4th, nothing more
-    const fullOpts: ReportOpts = { findings: r.findings, teasers: [], locked: [] };
     const clientOpts: ReportOpts = genericView(r.findings);
-    let reportHtmlFull = '';
-    try { reportHtmlFull = reportDocHtml(lead, r, note, fullOpts); } catch (e) { /* noop */ }
-    let pdfFull: string | null = null, pdfClient: string | null = null;
-    try { pdfFull = buildPdf(lead, r, note, fullOpts); } catch (e) { pdfFull = null; }
-    try { pdfClient = buildPdf(lead, r, note, clientOpts); } catch (e) { pdfClient = null; }
+    const clientData = buildClientReportData(lead, r, note, clientOpts);
+    const reportUrl = location.origin + '/report#r=' + encodeReport(clientData);
+
+    let pdfFull: string | null = null;
+    try {
+      const { data: internalData, findings: allFindings } = buildInternalReportData(lead, r, note);
+      const html = renderInternalReport(internalData, allFindings, { glow: false });
+      pdfFull = await htmlPagesToPdf(html);
+    } catch (e) { pdfFull = null; }
+
     fetch(PROXY_URL + '/lead', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1098,8 +1191,8 @@ import { SITE } from '../lib/site';
           findings: r.findings.map((f) => ({ tag: f.tag, headline: f.head, detail: f.detail, fix: f.fix, sev: f.sev, prev: f.prev })),
         },
         analystNote: note,
-        reportHtml: reportHtmlFull,
-        pdfFull, pdfClient,
+        reportUrl,
+        pdfFull,
         pageUrl: location.href,
       }),
     }).catch(() => { /* best-effort; the visitor already has their report */ });
@@ -1127,289 +1220,11 @@ import { SITE } from '../lib/site';
     return Math.max(28, Math.min(90, base + Math.min(cap, Math.round(w))));
   }
 
-  /* ===== Report documents (PDF + standalone HTML) ===== */
-  function esc(s: any): string {
-    return String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as any)[c]);
-  }
   function answerRows(): { label: string; value: string }[] {
     return QUESTIONS.map((q) => {
       const v = answers[q.id];
       return { label: q.label, value: Array.isArray(v) ? (v.join(', ') || '(skipped)') : (v || '(skipped)') };
     });
   }
-  function bandHex(band: string): string {
-    return band === 'HIGH' ? '#C13030' : band === 'ELEVATED' ? '#B86E00' : band === 'MODERATE' ? '#C99700' : '#0F8B5F';
-  }
 
-  // Self-contained HTML report that mirrors the on-screen output. Opens
-  // pixel-faithful in any browser; attached to the notification email.
-  function reportDocHtml(lead: any, r: any, note: string, opts?: ReportOpts): string {
-    const findings = opts ? opts.findings : r.findings;
-    const teasers = opts ? opts.teasers : [];
-    const locked = opts ? opts.locked : [];
-    const bc = bandHex(r.band);
-    const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    const tile = (label: string, val: string, sub: string, color: string) =>
-      '<td style="width:33.33%;vertical-align:top;padding:5px;">'
-      + '<div style="border:1px solid ' + color + '55;border-radius:10px;padding:12px 14px;background:' + color + '0f;">'
-      + '<div style="font:700 9px/1 monospace;letter-spacing:1.5px;color:' + color + ';margin-bottom:6px;">' + esc(label) + '</div>'
-      + '<div style="font:700 15px/1.2 Arial,sans-serif;color:#0A2540;">' + esc(val) + '</div>'
-      + '<div style="font:12px/1.4 Arial,sans-serif;color:#4A5A6E;margin-top:4px;">' + esc(sub) + '</div></div></td>';
-    const bar = (label: string, pct: number, color: string) =>
-      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:7px;font:12px Arial,sans-serif;">'
-      + '<span style="width:130px;color:#4A5A6E;">' + label + '</span>'
-      + '<span style="flex:1;height:9px;background:#ECF1F7;border-radius:99px;overflow:hidden;"><span style="display:block;height:100%;width:' + pct + '%;background:' + color + ';border-radius:99px;"></span></span>'
-      + '<span style="width:44px;text-align:right;font:700 13px monospace;color:' + color + ';">' + pct + '%</span></div>';
-    const lockedHtml = locked.map((f: any) => {
-      const tc = f.sev === 'danger' ? '#C13030' : f.sev === 'info' ? '#00B4FF' : '#B86E00';
-      const rc = f.sev === 'danger' ? '#C13030' : f.sev === 'warn' ? '#B86E00' : '#1B4A7A';
-      const rk = f.sev === 'danger' ? 'High priority' : f.sev === 'warn' ? 'Elevated' : 'Worth reviewing';
-      return '<div style="display:flex;align-items:center;gap:10px;padding:11px 14px;background:#F6F8FB;border:1px solid #DDE5EE;border-radius:8px;margin-bottom:8px;">'
-        + '<span style="font:700 10px/1 monospace;letter-spacing:1px;color:' + tc + ';border:1px solid ' + tc + ';border-radius:3px;padding:3px 8px;">' + esc(f.tag) + '</span>'
-        + '<span style="margin-left:auto;font:700 12px Arial,sans-serif;color:' + rc + ';">' + rk + '</span>'
-        + '<span style="font:700 13px monospace;color:' + rc + ';">' + riskScore(f) + '%</span>'
-        + '<span style="opacity:0.55;">&#128274;</span></div>';
-    }).join('');
-    const teaserHtml = teasers.map((f: any) => {
-      const tc = f.sev === 'danger' ? '#C13030' : f.sev === 'info' ? '#00B4FF' : '#B86E00';
-      return '<div style="border:1px dashed #B5C2D2;border-left:4px solid #33C5FF;border-radius:10px;padding:16px 18px;margin-bottom:14px;background:#F6F8FB;">'
-        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font:700 10px/1 monospace;letter-spacing:1px;color:' + tc + ';border:1px solid ' + tc + ';border-radius:3px;padding:3px 8px;">' + esc(f.tag) + '</span><span style="font:10px monospace;color:#0091D5;">&#128274; IN YOUR SESSION</span></div>'
-        + '<div style="font:700 16px/1.35 Arial,sans-serif;color:#0A2540;margin-bottom:6px;">' + esc(f.head) + '</div>'
-        + '<div style="font:13px/1.55 Arial,sans-serif;color:#6B7A8E;">The full detail, what to do about it, and how you compare to peers &mdash; walked through with you in a working session.</div></div>';
-    }).join('');
-    const findingHtml = findings.map((f: any, i: number) => {
-      const c = f.sev === 'danger' ? '#C13030' : f.sev === 'info' ? '#00B4FF' : '#B86E00';
-      const prev = f.prev
-        ? '<div style="margin-top:12px;padding-top:12px;border-top:1px solid #DDE5EE;">'
-          + '<div style="font:700 10px/1 monospace;letter-spacing:1.5px;color:#6B7A8E;text-transform:uppercase;margin-bottom:10px;">How common is this gap?</div>'
-          + bar('Small businesses', f.prev.s, '#0EA5E9') + bar('Mid-sized', f.prev.m, '#0369A1') + bar('Enterprises', f.prev.e, '#0A2540')
-          + '<div style="margin-top:10px;padding-left:12px;border-left:2px solid #66D6FF;font:italic 12px/1.6 Arial,sans-serif;color:#4A5A6E;">' + esc(f.prev.edge) + '</div></div>'
-        : '';
-      return '<div style="border:1px solid #DDE5EE;border-left:4px solid ' + c + ';border-radius:10px;padding:16px 18px;margin-bottom:14px;background:#fff;">'
-        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
-        + '<span style="font:700 10px/1 monospace;letter-spacing:1px;color:' + c + ';border:1px solid ' + c + ';border-radius:3px;padding:3px 8px;">' + esc(f.tag) + '</span>'
-        + '<span style="font:10px monospace;color:#6B7A8E;">FINDING 0' + (i + 1) + '</span></div>'
-        + '<div style="font:700 17px/1.35 Arial,sans-serif;color:#0A2540;margin-bottom:8px;">' + esc(f.head) + '</div>'
-        + '<div style="font:14px/1.65 Arial,sans-serif;color:#4A5A6E;margin-bottom:12px;">' + esc(f.detail) + '</div>'
-        + '<div style="font:14px/1.6 Arial,sans-serif;color:#0E1B2C;background:#F6F8FB;border:1px solid #DDE5EE;border-radius:6px;padding:11px 13px;"><b style="color:#0F8B5F;">What to do:</b> ' + esc(f.fix) + '</div>'
-        + prev + '</div>';
-    }).join('');
-    const ansHtml = answerRows().map((a) =>
-      '<tr><td style="padding:6px 10px;border-bottom:1px solid #ECF1F7;font:13px Arial,sans-serif;color:#4A5A6E;width:55%;">' + esc(a.label) + '</td>'
-      + '<td style="padding:6px 10px;border-bottom:1px solid #ECF1F7;font:600 13px Arial,sans-serif;color:#0A2540;">' + esc(a.value) + '</td></tr>').join('');
-    return '<!doctype html><html><head><meta charset="utf-8"><title>Fortify AI Readiness & Risk Report</title></head>'
-      + '<body style="margin:0;background:#F6F8FB;font-family:Arial,Helvetica,sans-serif;color:#0E1B2C;">'
-      + '<div style="max-width:720px;margin:0 auto;padding:24px;">'
-      + '<div style="background:#050B14;border-radius:14px 14px 0 0;padding:22px 24px;color:#fff;">'
-      + '<div style="font:700 10px/1 monospace;letter-spacing:3px;color:#00E0FF;margin-bottom:6px;">FORTIFY AI &middot; i-NETT</div>'
-      + '<div style="font:800 22px/1.1 Arial,sans-serif;">AI Readiness &amp; Risk Report</div>'
-      + '<div style="font:13px Arial,sans-serif;color:#B7C6D8;margin-top:6px;">Prepared for ' + esc(lead.company || '—') + ' &middot; ' + date + '</div>'
-      + '<div style="font:12px Arial,sans-serif;color:#8ba0b5;margin-top:2px;">' + esc([lead.name, lead.email, lead.cell, lead.website].filter(Boolean).join('  ·  ')) + '</div></div>'
-      + '<div style="background:#fff;border:1px solid #DDE5EE;border-top:none;border-radius:0 0 14px 14px;padding:24px;">'
-      + '<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px;">'
-      + '<span style="font:800 40px/1 monospace;color:' + bc + ';">' + r.score + '</span>'
-      + '<span style="font:700 14px Arial;color:#0A2540;">/ 100</span>'
-      + '<span style="margin-left:auto;font:700 13px monospace;letter-spacing:2px;color:' + bc + ';border:1px solid ' + bc + ';border-radius:4px;padding:4px 10px;">' + esc(r.band) + '</span></div>'
-      + '<div style="height:10px;background:#ECF1F7;border-radius:99px;overflow:hidden;margin-bottom:20px;"><span style="display:block;height:100%;width:' + r.score + '%;background:' + bc + ';border-radius:99px;"></span></div>'
-      + '<table style="width:100%;border-collapse:collapse;margin-bottom:22px;"><tr>'
-      + tile('SHADOW AI EXPOSURE', r.shadowLevel, r.shadowSub, '#B86E00')
-      + tile('COMPLIANCE FLAGS', String(r.flags.length), r.flags.length ? r.flags.join(' · ') : 'No regulated data reported', '#C13030')
-      + tile('RECOVERABLE HRS / WK', r.hoursVal, r.hoursSub, '#0F8B5F')
-      + '</tr></table>'
-      + '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#6B7A8E;margin-bottom:12px;">' + (teasers.length ? 'YOUR TOP PRIORITIES — AND WHAT TO DO ABOUT EACH' : 'FINDINGS — AND WHAT TO DO ABOUT EACH') + '</div>'
-      + findingHtml
-      + ((teasers.length || locked.length)
-        ? '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#6B7A8E;margin:6px 0 10px;">THE REST OF YOUR REPORT</div>'
-          + teaserHtml + lockedHtml
-          + '<div style="background:#050B14;border-radius:12px;padding:18px 20px;margin:8px 0 22px;text-align:center;"><div style="font:800 16px Arial,sans-serif;color:#fff;margin-bottom:6px;">These need to be walked through, not skimmed.</div><div style="font:13px/1.6 Arial,sans-serif;color:#B7C6D8;margin-bottom:14px;">These findings only mean something in the context of your organization. In a free 30-minute working session we go through each one, what it means for you, and what to do first.</div><a href="' + esc(BOOKING_URL) + '" style="display:inline-block;background:#00B4FF;color:#050B14;font-weight:700;text-decoration:none;padding:12px 20px;border-radius:8px;">Book your working session &rarr;</a></div>'
-        : '')
-      + '<div style="background:#0A2540;border-radius:10px;padding:16px 18px;margin:8px 0 22px;">'
-      + '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#66D6FF;margin-bottom:6px;">ANALYST NOTE</div>'
-      + '<div style="font:14px/1.65 Arial,sans-serif;color:#F4F8FC;">' + esc(note) + '</div></div>'
-      + '<div style="font:700 10px/1 monospace;letter-spacing:2px;color:#6B7A8E;margin-bottom:8px;">SCAN INPUTS</div>'
-      + '<table style="width:100%;border-collapse:collapse;">' + ansHtml + '</table>'
-      + '<div style="margin-top:20px;border-top:1px solid #DDE5EE;padding-top:14px;"><div style="font:12px Arial,sans-serif;color:#6B7A8E;">Prepared and reviewed by</div><div style="font:italic 700 18px Arial,sans-serif;color:#0A2540;margin-top:2px;">Nick Dreyfus</div><div style="font:13px Arial,sans-serif;color:#6B7A8E;">Vice President, Business Development &middot; i-NETT / Fortify AI</div></div>'
-      + '<div style="margin-top:16px;font:11px/1.55 Arial,sans-serif;color:#9AA7B5;">This report is for general information only and is meant to be reviewed together with the i-NETT team. It is not a formal audit or assessment, and not legal, compliance, security, or insurance advice. Scores and estimates are illustrative and industry-informed; any frameworks named may or may not apply to your organization.</div>'
-      + '<div style="margin-top:14px;font:12px Arial,sans-serif;color:#6B7A8E;">i-NETT · i-nett.ai · (858) 337-2866 · hello@i-nett.com</div>'
-      + '</div></div></body></html>';
-  }
-
-  // jsPDF is bundled with the site (no external CDN), so the PDF always
-  // generates. Best-effort: returns null on any failure and the email still
-  // goes out with the HTML report + inputs.
-  function buildPdf(lead: any, r: any, note: string, opts?: ReportOpts): string | null {
-    try { return renderPdf(lead, r, note, opts); } catch (e) { return null; }
-  }
-  // Hand-drawn dark-header report PDF mirroring the on-screen look. Deterministic
-  // vector output, always compact. Returns base64 (no data-uri prefix) or null.
-  function renderPdf(lead: any, r: any, note: string, opts?: ReportOpts): string | null {
-    const findings = opts ? opts.findings : r.findings;
-    const teasers = opts ? opts.teasers : [];
-    const locked = opts ? opts.locked : [];
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-    const PW = 210, PH = 297, M = 14; let y = 0;
-    const PANEL = [246, 248, 251], BORD = [221, 229, 238], INK = [10, 37, 64], MUT = [74, 90, 110], TEAL = [15, 139, 95], BLUE = [0, 180, 255], WARN = [184, 110, 0], DANG = [193, 48, 48], WHITE = [255, 255, 255];
-    // Sequential ramp for the prevalence bars (light cyan -> deep navy)
-    const RSM = [14, 165, 233], RMID = [3, 105, 161], RENT = [10, 37, 64];
-    const band = r.band === 'HIGH' ? DANG : r.band === 'ELEVATED' ? WARN : r.band === 'MODERATE' ? [201, 151, 0] : TEAL;
-    const CW = PW - 2 * M;
-    const fill = (c: number[]) => doc.setFillColor(c[0], c[1], c[2]);
-    const setT = (c: number[]) => doc.setTextColor(c[0], c[1], c[2]);
-    const wrap = (t: any, w: number, s: number, st?: string) => { doc.setFont('helvetica', st || 'normal'); doc.setFontSize(s); return doc.splitTextToSize(String(t || ''), w); };
-    const ensure = (h: number) => { if (y + h > PH - 14) { doc.addPage(); y = 16; } };
-
-    const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    // --- Co-branded header band: Fortify AI (light logo) left, i-NETT (dark
-    //     logo on a white chip) right ---
-    const HB = 30;
-    fill([5, 11, 20]); doc.rect(0, 0, PW, HB, 'F');
-    if (LOGO_FORTIFY) {
-      const h = 22, w = h * LOGO_FORTIFY.w / LOGO_FORTIFY.h;
-      doc.addImage(LOGO_FORTIFY.data, 'PNG', M, (HB - h) / 2, w, h, 'fortify', 'SLOW');
-    } else { doc.setFont('helvetica', 'bold'); doc.setFontSize(15); setT(WHITE); doc.text('FORTIFY AI', M, HB / 2 + 2); }
-    if (LOGO_INETT) {
-      const lh = 8.5, lw = lh * LOGO_INETT.w / LOGO_INETT.h, pad = 2.5;
-      const cw = lw + pad * 2, ch = lh + pad * 2, cx = PW - M - cw, cy = (HB - ch) / 2;
-      fill(WHITE); doc.roundedRect(cx, cy, cw, ch, 2, 2, 'F');
-      doc.addImage(LOGO_INETT.data, 'PNG', cx + pad, cy + pad, lw, lh, 'inett', 'SLOW');
-    } else { doc.setFont('helvetica', 'bold'); doc.setFontSize(13); setT(WHITE); doc.text('i-NETT', PW - M, HB / 2 + 2, { align: 'right' }); }
-    y = HB + 12;
-    // --- Title + prepared-for ---
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(9); setT(BLUE); doc.text('AI READINESS & RISK REPORT', M, y); y += 8;
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); setT(INK); doc.text('Your Fortify AI Scan Results', M, y); y += 7;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(10); setT(MUT);
-    doc.text('Prepared for ' + (lead.name || lead.company || '—') + (lead.name && lead.company ? ', ' + lead.company : '') + '   ·   ' + date, M, y); y += 4.5;
-    doc.setFontSize(8.5);
-    const pl = [lead.email, lead.cell ? 'cell ' + lead.cell : '', lead.website].filter(Boolean).join('   ·   ');
-    if (pl) { doc.text(pl, M, y); y += 3; }
-    y += 5; doc.setDrawColor(BORD[0], BORD[1], BORD[2]); doc.setLineWidth(0.3); doc.line(M, y, PW - M, y); y += 10;
-
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT(MUT); doc.text('EXPOSURE SCORE', M, y); y += 9;
-    doc.setFontSize(30); setT(band); doc.text(String(r.score), M, y);
-    const sw = doc.getTextWidth(String(r.score));
-    doc.setFontSize(12); setT([14, 27, 44]); doc.text('/ 100', M + sw + 3, y);
-    doc.setFontSize(13); setT(band); doc.text(r.band, PW - M, y, { align: 'right' }); y += 5;
-    fill(BORD); doc.roundedRect(M, y, CW, 3.4, 1.7, 1.7, 'F');
-    fill(band); doc.roundedRect(M, y, Math.max(4, CW * r.score / 100), 3.4, 1.7, 1.7, 'F'); y += 12;
-
-    const tiles = [['SHADOW AI', r.shadowLevel, r.shadowSub, WARN], ['COMPLIANCE FLAGS', String(r.flags.length), (r.flags.length ? r.flags.join(' · ') : 'None reported'), DANG], ['RECOVERABLE HRS / WK', r.hoursVal, r.hoursSub, TEAL]];
-    const tw = (CW - 2 * 4) / 3;
-    tiles.forEach((t: any, i: number) => {
-      const tx = M + i * (tw + 4); fill(PANEL); doc.roundedRect(tx, y, tw, 24, 2, 2, 'F');
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(6); setT(t[3]); doc.text(t[0], tx + 3.5, y + 5);
-      doc.setFontSize(12); setT(INK); doc.text(String(t[1]), tx + 3.5, y + 11.5);
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(6); setT(MUT); doc.text(doc.splitTextToSize(t[2] || '', tw - 7).slice(0, 2), tx + 3.5, y + 16.5);
-    });
-    y += 30;
-
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT(MUT); ensure(8);
-    doc.text(teasers.length ? 'YOUR TOP PRIORITIES — AND WHAT TO DO ABOUT EACH' : 'FINDINGS — AND WHAT TO DO ABOUT EACH', M, y); y += 6;
-    findings.forEach((f: any, i: number) => {
-      const sc = f.sev === 'danger' ? DANG : f.sev === 'info' ? BLUE : WARN;
-      const headL = wrap(f.head, CW - 12, 11, 'bold');
-      const detL = wrap(f.detail, CW - 12, 8.5, 'normal');
-      const fixL = wrap('What to do: ' + f.fix, CW - 12, 8.5, 'normal');
-      const prevH = f.prev ? 21 : 0;
-      const h = 8 + headL.length * 4.8 + detL.length * 3.9 + 3 + fixL.length * 3.9 + 5 + prevH;
-      ensure(h + 3);
-      fill(WHITE); doc.setDrawColor(BORD[0], BORD[1], BORD[2]); doc.setLineWidth(0.3); doc.roundedRect(M, y, CW, h, 2, 2, 'FD');
-      fill(sc); doc.rect(M, y, 1.6, h, 'F');
-      let cy = y + 6;
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); setT(sc); doc.text(f.tag, M + 6, cy);
-      doc.setFontSize(6.5); setT(MUT); doc.text('FINDING 0' + (i + 1), PW - M - 3, cy, { align: 'right' }); cy += 5.5;
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); setT(INK); doc.text(headL, M + 6, cy); cy += headL.length * 4.8;
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); setT(MUT); doc.text(detL, M + 6, cy); cy += detL.length * 3.9 + 3;
-      setT(TEAL); doc.text(fixL, M + 6, cy); cy += fixL.length * 3.9 + 5;
-      if (f.prev) {
-        const bars = [['Small businesses', f.prev.s, RSM], ['Mid-sized', f.prev.m, RMID], ['Enterprises', f.prev.e, RENT]];
-        bars.forEach((b: any) => {
-          doc.setFont('helvetica', 'normal'); doc.setFontSize(7); setT(MUT); doc.text(b[0], M + 6, cy);
-          const bx = M + 40, bw = CW - 40 - 20;
-          fill([236, 241, 247]); doc.roundedRect(bx, cy - 2.3, bw, 2.4, 1.2, 1.2, 'F');
-          fill(b[2]); doc.roundedRect(bx, cy - 2.3, Math.max(1, bw * b[1] / 100), 2.4, 1.2, 1.2, 'F');
-          doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); setT(b[2]); doc.text(b[1] + '%', PW - M - 4, cy, { align: 'right' });
-          cy += 5;
-        });
-      }
-      y += h + 3;
-    });
-
-    // --- The rest of the report: teased 4th + locked list + meeting prompt (client version only) ---
-    if (teasers.length || locked.length) {
-      y += 2; ensure(10);
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT(MUT); doc.text('THE REST OF YOUR REPORT', M, y); y += 6;
-      teasers.forEach((f: any) => {
-        const sc = f.sev === 'danger' ? DANG : f.sev === 'info' ? BLUE : WARN;
-        const headL = wrap(f.head, CW - 12, 11, 'bold');
-        const footL = wrap('The full detail, what to do about it, and how you compare to peers — walked through with you in a working session.', CW - 12, 8, 'normal');
-        const h = 9 + headL.length * 4.8 + footL.length * 3.6 + 4;
-        ensure(h + 3);
-        fill([246, 248, 251]); doc.setDrawColor(181, 194, 210); doc.setLineWidth(0.4); doc.roundedRect(M, y, CW, h, 2, 2, 'FD');
-        fill([51, 197, 255]); doc.rect(M, y, 1.6, h, 'F');
-        let cy = y + 6;
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(6.5); setT(sc); doc.text(f.tag, M + 6, cy);
-        setT([0, 145, 213]); doc.text('IN YOUR SESSION', PW - M - 3, cy, { align: 'right' }); cy += 5.5;
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(11); setT(INK); doc.text(headL, M + 6, cy); cy += headL.length * 4.8 + 1.5;
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setT(MUT); doc.text(footL, M + 6, cy);
-        y += h + 3;
-      });
-      // Locked rows: category + risk level + risk score — no information.
-      locked.forEach((f: any) => {
-        const sc = f.sev === 'danger' ? DANG : f.sev === 'info' ? BLUE : WARN;
-        const rc = f.sev === 'danger' ? DANG : f.sev === 'warn' ? WARN : [27, 74, 122];
-        const rk = f.sev === 'danger' ? 'High priority' : f.sev === 'warn' ? 'Elevated' : 'Worth reviewing';
-        ensure(11);
-        fill(PANEL); doc.setDrawColor(BORD[0], BORD[1], BORD[2]); doc.setLineWidth(0.3); doc.roundedRect(M, y, CW, 9, 1.5, 1.5, 'FD');
-        doc.setFont('helvetica', 'bold'); doc.setFontSize(7); setT(sc); doc.text(f.tag, M + 5, y + 5.7);
-        setT(rc); doc.setFontSize(7.5); doc.text(rk, PW - M - 32, y + 5.7, { align: 'right' });
-        doc.text(riskScore(f) + '%', PW - M - 18, y + 5.7, { align: 'right' });
-        doc.setFont('helvetica', 'normal'); doc.setFontSize(7); setT([154, 167, 181]); doc.text('LOCKED', PW - M - 4, y + 5.7, { align: 'right' });
-        y += 11;
-      });
-      // Meeting prompt
-      const subL = doc.splitTextToSize('These findings only mean something in the context of your organization. In a free 30-minute working session we go through each one, what it means for you, and what to do first.', CW - 12);
-      const boxH = 14 + subL.length * 4 + 6;
-      ensure(boxH + 2);
-      fill([5, 11, 20]); doc.roundedRect(M, y, CW, boxH, 2, 2, 'F');
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(11); setT(WHITE); doc.text('These need to be walked through, not skimmed.', M + 6, y + 8);
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); setT([183, 198, 216]); doc.text(subL, M + 6, y + 13.5);
-      const linkY = y + 13.5 + subL.length * 4 + 2;
-      doc.setFontSize(8.5); setT([102, 214, 255]);
-      try { doc.textWithLink('Book your session at i-nett.ai/resources', M + 6, linkY, { url: BOOKING_URL }); }
-      catch (e) { doc.text('Book your session at i-nett.ai/resources', M + 6, linkY); }
-      y += boxH + 4;
-    }
-
-    y += 2; ensure(14);
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT([17, 53, 92]); doc.text('ANALYST NOTE', M, y); y += 5;
-    const noteL = wrap(note, CW - 11, 9, 'italic'); const nh = noteL.length * 4.4 + 9;
-    ensure(nh); fill(INK); doc.roundedRect(M, y, CW, nh, 2, 2, 'F');
-    doc.setFont('helvetica', 'italic'); doc.setFontSize(9); setT([244, 248, 252]); doc.text(noteL, M + 5.5, y + 6); y += nh + 9;
-
-    ensure(12); doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); setT(MUT); doc.text('SCAN INPUTS', M, y); y += 6;
-    answerRows().forEach((a) => {
-      const lL = wrap(a.label, CW * 0.54, 8, 'normal');
-      const vL = wrap(a.value, CW * 0.42, 8, 'bold');
-      const rh = Math.max(lL.length, vL.length) * 3.7 + 2.5;
-      ensure(rh);
-      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setT(MUT); doc.text(lL, M, y);
-      doc.setFont('helvetica', 'bold'); setT(INK); doc.text(vL, M + CW * 0.56, y);
-      y += rh; doc.setDrawColor(236, 241, 247); doc.setLineWidth(0.2); doc.line(M, y - 1.5, PW - M, y - 1.5);
-    });
-
-    // --- Sign-off ---
-    y += 10; ensure(30);
-    doc.setDrawColor(BORD[0], BORD[1], BORD[2]); doc.setLineWidth(0.3); doc.line(M, y, PW - M, y); y += 8;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); setT(MUT); doc.text('Prepared and reviewed by', M, y); y += 9;
-    doc.setFont('helvetica', 'bolditalic'); doc.setFontSize(17); setT(INK); doc.text('Nick Dreyfus', M, y); y += 6;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); setT(MUT); doc.text('Vice President, Business Development  ·  i-NETT / Fortify AI', M, y); y += 10;
-
-    ensure(22);
-    doc.setFont('helvetica', 'italic'); doc.setFontSize(7); setT([154, 167, 181]);
-    const discL = doc.splitTextToSize('This report is for general information only and is meant to be reviewed together with the i-NETT team. It is not a formal audit or assessment, and not legal, compliance, security, or insurance advice. Scores and estimates are illustrative and industry-informed; any frameworks named may or may not apply to your organization.', CW);
-    doc.text(discL, M, y); y += discL.length * 3 + 5;
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); setT(MUT);
-    doc.text('i-NETT · i-nett.ai · (858) 337-2866 · hello@i-nett.com', M, y);
-    return doc.output('datauristring').split(',')[1] || null;
-  }
 </script>
