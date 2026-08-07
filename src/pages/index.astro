@@ -131,20 +131,6 @@ const leadersSchema = {
           legal, financial services, and professional services firms across Southern California,
           the United States, and Canada. We operate it. You see results.
         </p>
-        <div class="hero__ctas">
-          <a href="/resources#scan" class="btn btn-accent btn-lg">
-            Take the AI Readiness Scan
-            <span aria-hidden="true">&rarr;</span>
-          </a>
-          <a href={SITE.bookingUrl} class="btn btn-outline on-dark btn-lg" target="_blank" rel="noopener">
-            Book a 30 minute consultation
-          </a>
-        </div>
-        <ul class="hero__trust">
-          <li>HIPAA, GDPR, CCPA ready; aligned with SOC 2 controls</li>
-          <li>Dedicated tenant, access to all major frontier model providers</li>
-          <li>148 service cities across US and Canada</li>
-        </ul>
         <div class="hero__offers" aria-label="Free resources">
           <a class="hero__offer" href="/ai-usage-policy">
             <span class="hero__offer-tag">Free template</span>
@@ -172,6 +158,20 @@ const leadersSchema = {
             fetchpriority="high"
           />
         </div>
+        <div class="hero__ctas">
+          <a href="/resources#scan" class="btn btn-accent btn-lg">
+            Take the AI Readiness Scan
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+          <a href={SITE.bookingUrl} class="btn btn-outline on-dark btn-lg" target="_blank" rel="noopener">
+            Book a 30 minute consultation
+          </a>
+        </div>
+        <ul class="hero__trust">
+          <li>HIPAA, GDPR, CCPA ready; aligned with SOC 2 controls</li>
+          <li>Dedicated tenant, access to all major frontier model providers</li>
+          <li>148 service cities across US and Canada</li>
+        </ul>
       </aside>
     </div>
   </section>
@@ -1226,6 +1226,12 @@ const leadersSchema = {
   @media (min-width: 480px) {
     .hero__ctas { flex-direction: row; }
   }
+  .hero__panel .hero__ctas {
+    flex-direction: column;
+    width: 100%;
+    max-width: 360px;
+    margin-bottom: 0;
+  }
   .hero__trust {
     list-style: none;
     padding: 0;
@@ -1250,22 +1256,27 @@ const leadersSchema = {
   @media (min-width: 640px) {
     .hero__trust { grid-template-columns: repeat(3, 1fr); }
   }
+  .hero__panel .hero__trust {
+    grid-template-columns: 1fr;
+    max-width: 360px;
+  }
 
-  /* Hero logo lockup */
+  /* Hero logo lockup, CTAs, and trust row — stacked as one balanced unit */
   .hero__panel {
     position: relative;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    gap: var(--space-5);
     min-height: 320px;
   }
   @media (min-width: 1024px) {
-    .hero__panel { align-self: start; padding-top: var(--space-4); }
+    .hero__panel { align-self: start; }
   }
   .hero-logo {
     position: relative;
     width: 100%;
-    max-width: 520px;
+    max-width: 400px;
     aspect-ratio: 1 / 1;
     display: grid;
     place-items: center;
@@ -1276,7 +1287,7 @@ const leadersSchema = {
     z-index: 2;
     width: 100%;
     height: auto;
-    max-width: 480px;
+    max-width: 360px;
     object-fit: contain;
     opacity: 0;
     transform: scale(0.92);
