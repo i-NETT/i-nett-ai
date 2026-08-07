@@ -42,6 +42,7 @@ const breadcrumbs = [
           {new Date(d.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           {d.author ? ` · ${d.author}` : ''}
         </p>
+        {d.image && <img class="article-hero" src={d.image} alt="" width="1200" height="1200" loading="eager" />}
         <div class="article-body">
           <Content />
         </div>
@@ -56,6 +57,7 @@ const breadcrumbs = [
   .article-wrap { max-width: var(--container-narrow); margin: 0 auto; }
   .article-wrap h1 { margin: var(--space-3) 0 var(--space-2); font-size: var(--fs-2xl); line-height: var(--lh-snug); }
   .article-meta { color: var(--color-text-muted); font-size: var(--fs-sm); margin-bottom: var(--space-6); }
+  .article-hero { width: 100%; aspect-ratio: 1 / 1; max-height: 480px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: var(--space-6); background: var(--color-bg-muted); }
   .article-body :global(h2) { margin: var(--space-7) 0 var(--space-3); font-size: var(--fs-xl); }
   .article-body :global(h3) { margin: var(--space-5) 0 var(--space-2); font-size: var(--fs-lg); }
   .article-body :global(p) { margin-bottom: var(--space-4); }

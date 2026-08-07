@@ -36,6 +36,7 @@ const blog = defineCollection({
     author: z.string().default('i-NETT'),
     draft: z.boolean().default(false),
     answerFirst: z.string().optional(),
+    image: z.string().optional(),
   }),
 });
 

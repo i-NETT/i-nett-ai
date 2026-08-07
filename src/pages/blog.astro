@@ -38,6 +38,7 @@ const feed: FeedItem[] = [
     href: `/blog/${a.id}`,
     date: a.data.datePublished,
     tag: 'Article',
+    image: a.data.image,
   })),
 ].sort((a, b) => b.date.valueOf() - a.date.valueOf());
 ---
