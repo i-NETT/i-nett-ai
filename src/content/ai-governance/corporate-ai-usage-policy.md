@@ -109,4 +109,4 @@ A policy sets the rules; your environment has to make the rules livable. If the 
 
 If you want a starting point you can adapt today, use our [AI usage policy](/ai-usage-policy) template, then tailor the data classification and approved-tools sections to your firm.
 
-Ready to put real governance behind your AI use? [Book a 30-minute call](https://meetings-na2.hubspot.com/ndreyfus/initial_call) and we will walk through your policy and your deployment together.
+Ready to put real governance behind your AI use? [Book a 30-minute call](https://meetings-na2.hubspot.com/ndreyfus/ai-risk-assessment) and we will walk through your policy and your deployment together.

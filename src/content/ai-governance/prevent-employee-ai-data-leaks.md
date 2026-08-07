@@ -98,4 +98,4 @@ The downside of inaction is not hypothetical. IBM's Cost of a Data Breach Report
 
 A ban feels like control. Governance is control. The firms that thrive with AI are the ones that gave their people a safe, fast, approved way to use it, and then watched usage move out of the shadows and into the light.
 
-If you want to map the right set of controls for your firm, [book a 30-minute call with us](https://meetings-na2.hubspot.com/ndreyfus/initial_call). We will walk through where your current AI exposure sits and what a governed alternative would look like for your team.
+If you want to map the right set of controls for your firm, [book a 30-minute call with us](https://meetings-na2.hubspot.com/ndreyfus/ai-risk-assessment). We will walk through where your current AI exposure sits and what a governed alternative would look like for your team.

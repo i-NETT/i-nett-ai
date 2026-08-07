@@ -14,7 +14,7 @@ export const SITE = {
   email: 'nickd@i-nett.com',
   phone: '+1-858-337-2866',
   phoneDisplay: '(858) 337-2866',
-  bookingUrl: 'https://meetings-na2.hubspot.com/ndreyfus/initial_call',
+  bookingUrl: 'https://meetings-na2.hubspot.com/ndreyfus/ai-risk-assessment',
   podcastUrl:
     'https://podcasts.apple.com/us/podcast/the-digital-dilemma/id1764658911',
   podcastTitle: 'The Digital Dilemma',

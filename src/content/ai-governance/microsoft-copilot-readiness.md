@@ -100,4 +100,4 @@ This is the work we do for clients. [Fortify AI](/fortify-ai) is configured to y
 
 ## Your Next Step
 
-If you are weighing a Copilot rollout and want a clear-eyed view of your readiness before you commit, we can help you assess it. [Book a 30-minute call](https://meetings-na2.hubspot.com/ndreyfus/initial_call) and we will walk through where your data foundation stands and what to lock down first.
+If you are weighing a Copilot rollout and want a clear-eyed view of your readiness before you commit, we can help you assess it. [Book a 30-minute call](https://meetings-na2.hubspot.com/ndreyfus/ai-risk-assessment) and we will walk through where your data foundation stands and what to lock down first.

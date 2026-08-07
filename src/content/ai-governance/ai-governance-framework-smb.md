@@ -102,4 +102,4 @@ Most of this framework, the policy, the tool list, the review cadence, is operat
 
 In other words, you bring the governance discipline, and we make sure the technology underneath it can actually honor those rules. That combination is what lets a 30 to 150 employee firm adopt AI at the pace of an enterprise without the enterprise risk profile.
 
-If you want a second set of eyes on your AI governance before you scale usage, [book a 30-minute call](https://meetings-na2.hubspot.com/ndreyfus/initial_call) with us. We will walk through your current tooling, your regulatory exposure, and where a lightweight framework would close the biggest gaps first.
+If you want a second set of eyes on your AI governance before you scale usage, [book a 30-minute call](https://meetings-na2.hubspot.com/ndreyfus/ai-risk-assessment) with us. We will walk through your current tooling, your regulatory exposure, and where a lightweight framework would close the biggest gaps first.

@@ -36,7 +36,7 @@ Fortify AI gives your team a secure, locked-down environment where your data sta
 
 The bigger point: this is not just about technology. It is about building a competitive edge by protecting your data without compromising on innovation.
 
-For a deeper conversation on integrating AI tools into your business strategy, [browse The Digital Dilemma podcast](/podcast/) or [book a 30 minute consultation](https://meetings-na2.hubspot.com/ndreyfus/initial_call).
+For a deeper conversation on integrating AI tools into your business strategy, [browse The Digital Dilemma podcast](/podcast/) or [book a 30 minute consultation](https://meetings-na2.hubspot.com/ndreyfus/ai-risk-assessment).
 
 ---
 

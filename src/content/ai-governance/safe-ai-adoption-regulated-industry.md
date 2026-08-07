@@ -104,4 +104,4 @@ The most common mistake we see is treating AI adoption as an all-or-nothing deci
 
 A useful way to start building internal capability while you assess is to standardize how your team actually instructs AI. Our [Master Prompt resource](https://i-nett.ai/master-prompt) gives leaders a structured starting point for getting consistent, governed output from AI, which is a small but real step toward controlled adoption.
 
-When you are ready to map your own staged path, we can help you assess your current exposure and design a deployment configured to your regulatory environment. [Book a 30-minute call](https://meetings-na2.hubspot.com/ndreyfus/initial_call) and we will walk through where AI can deliver value for your firm without adding regulatory risk.
+When you are ready to map your own staged path, we can help you assess your current exposure and design a deployment configured to your regulatory environment. [Book a 30-minute call](https://meetings-na2.hubspot.com/ndreyfus/ai-risk-assessment) and we will walk through where AI can deliver value for your firm without adding regulatory risk.
