@@ -418,7 +418,6 @@ import { SITE } from '../lib/site';
   }
   @keyframes scan-beam-rotate { to { --scan-beam-angle: 360deg; } }
   @media (prefers-reduced-motion: reduce) { .scan__teaser::before { animation: none; } }
-  .scan__teaserHead { font-weight: 700; font-size: var(--fs-md); line-height: 1.35; color: var(--color-ink-800); margin-bottom: 6px; }
   .scan__teaserFoot { font-size: 12px; color: var(--color-text-muted); line-height: 1.55; }
 
   /* Score badge: red/amber/green read on the finding — signals good vs. bad
@@ -584,8 +583,7 @@ import { SITE } from '../lib/site';
   let aiNote: string | null = null, unlocked = false;
   let currentReport: Report | null = null;
   const SHOWN_FINDINGS = 2;   // shown free, before the details form
-  const FULL_FINDINGS = 3;    // full findings the client ever sees (rest need a meeting)
-  const TEASE_FINDINGS = 4;   // one extra finding is teased (headline only) as a hook
+  const FULL_FINDINGS = 3;    // full findings the client ever sees — 2 free + 1 on unlock (rest are redacted, no meeting)
 
   const $ = (id: string) => document.getElementById(id);
 
@@ -1047,17 +1045,8 @@ import { SITE } from '../lib/site';
     return '<span class="scan__scoreBadge ' + scoreBadgeClass(f) + '">' + riskScore(f) + '%</span>';
   }
 
-  function renderTeaser(f: Finding): string {
-    const ft = f.sev === 'danger' ? 'scan-tag--danger' : f.sev === 'info' ? 'scan-tag--info' : 'scan-tag--warn';
-    return '<div class="scan__teaser">'
-      + '<div class="scan__findingTop"><span class="scan-tag ' + ft + '">' + f.tag + '</span>' + scoreBadge(f) + '</div>'
-      + '<div class="scan__teaserHead">' + f.head + '</div>'
-      + '<div class="scan__teaserFoot">🔒 The full detail, what to do about it, and how you compare to peers &mdash; walked through with you in your session.</div>'
-      + '</div>';
-  }
-
-  // Redacted item: same box size and treatment as the teaser above — no
-  // shrinking these down — but the finding itself stays withheld. These are
+  // Redacted item: full-size box, same treatment throughout — no headline
+  // teased anywhere, no shrinking these down. These are
   // the higher-value findings we walk through in a session; showing them at
   // full size (instead of a small chip) avoids reading as if we're hiding
   // something, while the copy explains exactly why it's blanked out.
@@ -1079,9 +1068,9 @@ import { SITE } from '../lib/site';
     ($('findingsList') as HTMLElement).innerHTML = cv.findings.map((f, i) => renderFinding(f, i)).join('');
     ($('shownLabel') as HTMLElement).textContent = 'YOUR TOP ' + cv.findings.length + ' PRIORITIES — AND WHAT TO DO ABOUT EACH';
     ($('gateSection') as HTMLElement).style.display = 'none';
-    const rest = cv.teasers.map((f) => renderTeaser(f)).join('') + cv.locked.map((f) => renderRedacted(f)).join('');
+    const rest = cv.locked.map((f) => renderRedacted(f)).join('');
     if (rest) {
-      ($('meetingLabel') as HTMLElement).textContent = 'THE REST OF YOUR REPORT — ' + (cv.teasers.length + cv.locked.length) + ' MORE';
+      ($('meetingLabel') as HTMLElement).textContent = 'THE REST OF YOUR REPORT — ' + cv.locked.length + ' MORE';
       ($('meetingCards') as HTMLElement).innerHTML = rest;
       ($('meetingGate') as HTMLElement).style.display = 'block';
       ($('ctaSection') as HTMLElement).style.display = 'none';
@@ -1328,15 +1317,16 @@ import { SITE } from '../lib/site';
     }).catch(() => { /* best-effort; the visitor already has their report */ });
   }
 
-  // findings = shown in full; teasers = headline-only hook; locked = category + risk only.
+  // findings = shown in full; teasers = unused (kept for type compat, always empty);
+  // locked = redacted — category + risk score only, no headline, no detail.
   type ReportOpts = { findings: Finding[]; teasers: Finding[]; locked: Finding[] };
 
-  // The CLIENT view: reveal the 3 most GENERIC findings in full + one teased 4th,
-  // and list every remaining (higher-value) finding as a locked category + risk
-  // item — no detail. Book a session to have those walked through.
+  // The CLIENT view: reveal the FULL_FINDINGS most GENERIC findings in full,
+  // and redact every remaining (higher-value) finding — category + risk score
+  // only, no headline. Book a session to have those walked through.
   function genericView(all: Finding[]): ReportOpts {
     const g = [...all].sort((a, b) => (b.gen || 0) - (a.gen || 0));
-    return { findings: g.slice(0, 3), teasers: g.slice(3, 4), locked: g.slice(4) };
+    return { findings: g.slice(0, FULL_FINDINGS), teasers: [], locked: g.slice(FULL_FINDINGS) };
   }
   function riskLabel(sev: string): string {
     return sev === 'danger' ? 'High priority' : sev === 'warn' ? 'Elevated' : 'Worth reviewing';
