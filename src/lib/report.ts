@@ -267,30 +267,33 @@ export function renderReport(d: ReportData, opts: RenderOpts = {}): string {
   return page1 + page2 + page3;
 }
 
-// ---- Internal team report: every finding gets a full card, not just the top 3.
-// Same visual language as renderReport (masthead, scorecard, finding cards,
-// analyst note, scan inputs, sign-off) but paginated to fit an arbitrary number
-// of findings — no locked-areas table, no CTA, no client-facing gating.
-export function renderInternalReport(d: ReportData, allFindings: ReportFinding[], opts: RenderOpts = {}): string {
+// ---- Internal team report: every finding gets a full card, not just the top
+// 3 — no locked-areas table, no CTA, no client-facing gating. Split into three
+// composable pieces (cover / findings-page / closing) rather than one
+// monolithic renderer: the middle section holds an arbitrary number of
+// findings whose card height depends on their content (peer rows, "what to
+// do" text length), so a fixed "2 per page" layout either wastes space on
+// short findings or silently clips long ones. The caller (which has a live
+// DOM to measure actual card heights in) bin-packs findings into pages by
+// real height and passes each page's pre-rendered card HTML to
+// internalFindingsPage — see htmlPagesToPdf in AIReadinessScan.astro.
+export const INTERNAL_PAGE_MARGIN_IN = 0.55;
+export const INTERNAL_CONTENT_TOP_IN = 0.4;
+export const INTERNAL_CARD_GAP_IN = 0.2;
+export const INTERNAL_FOOTER_RESERVE_IN = 0.75;
+
+function internalFooter(company: string, n: number, total: number): string {
+  return `<footer style="margin-top:auto;padding:0.22in 0.55in 0.3in;display:flex;align-items:center;justify-content:space-between;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
+    <span>i-NETT · FORTIFY AI · INTERNAL</span><span>FULL REPORT — ${esc(company.toUpperCase())}</span><span>0${n} / 0${total}</span>
+  </footer>`;
+}
+
+export function internalCoverPage(d: ReportData, firstFinding: ReportFinding | undefined, findingsCount: number, opts: RenderOpts, totalPages: number): string {
   const glow = !!opts.glow;
   const fortify = opts.logoFortify || '/assets/brand/fortify-ai-logo.png';
-  const inett = opts.logoInett || '/assets/brand/inett-logo.png';
   const scorePct = Math.max(0, Math.min(100, d.exposureScore));
   const company = d.preparedFor.company || '—';
-  const findings = allFindings.length ? allFindings : d.findings;
-
-  // Pair up findings for the middle pages (2 per page); the first finding
-  // rides along on the cover page under the scorecard, like the client report.
-  const rest = findings.slice(1);
-  const pairs: ReportFinding[][] = [];
-  for (let i = 0; i < rest.length; i += 2) pairs.push(rest.slice(i, i + 2));
-  const totalPages = 1 + pairs.length + 1;
-
-  const foot = (n: number) => `<footer style="margin-top:auto;padding:0.22in 0.55in 0.3in;display:flex;align-items:center;justify-content:space-between;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
-    <span>i-NETT · FORTIFY AI · INTERNAL</span><span>FULL REPORT — ${esc(company.toUpperCase())}</span><span>0${n} / 0${totalPages}</span>
-  </footer>`;
-
-  const page1 = `<section class="fa-page" data-p="01" style="display:flex;flex-direction:column;background:${C.white};color:${C.ink};">
+  return `<section class="fa-page" data-p="01" style="display:flex;flex-direction:column;background:${C.white};color:${C.ink};">
     <header class="${glow ? 'fa-glow-mast' : ''}" style="background:${MAST};color:#fff;padding:0.46in 0.55in 0.4in;display:flex;align-items:flex-start;justify-content:space-between;gap:0.4in;">
       <div style="display:flex;align-items:center;gap:0.28in;">
         <img src="${esc(fortify)}" alt="i-NETT Fortify AI" style="height:1.02in;width:auto;display:block;">
@@ -332,24 +335,33 @@ export function renderInternalReport(d: ReportData, allFindings: ReportFinding[]
     <div style="padding:0.3in 0.55in 0;">
       <div style="display:flex;align-items:center;gap:0.16in;border-bottom:2px solid ${C.navy};padding-bottom:7px;">
         <h2 style="${arch};font-weight:700;font-size:12.5pt;letter-spacing:0.02em;margin:0;color:${C.navy};">Every finding — and what to do about each</h2>
-        <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.muted};margin-left:auto;white-space:nowrap;">${findings.length} FINDINGS</span>
+        <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.muted};margin-left:auto;white-space:nowrap;">${findingsCount} FINDINGS</span>
       </div>
     </div>
 
-    <div style="margin:0.2in 0.55in 0;">${findings[0] ? findingCard(findings[0], glow) : ''}</div>
-    ${foot(1)}
+    <div style="margin:0.2in 0.55in 0;">${firstFinding ? findingCard(firstFinding, glow) : ''}</div>
+    ${internalFooter(company, 1, totalPages)}
   </section>`;
+}
 
-  const midPages = pairs.map((pair, i) => `<section class="fa-page" data-p="${String(i + 2).padStart(2, '0')}" style="display:flex;flex-direction:column;background:${C.white};color:${C.ink};">
+// One or more pre-rendered findingCard() strings, already sized to fit this
+// page (the caller measured actual heights and bin-packed them — see
+// htmlPagesToPdf). This function only lays out whatever it's handed.
+export function internalFindingsPage(cardsHtml: string, company: string, pageNum: number, totalPages: number): string {
+  return `<section class="fa-page" data-p="${String(pageNum).padStart(2, '0')}" style="display:flex;flex-direction:column;background:${C.white};color:${C.ink};">
     <div style="height:0.16in;background:${RULE};"></div>
-    <div style="margin:0.4in 0.55in 0;">${pair[0] ? findingCard(pair[0], glow) : ''}</div>
-    ${pair[1] ? `<div style="margin:0.2in 0.55in 0;">${findingCard(pair[1], glow)}</div>` : ''}
-    ${foot(i + 2)}
-  </section>`).join('');
+    <div style="margin:0.4in 0.55in 0;display:flex;flex-direction:column;gap:${INTERNAL_CARD_GAP_IN}in;">${cardsHtml}</div>
+    ${internalFooter(company, pageNum, totalPages)}
+  </section>`;
+}
 
+export function internalClosingPage(d: ReportData, opts: RenderOpts, pageNum: number, totalPages: number): string {
+  const glow = !!opts.glow;
+  const inett = opts.logoInett || '/assets/brand/inett-logo.png';
+  const company = d.preparedFor.company || '—';
   const inputs = d.scanInputs;
   const inputCells = inputs.map((q, i) => scanInputCell(q.question, q.answer, i >= inputs.length - 1)).join('') + (inputs.length % 2 === 1 ? '<div style="padding:0.07in 0;"></div>' : '');
-  const lastPage = `<section class="fa-page" data-p="${String(totalPages).padStart(2, '0')}" style="display:flex;flex-direction:column;background:${C.white};color:${C.ink};">
+  return `<section class="fa-page" data-p="${String(pageNum).padStart(2, '0')}" style="display:flex;flex-direction:column;background:${C.white};color:${C.ink};">
     <div style="height:0.16in;background:${RULE};"></div>
     <div class="${glow ? 'fa-glow-note' : ''}" style="margin:0.4in 0.55in 0;background:${MAST};color:#fff;padding:0.3in 0.32in;display:flex;flex-direction:column;gap:11px;">
       <div style="${mono};font-size:7pt;letter-spacing:0.17em;color:${C.lightCyan};">ANALYST NOTE</div>
@@ -374,12 +386,10 @@ export function renderInternalReport(d: ReportData, allFindings: ReportFinding[]
     <footer style="margin-top:auto;padding:0.2in 0.55in 0.3in;display:flex;flex-direction:column;gap:9px;">
       <p style="font-size:6.9pt;line-height:1.5;margin:0;color:${C.faint};">${esc(d.disclaimer)}</p>
       <div style="display:flex;align-items:center;justify-content:space-between;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
-        <span>i-NETT · FORTIFY AI · INTERNAL</span><span>FULL REPORT — ${esc(company.toUpperCase())}</span><span>0${totalPages} / 0${totalPages}</span>
+        <span>i-NETT · FORTIFY AI · INTERNAL</span><span>FULL REPORT — ${esc(company.toUpperCase())}</span><span>0${pageNum} / 0${totalPages}</span>
       </div>
     </footer>
   </section>`;
-
-  return page1 + midPages + lastPage;
 }
 
 // Page geometry, web desk background, screen-only glow, and print rules.
