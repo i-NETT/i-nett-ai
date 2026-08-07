@@ -6,6 +6,14 @@ import FAQ from '@components/FAQ.astro';
 import CTASection from '@components/CTASection.astro';
 import DemoStream from '@components/DemoStream.astro';
 import { SITE } from '@lib/site';
+import { getEpisodes } from '@lib/podcast';
+
+// Always the newest episode — resolved at build time from the Riverside RSS
+// feed + YouTube Data API (see src/lib/podcast.ts). Falls back to the prior
+// hardcoded video if the feed fetch fails so this section never breaks.
+const episodes = await getEpisodes();
+const latestEpisode = episodes[0];
+const latestVideoId = latestEpisode?.youtubeId || 'IstQKqxCRQY';
 
 const faqs = [
   {
@@ -916,8 +924,8 @@ const leadersSchema = {
       <div class="dd-video-wrap reveal reveal-up reveal-delay-2">
         <div class="dd-video">
           <iframe
-            title="Latest Digital Dilemma Podcast Episode"
-            src="https://www.youtube.com/embed/IstQKqxCRQY?rel=0"
+            title={`Latest Digital Dilemma Podcast Episode${latestEpisode ? `: ${latestEpisode.title}` : ''}`}
+            src={`https://www.youtube.com/embed/${latestVideoId}?rel=0`}
             loading="lazy"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen
