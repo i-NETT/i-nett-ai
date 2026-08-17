@@ -245,6 +245,14 @@ export function renderReport(d: ReportData, opts: RenderOpts = {}): string {
         <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.muted};">${esc(d.policyFlag.label)}</span>
         <span style="font-size:9pt;line-height:1.4;color:${C.ink};font-weight:500;">${esc(d.policyFlag.text)}</span>
       </div>` : ''}
+      <!-- Why these are locked. The scan page says this next to every redacted
+           finding on screen; the PDF used to just show a LOCKED column and
+           leave the reader to guess, which reads as a paywall rather than as
+           the access control it actually is. Same wording as the web report. -->
+      <div style="margin-top:0.1in;display:flex;align-items:flex-start;gap:8px;background:${C.tint};border-left:3px solid ${C.navy};padding:0.1in 0.17in;">
+        <span style="flex:0 0 auto;width:6px;height:6px;background:${C.navy};display:inline-block;transform:rotate(45deg);margin-top:4px;"></span>
+        <span style="font-size:8.2pt;line-height:1.45;color:${C.panel};">Redacted to protect ${esc(company)}&rsquo;s privacy and security &mdash; we only share an organization&rsquo;s full findings with someone confirmed to be part of it. You&rsquo;ll receive these findings in full, completely unredacted, in your PDF after our working session.</span>
+      </div>
       <div style="margin-top:0.11in;border:1px solid ${C.border};display:grid;">
         <div style="display:grid;grid-template-columns:1.55in 1fr 0.75in 0.62in;align-items:center;gap:0.16in;padding:0.085in 0.17in;background:${C.tint};border-bottom:1px solid ${C.border};${mono};font-size:6.4pt;letter-spacing:0.13em;color:${C.muted};">
           <span>AREA</span><span>ASSESSMENT</span><span style="text-align:right;">CONFIDENCE</span><span style="text-align:right;">STATUS</span>
