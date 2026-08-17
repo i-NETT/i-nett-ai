@@ -70,28 +70,49 @@ function bandColor(band: string): string {
 function peerRows(peers: Peer[]): string {
   const colors = [C.navy, C.cyan, C.paleBar];
   return peers.slice(0, 3).map((p, i) =>
-    `<span style="font-size:7.6pt;color:${C.body};">${esc(p.label)}</span>`
-    + `<span style="height:5px;background:${C.track};display:block;"><span style="display:block;height:5px;width:${Math.max(0, Math.min(100, p.pct))}%;background:${colors[i]};"></span></span>`
-    + `<span style="${mono};font-size:7.2pt;color:${C.navy};text-align:right;">${p.pct}%</span>`
+    `<span style="font-size:7.4pt;color:${C.body};font-weight:500;">${esc(p.label)}</span>`
+    + `<span style="height:6px;background:${C.track};border-radius:3px;display:block;overflow:hidden;"><span style="display:block;height:100%;width:${Math.max(0, Math.min(100, p.pct))}%;background:${colors[i]};border-radius:3px;"></span></span>`
+    + `<span style="${mono};font-size:7.4pt;font-weight:700;color:${colors[i] === C.paleBar ? C.navy : colors[i]};text-align:right;">${p.pct}%</span>`
   ).join('');
 }
 
+// A short accent segment overlapping the rule, plus generous baseline
+// alignment between the heading and its trailing meta label — the kind of
+// small editorial detail that reads as considered rather than templated.
+export function sectionHeader(title: string, badge: string): string {
+  return `<div style="position:relative;display:flex;align-items:baseline;gap:0.16in;border-bottom:1px solid ${C.border};padding-bottom:9px;">
+    <span style="position:absolute;left:0;bottom:-1px;width:0.5in;height:2px;background:${RULE};"></span>
+    <h2 style="${arch};font-weight:700;font-size:12.5pt;letter-spacing:0.01em;margin:0;color:${C.navy};white-space:nowrap;">${title}</h2>
+    <span style="${mono};font-size:6.6pt;letter-spacing:0.15em;color:${C.muted};margin-left:auto;white-space:nowrap;">${badge}</span>
+  </div>`;
+}
+
+// A restrained outline pill rather than a filled badge — reads closer to a
+// print-consultancy report than a SaaS dashboard status chip.
+function pill(text: string, color: string, onDark?: boolean): string {
+  return `<span style="display:inline-block;${arch};font-weight:700;font-size:8pt;letter-spacing:0.09em;color:${color};border:1px solid ${color};padding:3px 10px;${onDark ? '' : `background:${color}14;`}">${esc(text)}</span>`;
+}
+
 export function findingCard(f: ReportFinding, glow: boolean): string {
-  return `<article class="fa-card${glow ? ' fa-glow-card' : ''}" style="border:1px solid ${C.border};border-top:3px solid ${C.navy};padding:0.2in 0.22in;background:${C.white};">
-    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:0.2in;margin-bottom:8px;">
-      <span style="${mono};font-size:7pt;letter-spacing:0.16em;color:${C.link};">${esc(f.category)}</span>
+  return `<article class="fa-card${glow ? ' fa-glow-card' : ''}" style="position:relative;border:1px solid ${C.border};padding:0.22in 0.24in 0.22in 0.28in;background:${C.white};">
+    <div style="position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,${C.navy},${C.cyan});"></div>
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:0.2in;margin-bottom:9px;">
+      <span style="${mono};font-size:7pt;letter-spacing:0.18em;color:${C.link};">${esc(f.category)}</span>
       <span style="${mono};font-size:7pt;letter-spacing:0.16em;color:${C.footer};">${esc(f.index)}</span>
     </div>
-    <h3 style="${arch};font-weight:600;font-size:13pt;line-height:1.25;margin:0 0 7px;color:${C.ink};text-wrap:balance;">${esc(f.headline)}</h3>
-    <p style="font-size:8.8pt;line-height:1.5;margin:0 0 0.14in;color:${C.body};text-wrap:pretty;">${esc(f.body)}</p>
+    <h3 style="${arch};font-weight:600;font-size:13pt;line-height:1.28;margin:0 0 7px;color:${C.ink};text-wrap:balance;">${esc(f.headline)}</h3>
+    <p style="font-size:8.8pt;line-height:1.55;margin:0 0 0.16in;color:${C.body};text-wrap:pretty;">${esc(f.body)}</p>
     <div style="display:grid;grid-template-columns:1fr 2.15in;gap:0.22in;align-items:start;">
-      <div class="${glow ? 'fa-glow-action' : ''}" style="background:${C.tint};border-left:3px solid ${C.cyan};padding:0.13in 0.16in;">
-        <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.navy};display:block;margin-bottom:4px;">WHAT TO DO</span>
-        <span style="font-size:8.6pt;line-height:1.45;color:${C.panel};">${f.action}</span>
+      <div class="${glow ? 'fa-glow-action' : ''}" style="background:${C.tint};border-left:3px solid ${C.cyan};padding:0.14in 0.17in;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px;">
+          <span style="width:5px;height:5px;background:${C.cyan};display:inline-block;transform:rotate(45deg);"></span>
+          <span style="${mono};font-size:6.8pt;letter-spacing:0.15em;color:${C.navy};">WHAT TO DO</span>
+        </div>
+        <span style="font-size:8.6pt;line-height:1.5;color:${C.panel};">${f.action}</span>
       </div>
-      <div style="display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;flex-direction:column;gap:7px;">
         <span style="${mono};font-size:6.4pt;letter-spacing:0.13em;color:${C.muted};">PEERS REPORTING THIS ISSUE</span>
-        <div style="display:grid;grid-template-columns:0.82in 1fr 0.3in;align-items:center;gap:7px;">${peerRows(f.peers)}</div>
+        <div style="display:grid;grid-template-columns:0.82in 1fr 0.3in;align-items:center;gap:7px 8px;">${peerRows(f.peers)}</div>
       </div>
     </div>
   </article>`;
@@ -99,22 +120,22 @@ export function findingCard(f: ReportFinding, glow: boolean): string {
 
 export function metricTile(m: { label: string; value: string; accent: string; valueColor: string; blurb: string }, glow: boolean): string {
   const high = m.accent === C.red;
-  return `<div class="${glow && high ? 'fa-glow-high' : ''}" style="border:1px solid ${C.border};border-left:3px solid ${m.accent};padding:0.13in 0.17in;display:grid;grid-template-columns:1.55in 1fr;align-items:center;gap:0.16in;background:${C.white};">
-    <div style="display:flex;flex-direction:column;gap:3px;">
-      <span style="${mono};font-size:6.6pt;letter-spacing:0.14em;color:${C.muted};">${esc(m.label)}</span>
+  return `<div class="${glow && high ? 'fa-glow-high' : ''}" style="border:1px solid ${C.border};border-left:3px solid ${m.accent};padding:0.14in 0.17in;display:grid;grid-template-columns:1.55in 1fr;align-items:center;gap:0.16in;background:${C.white};">
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <span style="${mono};font-size:6.6pt;letter-spacing:0.15em;color:${C.muted};">${esc(m.label)}</span>
       <span style="${arch};font-weight:700;font-size:14pt;color:${m.valueColor};line-height:1;">${esc(m.value)}</span>
     </div>
-    <span style="font-size:8.4pt;line-height:1.35;color:${C.body};">${esc(m.blurb)}</span>
+    <span style="font-size:8.4pt;line-height:1.4;color:${C.body};">${esc(m.blurb)}</span>
   </div>`;
 }
 
-export function lockedRow(a: LockedArea, last: boolean): string {
+export function lockedRow(a: LockedArea, last: boolean, alt?: boolean): string {
   const aColor = a.priority === 'high' ? C.red : C.body;
-  const aWeight = a.priority === 'high' ? '500' : '400';
-  return `<div style="display:grid;grid-template-columns:1.55in 1fr 0.75in 0.62in;align-items:center;gap:0.16in;padding:0.09in 0.17in;${last ? '' : `border-bottom:1px solid ${C.hairline};`}">
-    <span style="${mono};font-size:7pt;letter-spacing:0.11em;color:${C.navy};">${esc(a.area)}</span>
+  const aWeight = a.priority === 'high' ? '600' : '500';
+  return `<div style="display:grid;grid-template-columns:1.55in 1fr 0.75in 0.62in;align-items:center;gap:0.16in;padding:0.1in 0.17in;background:${alt ? C.tint : C.white};${last ? '' : `border-bottom:1px solid ${C.hairline};`}">
+    <span style="${mono};font-size:7pt;letter-spacing:0.12em;color:${C.navy};font-weight:600;">${esc(a.area)}</span>
     <span style="font-size:8.4pt;color:${aColor};font-weight:${aWeight};">${esc(a.assessment)}</span>
-    <span style="${mono};font-size:7.4pt;color:${C.body};text-align:right;">${a.confidence}%</span>
+    <span style="${mono};font-size:7.4pt;color:${C.body};text-align:right;font-weight:600;">${a.confidence}%</span>
     <span style="${mono};font-size:6.4pt;letter-spacing:0.12em;color:${C.footer};text-align:right;">LOCKED</span>
   </div>`;
 }
@@ -126,9 +147,21 @@ export function scanInputCell(q: string, ans: string, last: boolean): string {
   </div>`;
 }
 
+// Zero-pad to two digits without assuming a single digit — the internal report
+// has a variable page count and "0" + 10 rendered as "010".
+export function pageNo(n: number): string {
+  return String(n).padStart(2, '0');
+}
+
+// The three footer cells are nowrap so they never reflow, which means a long
+// company name would otherwise push the footer wider than the page (measured:
+// +16px on a 58-character name) and shove the page number off the edge. Only
+// the middle cell is allowed to shrink, and it ellipsizes rather than wrap.
+const FOOTER_MID = 'overflow:hidden;text-overflow:ellipsis;min-width:0;flex:0 1 auto;';
+
 function footer(company: string, n: number): string {
-  return `<footer style="margin-top:auto;padding:0.22in 0.55in 0.3in;display:flex;align-items:center;justify-content:space-between;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
-    <span>i-NETT · FORTIFY AI</span><span>PREPARED FOR ${esc(company.toUpperCase())}</span><span>0${n} / 03</span>
+  return `<footer style="margin-top:auto;padding:0.22in 0.55in 0.3in;display:flex;align-items:center;justify-content:space-between;gap:0.2in;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
+    <span style="flex:0 0 auto;">i-NETT · FORTIFY AI</span><span style="${FOOTER_MID}">PREPARED FOR ${esc(company.toUpperCase())}</span><span style="flex:0 0 auto;">${pageNo(n)} / 03</span>
   </footer>`;
 }
 
@@ -150,9 +183,9 @@ export function renderReport(d: ReportData, opts: RenderOpts = {}): string {
           <div style="font-size:8.6pt;color:rgba(255,255,255,0.66);">Prepared for ${esc(d.preparedFor.name)} · ${esc(company)} · ${esc(d.date)}</div>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-top:4px;">
-        <div style="${mono};font-size:7pt;letter-spacing:0.16em;color:${C.navy};background:${C.lightCyan};padding:4px 9px;">CONFIDENTIAL</div>
-        <div style="${mono};font-size:7pt;letter-spacing:0.13em;color:rgba(255,255,255,0.5);">SCAN ${esc(d.scanId)}</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:9px;padding-top:4px;">
+        <span style="display:inline-block;${mono};font-size:7pt;letter-spacing:0.18em;color:${C.lightCyan};border:1px solid rgba(127,212,242,0.5);padding:4px 10px;">CONFIDENTIAL</span>
+        <div style="${mono};font-size:7pt;letter-spacing:0.13em;color:rgba(255,255,255,0.5);white-space:nowrap;">SCAN ${esc(d.scanId)}</div>
       </div>
     </header>
 
@@ -165,25 +198,29 @@ export function renderReport(d: ReportData, opts: RenderOpts = {}): string {
     <div style="padding:0.32in 0.55in 0;display:grid;grid-template-columns:2.45in 1fr;gap:0.3in;align-items:stretch;">
       <div class="fa-score${glow ? ' fa-glow-score' : ''}" style="border:1px solid ${C.navy};background:${C.navy};color:#fff;padding:0.2in 0.22in;display:flex;flex-direction:column;gap:10px;">
         <div style="${mono};font-size:7pt;letter-spacing:0.17em;color:${C.lightCyan};">EXPOSURE SCORE</div>
-        <div style="display:flex;align-items:baseline;gap:8px;">
-          <span style="${arch};font-weight:700;font-size:44pt;line-height:0.85;letter-spacing:-0.03em;">${scorePct}</span>
-          <span style="${arch};font-weight:500;font-size:13pt;color:rgba(255,255,255,0.55);">/ 100</span>
+        <!-- nowrap + flex-wrap:nowrap are load-bearing, not cosmetic. The PDF
+             capture rasterizes this through html2canvas, whose text metrics do
+             not match the browser's: the 46pt numeral measures wider there, so
+             "/ 100" wrapped to a second line and collided with the score bar
+             below it. The web layout has ~10px of slack and never showed it.
+             Until the PDF is rendered by a real browser engine, any text that
+             sits next to a fixed-position graphic has to be unwrappable. -->
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:nowrap;white-space:nowrap;">
+          <span style="${arch};font-weight:700;font-size:46pt;line-height:0.85;letter-spacing:-0.035em;white-space:nowrap;">${scorePct}</span>
+          <span style="${arch};font-weight:500;font-size:13pt;color:rgba(255,255,255,0.5);white-space:nowrap;">/ 100</span>
         </div>
-        <div style="height:6px;background:rgba(255,255,255,0.16);position:relative;"><div class="${glow ? 'fa-glow-bar' : ''}" style="position:absolute;inset:0 auto 0 0;width:${scorePct}%;background:linear-gradient(90deg,${C.cyan},${C.lightCyan});"></div></div>
-        <div style="display:flex;justify-content:space-between;${mono};font-size:6.4pt;letter-spacing:0.12em;color:rgba(255,255,255,0.45);"><span>LOW</span><span>MODERATE</span><span>ELEVATED</span><span>SEVERE</span></div>
-        <div style="margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,0.16);display:flex;align-items:center;gap:8px;">
-          <span style="${arch};font-weight:600;font-size:10pt;letter-spacing:0.08em;color:${bandColor(d.severityBand)};">${esc(d.severityBand)}</span>
-          <span style="font-size:7.8pt;color:rgba(255,255,255,0.6);line-height:1.3;">${esc(d.severityNote)}</span>
+        <div style="height:7px;background:rgba(255,255,255,0.14);border-radius:3.5px;position:relative;overflow:hidden;"><div class="${glow ? 'fa-glow-bar' : ''}" style="position:absolute;inset:0 auto 0 0;width:${scorePct}%;background:linear-gradient(90deg,${C.cyan},${C.lightCyan});border-radius:3.5px;"></div></div>
+        <div style="display:flex;justify-content:space-between;${mono};font-size:6.4pt;letter-spacing:0.12em;color:rgba(255,255,255,0.42);"><span>LOW</span><span>MODERATE</span><span>ELEVATED</span><span>SEVERE</span></div>
+        <div style="margin-top:auto;padding-top:11px;border-top:1px solid rgba(255,255,255,0.16);display:flex;align-items:center;gap:9px;">
+          ${pill(d.severityBand, bandColor(d.severityBand), true)}
+          <span style="font-size:7.8pt;color:rgba(255,255,255,0.62);line-height:1.35;">${esc(d.severityNote)}</span>
         </div>
       </div>
       <div style="display:grid;grid-template-rows:repeat(3,1fr);gap:0.11in;">${d.metrics.map((m) => metricTile(m, glow)).join('')}</div>
     </div>
 
     <div style="padding:0.3in 0.55in 0;">
-      <div style="display:flex;align-items:center;gap:0.16in;border-bottom:2px solid ${C.navy};padding-bottom:7px;">
-        <h2 style="${arch};font-weight:700;font-size:12.5pt;letter-spacing:0.02em;margin:0;color:${C.navy};">Your top priorities — and what to do about each</h2>
-        <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.muted};margin-left:auto;white-space:nowrap;">${d.findings.length} FINDINGS</span>
-      </div>
+      ${sectionHeader('Your top priorities — and what to do about each', `${d.findings.length} FINDINGS`)}
     </div>
 
     <div style="margin:0.2in 0.55in 0;">${d.findings[0] ? findingCard(d.findings[0], glow) : ''}</div>
@@ -197,16 +234,13 @@ export function renderReport(d: ReportData, opts: RenderOpts = {}): string {
   </section>`;
 
   // ---- Page 2: findings 02-03 + policy flag + locked-areas table ----
-  const lockedRows = d.lockedAreas.map((a, i) => lockedRow(a, i === d.lockedAreas.length - 1)).join('');
+  const lockedRows = d.lockedAreas.map((a, i) => lockedRow(a, i === d.lockedAreas.length - 1, i % 2 === 1)).join('');
   const page2 = `<section class="fa-page" data-p="02" style="display:flex;flex-direction:column;background:${C.white};color:${C.ink};">
     <div style="height:0.16in;background:${RULE};"></div>
     <div style="margin:0.4in 0.55in 0;">${d.findings[1] ? findingCard(d.findings[1], glow) : ''}</div>
     <div style="margin:0.2in 0.55in 0;">${d.findings[2] ? findingCard(d.findings[2], glow) : ''}</div>
     <div style="padding:0.34in 0.55in 0;">
-      <div style="display:flex;align-items:center;gap:0.16in;border-bottom:2px solid ${C.navy};padding-bottom:7px;">
-        <h2 style="${arch};font-weight:700;font-size:12.5pt;letter-spacing:0.02em;margin:0;color:${C.navy};">The rest of your report</h2>
-        <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.muted};margin-left:auto;white-space:nowrap;">REVIEWED IN YOUR SESSION</span>
-      </div>
+      ${sectionHeader('The rest of your report', 'REVIEWED IN YOUR SESSION')}
       ${d.policyFlag ? `<div style="margin-top:0.16in;border:1px solid ${C.border};border-left:3px solid ${C.amber};padding:0.14in 0.17in;display:grid;grid-template-columns:1.55in 1fr;gap:0.16in;align-items:center;">
         <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.muted};">${esc(d.policyFlag.label)}</span>
         <span style="font-size:9pt;line-height:1.4;color:${C.ink};font-weight:500;">${esc(d.policyFlag.text)}</span>
@@ -230,21 +264,18 @@ export function renderReport(d: ReportData, opts: RenderOpts = {}): string {
       <div style="${mono};font-size:7pt;letter-spacing:0.17em;color:${C.lightCyan};">ANALYST NOTE</div>
       <p style="font-size:9.6pt;line-height:1.55;margin:0;color:rgba(255,255,255,0.9);text-wrap:pretty;">${esc(d.analystNote)}</p>
     </div>
-    <div style="margin:0.26in 0.55in 0;border:1px solid ${C.navy};display:grid;grid-template-columns:1fr auto;align-items:center;gap:0.3in;padding:0.19in 0.24in;">
+    <div style="margin:0.26in 0.55in 0;border:1px solid ${C.navy};background:${C.tint};display:grid;grid-template-columns:1fr auto;align-items:center;gap:0.3in;padding:0.2in 0.24in;">
       <div style="display:flex;flex-direction:column;gap:5px;">
         <span style="${arch};font-weight:700;font-size:12pt;color:${C.navy};">${esc(d.cta.headline)}</span>
         <span style="font-size:8.6pt;line-height:1.45;color:${C.body};">${esc(d.cta.body)}</span>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;">
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
         <span style="${mono};font-size:6.6pt;letter-spacing:0.14em;color:${C.muted};">BOOK YOUR SESSION</span>
-        <a class="fa-cta" href="${esc(d.cta.url)}" style="${arch};font-weight:600;font-size:11pt;color:#fff;background:${C.navy};padding:8px 16px;text-decoration:none;letter-spacing:0.01em;">i-nett.ai/resources</a>
+        <a class="fa-cta" href="${esc(d.cta.url)}" style="${arch};font-weight:600;font-size:11pt;color:#fff;background:${C.navy};padding:9px 18px;text-decoration:none;letter-spacing:0.01em;white-space:nowrap;display:inline-block;">i-nett.ai/resources →</a>
       </div>
     </div>
     <div style="padding:0.32in 0.55in 0;">
-      <div style="display:flex;align-items:center;gap:0.16in;border-bottom:2px solid ${C.navy};padding-bottom:7px;">
-        <h2 style="${arch};font-weight:700;font-size:12.5pt;letter-spacing:0.02em;margin:0;color:${C.navy};">Scan inputs</h2>
-        <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.muted};margin-left:auto;white-space:nowrap;">AS ANSWERED · ${esc(d.date.toUpperCase())}</span>
-      </div>
+      ${sectionHeader('Scan inputs', `AS ANSWERED · ${esc(d.date.toUpperCase())}`)}
       <div style="margin-top:0.14in;display:grid;grid-template-columns:1fr 1fr;gap:0 0.3in;">${inputCells}</div>
     </div>
     <div style="margin:0.34in 0.55in 0;padding-top:0.2in;border-top:1px solid ${C.border};display:grid;grid-template-columns:1fr auto;align-items:center;gap:0.3in;">
@@ -258,8 +289,8 @@ export function renderReport(d: ReportData, opts: RenderOpts = {}): string {
     </div>
     <footer style="margin-top:auto;padding:0.2in 0.55in 0.3in;display:flex;flex-direction:column;gap:9px;">
       <p style="font-size:6.9pt;line-height:1.5;margin:0;color:${C.faint};">${esc(d.disclaimer)}</p>
-      <div style="display:flex;align-items:center;justify-content:space-between;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
-        <span>i-NETT · FORTIFY AI</span><span>PREPARED FOR ${esc(company.toUpperCase())}</span><span>03 / 03</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:0.2in;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
+        <span style="flex:0 0 auto;">i-NETT · FORTIFY AI</span><span style="${FOOTER_MID}">PREPARED FOR ${esc(company.toUpperCase())}</span><span style="flex:0 0 auto;">03 / 03</span>
       </div>
     </footer>
   </section>`;
@@ -283,8 +314,8 @@ export const INTERNAL_CARD_GAP_IN = 0.2;
 export const INTERNAL_FOOTER_RESERVE_IN = 0.75;
 
 function internalFooter(company: string, n: number, total: number): string {
-  return `<footer style="margin-top:auto;padding:0.22in 0.55in 0.3in;display:flex;align-items:center;justify-content:space-between;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
-    <span>i-NETT · FORTIFY AI · INTERNAL</span><span>FULL REPORT — ${esc(company.toUpperCase())}</span><span>0${n} / 0${total}</span>
+  return `<footer style="margin-top:auto;padding:0.22in 0.55in 0.3in;display:flex;align-items:center;justify-content:space-between;gap:0.2in;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
+    <span style="flex:0 0 auto;">i-NETT · FORTIFY AI · INTERNAL</span><span style="${FOOTER_MID}">FULL REPORT — ${esc(company.toUpperCase())}</span><span style="flex:0 0 auto;">${pageNo(n)} / ${pageNo(total)}</span>
   </footer>`;
 }
 
@@ -303,9 +334,9 @@ export function internalCoverPage(d: ReportData, firstFinding: ReportFinding | u
           <div style="font-size:8.6pt;color:rgba(255,255,255,0.66);">Prepared for ${esc(d.preparedFor.name)} · ${esc(company)} · ${esc(d.date)}</div>
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;padding-top:4px;">
-        <div style="${mono};font-size:7pt;letter-spacing:0.16em;color:${C.navy};background:${C.lightCyan};padding:4px 9px;">INTERNAL — DO NOT SEND</div>
-        <div style="${mono};font-size:7pt;letter-spacing:0.13em;color:rgba(255,255,255,0.5);">SCAN ${esc(d.scanId)}</div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:9px;padding-top:4px;">
+        <span style="display:inline-block;${mono};font-size:7pt;letter-spacing:0.16em;color:${C.lightCyan};border:1px solid rgba(127,212,242,0.5);padding:4px 10px;">INTERNAL — DO NOT SEND</span>
+        <div style="${mono};font-size:7pt;letter-spacing:0.13em;color:rgba(255,255,255,0.5);white-space:nowrap;">SCAN ${esc(d.scanId)}</div>
       </div>
     </header>
 
@@ -318,25 +349,29 @@ export function internalCoverPage(d: ReportData, firstFinding: ReportFinding | u
     <div style="padding:0.32in 0.55in 0;display:grid;grid-template-columns:2.45in 1fr;gap:0.3in;align-items:stretch;">
       <div class="fa-score${glow ? ' fa-glow-score' : ''}" style="border:1px solid ${C.navy};background:${C.navy};color:#fff;padding:0.2in 0.22in;display:flex;flex-direction:column;gap:10px;">
         <div style="${mono};font-size:7pt;letter-spacing:0.17em;color:${C.lightCyan};">EXPOSURE SCORE</div>
-        <div style="display:flex;align-items:baseline;gap:8px;">
-          <span style="${arch};font-weight:700;font-size:44pt;line-height:0.85;letter-spacing:-0.03em;">${scorePct}</span>
-          <span style="${arch};font-weight:500;font-size:13pt;color:rgba(255,255,255,0.55);">/ 100</span>
+        <!-- nowrap + flex-wrap:nowrap are load-bearing, not cosmetic. The PDF
+             capture rasterizes this through html2canvas, whose text metrics do
+             not match the browser's: the 46pt numeral measures wider there, so
+             "/ 100" wrapped to a second line and collided with the score bar
+             below it. The web layout has ~10px of slack and never showed it.
+             Until the PDF is rendered by a real browser engine, any text that
+             sits next to a fixed-position graphic has to be unwrappable. -->
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:nowrap;white-space:nowrap;">
+          <span style="${arch};font-weight:700;font-size:46pt;line-height:0.85;letter-spacing:-0.035em;white-space:nowrap;">${scorePct}</span>
+          <span style="${arch};font-weight:500;font-size:13pt;color:rgba(255,255,255,0.5);white-space:nowrap;">/ 100</span>
         </div>
-        <div style="height:6px;background:rgba(255,255,255,0.16);position:relative;"><div class="${glow ? 'fa-glow-bar' : ''}" style="position:absolute;inset:0 auto 0 0;width:${scorePct}%;background:linear-gradient(90deg,${C.cyan},${C.lightCyan});"></div></div>
-        <div style="display:flex;justify-content:space-between;${mono};font-size:6.4pt;letter-spacing:0.12em;color:rgba(255,255,255,0.45);"><span>LOW</span><span>MODERATE</span><span>ELEVATED</span><span>SEVERE</span></div>
-        <div style="margin-top:auto;padding-top:10px;border-top:1px solid rgba(255,255,255,0.16);display:flex;align-items:center;gap:8px;">
-          <span style="${arch};font-weight:600;font-size:10pt;letter-spacing:0.08em;color:${bandColor(d.severityBand)};">${esc(d.severityBand)}</span>
-          <span style="font-size:7.8pt;color:rgba(255,255,255,0.6);line-height:1.3;">${esc(d.severityNote)}</span>
+        <div style="height:7px;background:rgba(255,255,255,0.14);border-radius:3.5px;position:relative;overflow:hidden;"><div class="${glow ? 'fa-glow-bar' : ''}" style="position:absolute;inset:0 auto 0 0;width:${scorePct}%;background:linear-gradient(90deg,${C.cyan},${C.lightCyan});border-radius:3.5px;"></div></div>
+        <div style="display:flex;justify-content:space-between;${mono};font-size:6.4pt;letter-spacing:0.12em;color:rgba(255,255,255,0.42);"><span>LOW</span><span>MODERATE</span><span>ELEVATED</span><span>SEVERE</span></div>
+        <div style="margin-top:auto;padding-top:11px;border-top:1px solid rgba(255,255,255,0.16);display:flex;align-items:center;gap:9px;">
+          ${pill(d.severityBand, bandColor(d.severityBand), true)}
+          <span style="font-size:7.8pt;color:rgba(255,255,255,0.62);line-height:1.35;">${esc(d.severityNote)}</span>
         </div>
       </div>
       <div style="display:grid;grid-template-rows:repeat(3,1fr);gap:0.11in;">${d.metrics.map((m) => metricTile(m, glow)).join('')}</div>
     </div>
 
     <div style="padding:0.3in 0.55in 0;">
-      <div style="display:flex;align-items:center;gap:0.16in;border-bottom:2px solid ${C.navy};padding-bottom:7px;">
-        <h2 style="${arch};font-weight:700;font-size:12.5pt;letter-spacing:0.02em;margin:0;color:${C.navy};">Every finding — and what to do about each</h2>
-        <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.muted};margin-left:auto;white-space:nowrap;">${findingsCount} FINDINGS</span>
-      </div>
+      ${sectionHeader('Every finding — and what to do about each', `${findingsCount} FINDINGS`)}
     </div>
 
     <div style="margin:0.2in 0.55in 0;">${firstFinding ? findingCard(firstFinding, glow) : ''}</div>
@@ -368,10 +403,7 @@ export function internalClosingPage(d: ReportData, opts: RenderOpts, pageNum: nu
       <p style="font-size:9.6pt;line-height:1.55;margin:0;color:rgba(255,255,255,0.9);text-wrap:pretty;">${esc(d.analystNote)}</p>
     </div>
     <div style="padding:0.32in 0.55in 0;">
-      <div style="display:flex;align-items:center;gap:0.16in;border-bottom:2px solid ${C.navy};padding-bottom:7px;">
-        <h2 style="${arch};font-weight:700;font-size:12.5pt;letter-spacing:0.02em;margin:0;color:${C.navy};">Scan inputs</h2>
-        <span style="${mono};font-size:6.8pt;letter-spacing:0.14em;color:${C.muted};margin-left:auto;white-space:nowrap;">AS ANSWERED · ${esc(d.date.toUpperCase())}</span>
-      </div>
+      ${sectionHeader('Scan inputs', `AS ANSWERED · ${esc(d.date.toUpperCase())}`)}
       <div style="margin-top:0.14in;display:grid;grid-template-columns:1fr 1fr;gap:0 0.3in;">${inputCells}</div>
     </div>
     <div style="margin:0.34in 0.55in 0;padding-top:0.2in;border-top:1px solid ${C.border};display:grid;grid-template-columns:1fr auto;align-items:center;gap:0.3in;">
@@ -385,8 +417,8 @@ export function internalClosingPage(d: ReportData, opts: RenderOpts, pageNum: nu
     </div>
     <footer style="margin-top:auto;padding:0.2in 0.55in 0.3in;display:flex;flex-direction:column;gap:9px;">
       <p style="font-size:6.9pt;line-height:1.5;margin:0;color:${C.faint};">${esc(d.disclaimer)}</p>
-      <div style="display:flex;align-items:center;justify-content:space-between;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
-        <span>i-NETT · FORTIFY AI · INTERNAL</span><span>FULL REPORT — ${esc(company.toUpperCase())}</span><span>0${pageNum} / 0${totalPages}</span>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:0.2in;${mono};font-size:6.6pt;letter-spacing:0.13em;color:${C.footer};white-space:nowrap;">
+        <span style="flex:0 0 auto;">i-NETT · FORTIFY AI · INTERNAL</span><span style="${FOOTER_MID}">FULL REPORT — ${esc(company.toUpperCase())}</span><span style="flex:0 0 auto;">${pageNo(pageNum)} / ${pageNo(totalPages)}</span>
       </div>
     </footer>
   </section>`;

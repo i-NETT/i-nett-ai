@@ -167,11 +167,11 @@ import { SITE } from '../lib/site';
               <div class="scan__findingsLabel" id="meetingLabel"></div>
               <div id="meetingCards"></div>
               <div class="scan__meeting">
-                <div class="scan__meetingTitle">These need to be walked through, not skimmed.</div>
+                <div class="scan__meetingTitle">Your full report &mdash; first 15 minutes of the call.</div>
                 <div class="scan__meetingSub">
-                  These findings only mean something in the context of your organization &mdash; that&rsquo;s why we
-                  don&rsquo;t hand them over cold. In a free 30-minute working session we go through each one, what
-                  it actually means for you, and what to do first. It&rsquo;s a working session, not a pitch.
+                  Book a free 30-minute session. We open with your complete report, redacted findings included
+                  &mdash; we verify you&rsquo;re with the organization first, so its details never reach someone
+                  who simply filled out a form.
                 </div>
                 <button class="btn btn-accent btn-lg btn-block" id="meetingBookBtn">Book your 30-minute working session <span aria-hidden="true">&rarr;</span></button>
               </div>
@@ -262,7 +262,10 @@ import { SITE } from '../lib/site';
   .scan__introSub { max-width: 58ch; }
 
   /* ===== Intro ===== */
-  .scan__tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: var(--space-5); }
+  /* The panel is wide (940px) but this content caps out much narrower —
+     center the whole block instead of letting it hug the left edge. */
+  #introScreen { max-width: 620px; margin: 0 auto; text-align: center; }
+  .scan__tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: var(--space-5); }
   .scan-tag {
     font-family: var(--font-mono); font-size: 10px;
     border: 1px solid; padding: 3px 8px; border-radius: 3px;
@@ -274,13 +277,14 @@ import { SITE } from '../lib/site';
   .scan-tag--ok { color: var(--color-success); border-color: var(--color-success); }
   .scan-tag--info { color: var(--color-ink-700); border-color: rgba(0,180,255,0.45); }
 
-  .scan__introTitle { font-size: var(--fs-lg); font-weight: 800; line-height: 1.3; margin-bottom: var(--space-3); color: var(--color-ink-800); }
-  .scan__introSub { color: var(--color-text-soft); line-height: var(--lh-loose); font-size: var(--fs-sm); margin-bottom: var(--space-5); }
+  .scan__introTitle { font-size: var(--fs-lg); font-weight: 800; line-height: 1.3; margin: 0 auto var(--space-3); color: var(--color-ink-800); }
+  .scan__introSub { color: var(--color-text-soft); line-height: var(--lh-loose); font-size: var(--fs-sm); margin: 0 auto var(--space-5); }
   .scan__checklist {
     background: var(--color-bg-soft);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: var(--space-4) var(--space-4); margin-bottom: var(--space-5);
+    text-align: left;
   }
   .scan__checklistLabel { font-family: var(--font-mono); font-size: 9px; color: var(--color-accent-500); letter-spacing: 2px; margin-bottom: var(--space-2); }
   .scan__check { font-size: var(--fs-sm); color: var(--color-text-soft); line-height: 2; }
@@ -363,7 +367,7 @@ import { SITE } from '../lib/site';
   .scan__statSub { font-size: 11px; color: var(--color-text-soft); margin-top: 2px; line-height: 1.5; }
 
   .scan__findingsLabel { font-family: var(--font-mono); font-size: 9px; color: var(--color-text-muted); letter-spacing: 2px; margin-bottom: 10px; }
-  .scan__finding { border-radius: var(--radius-md); padding: var(--space-5); margin-bottom: var(--space-4); border: 1px solid var(--color-border); border-left-width: 4px; background: var(--color-bg); box-shadow: var(--shadow-sm); }
+  .scan__finding { border-radius: var(--radius-md); padding: var(--space-5); margin-bottom: var(--space-4); border: 1px solid var(--color-border); border-left-width: 4px; background: var(--color-bg-soft); box-shadow: var(--shadow-sm); }
   .scan__finding--warn { border-left-color: var(--color-warning); }
   .scan__finding--danger { border-left-color: var(--color-danger); }
   .scan__finding--info { border-left-color: var(--color-accent-500); }
@@ -398,42 +402,59 @@ import { SITE } from '../lib/site';
   .scan__lockedOverlay { position: absolute; inset: 0; background: rgba(246,248,251,0.82); display: flex; align-items: center; justify-content: center; gap: 8px; }
   .scan__lockLabel { font-family: var(--font-mono); font-size: 10px; color: var(--color-text-muted); letter-spacing: 1px; }
 
-  /* "Rest of your report" boxes — the teaser (4th finding, headline visible)
-     and the redacted findings beyond it. Both render at the SAME full size on
-     purpose: shrinking the redacted ones down read as if something was being
-     hidden rather than deliberately protected. A slow light-beam traces the
-     border to signal "open me," not "closed off." */
+  /* "Rest of your report" boxes — redacted findings beyond the 3 shown in
+     full. Rendered at the SAME full size as a shown finding on purpose:
+     shrinking them down would read as if something was being hidden rather
+     than deliberately protected. Background goes dark (near the site's own
+     dark sections) to visually read as "locked," distinct from the shown
+     findings' light cards. A bright light-beam traces the border to signal
+     "open me," not "closed off." */
   @property --scan-beam-angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
   .scan__teaser {
-    position: relative; border: 1px solid var(--color-border-strong); border-radius: var(--radius-md);
+    position: relative; border: 1px solid rgba(255,255,255,0.14); border-radius: var(--radius-md);
     padding: var(--space-4) var(--space-5); margin-bottom: var(--space-3);
-    background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-soft) 100%);
+    background: var(--color-ink-900);
   }
   .scan__teaser::before {
-    content: ''; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px;
-    background: conic-gradient(from var(--scan-beam-angle), transparent 0%, transparent 78%, var(--color-accent-300) 88%, var(--color-accent-500) 94%, transparent 100%);
+    content: ''; position: absolute; inset: -1.5px; border-radius: inherit; padding: 2.5px;
+    background: conic-gradient(from var(--scan-beam-angle), transparent 0%, transparent 68%, var(--color-accent-400) 82%, var(--color-glow) 90%, var(--color-accent-400) 96%, transparent 100%);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude;
     animation: scan-beam-rotate 4s linear infinite; pointer-events: none;
+    filter: drop-shadow(0 0 6px rgba(0,224,255,0.55));
   }
   @keyframes scan-beam-rotate { to { --scan-beam-angle: 360deg; } }
-  @media (prefers-reduced-motion: reduce) { .scan__teaser::before { animation: none; } }
-  .scan__teaserFoot { font-size: 12px; color: var(--color-text-muted); line-height: 1.55; }
+  @media (prefers-reduced-motion: reduce) { .scan__teaser::before, .scan__meeting::before { animation: none; } }
+  .scan__teaserFoot { font-size: 12px; color: var(--color-text-on-dark-soft); line-height: 1.55; }
 
   /* Score badge: red/amber/green read on the finding — signals good vs. bad
      news without revealing what the finding is. */
   .scan__scoreBadge { font-family: var(--font-mono); font-size: 13px; font-weight: 700; white-space: nowrap; padding: 2px 8px; border-radius: var(--radius-pill); border: 1px solid; }
-  .scan__scoreBadge--high { color: var(--color-danger); border-color: var(--color-danger); background: rgba(193,48,48,0.07); }
-  .scan__scoreBadge--mid { color: var(--color-warning); border-color: var(--color-warning); background: rgba(184,110,0,0.07); }
-  .scan__scoreBadge--low { color: var(--color-success); border-color: var(--color-success); background: rgba(15,139,95,0.07); }
+  .scan__scoreBadge--high { color: #FF7A6B; border-color: #FF7A6B; background: rgba(255,122,107,0.12); }
+  .scan__scoreBadge--mid { color: #FFC46B; border-color: #FFC46B; background: rgba(255,196,107,0.12); }
+  .scan__scoreBadge--low { color: #7BE0A8; border-color: #7BE0A8; background: rgba(123,224,168,0.12); }
 
   /* Redacted findings: same box, ghost bars stand in for the withheld
      headline/detail so the box reads as substantial, not empty. */
-  .scan__redactedBar { height: 11px; border-radius: 4px; margin: 4px 0; background: linear-gradient(90deg, var(--color-border-strong) 0%, var(--color-border) 50%, var(--color-border-strong) 100%); opacity: 0.55; }
+  .scan__redactedBar { height: 11px; border-radius: 4px; margin: 4px 0; background: linear-gradient(90deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.22) 100%); }
   .scan__redactedBar--short { width: 62%; margin-bottom: 10px; }
 
-  /* Meeting gate — the rest is a working session */
-  .scan__meeting { background: var(--color-ink-900); color: var(--color-text-on-dark); border-radius: var(--radius-lg); padding: var(--space-6); margin: var(--space-4) 0 var(--space-5); text-align: center; }
+  /* Meeting gate — the rest is a working session. Same beam treatment as the
+     redacted cards, but bigger: this is the single most important box on the
+     screen, so it should read as the brightest. */
+  .scan__meeting {
+    position: relative; background: var(--color-ink-900); color: var(--color-text-on-dark);
+    border-radius: var(--radius-lg); padding: var(--space-6); margin: var(--space-4) 0 var(--space-5); text-align: center;
+    box-shadow: 0 0 60px -10px rgba(0,224,255,0.35);
+  }
+  .scan__meeting::before {
+    content: ''; position: absolute; inset: -2px; border-radius: inherit; padding: 3.5px;
+    background: conic-gradient(from var(--scan-beam-angle), transparent 0%, transparent 62%, var(--color-accent-400) 80%, var(--color-glow) 90%, var(--color-accent-400) 98%, transparent 100%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: scan-beam-rotate 4s linear infinite; pointer-events: none;
+    filter: drop-shadow(0 0 10px rgba(0,224,255,0.7));
+  }
   .scan__meetingTitle { font-size: var(--fs-lg); font-weight: 800; color: #fff; margin-bottom: var(--space-3); }
   .scan__meetingSub { font-size: var(--fs-sm); line-height: var(--lh-loose); color: var(--color-text-on-dark-soft); max-width: 56ch; margin: 0 auto var(--space-5); }
 
@@ -477,13 +498,11 @@ import { SITE } from '../lib/site';
 </style>
 
 <script>
-  import { jsPDF } from 'jspdf';
-  import html2canvas from 'html2canvas';
-  import {
-    internalCoverPage, internalFindingsPage, internalClosingPage, findingCard, reportCss, encodeReport,
-    INTERNAL_PAGE_MARGIN_IN, INTERNAL_CARD_GAP_IN, INTERNAL_CONTENT_TOP_IN, INTERNAL_FOOTER_RESERVE_IN,
-    type ReportData, type ReportFinding, type Peer,
-  } from '../lib/report';
+  import { renderReport, encodeReport, type ReportData, type ReportFinding, type Peer } from '../lib/report';
+  // The capture/assembly pipeline lives in lib/reportPdf.ts so that the exact
+  // code path that emails prospects can also be exercised from /report-pdf-test
+  // without pushing a real lead through HubSpot.
+  import { buildInternalReportPages, htmlPagesToPdf, imageToDataUri } from '../lib/reportPdf';
 
   // The report is computed ENTIRELY in this component from the answers, so it
   // renders complete even if the backend is unreachable. The Worker call only
@@ -1156,130 +1175,6 @@ import { SITE } from '../lib/site';
     return { data: d, findings };
   }
 
-  // Renders arbitrary body HTML inside an isolated iframe (its own document,
-  // so none of the site's global CSS — h1 colors, section/div rules, etc. —
-  // can leak in and override the report's own styles) with the report's
-  // fonts and CSS loaded, and waits until it's actually safe to read layout
-  // from (fonts + images settled). Caller reads/measures/captures, then must
-  // call the returned remove() when done.
-  async function renderReportIframe(bodyHtml: string): Promise<{ fdoc: Document; win: any; remove: () => void }> {
-    const iframe = document.createElement('iframe');
-    iframe.style.cssText = 'position:fixed;left:-99999px;top:0;width:900px;height:1150px;border:0;';
-    document.body.appendChild(iframe);
-    const fdoc = iframe.contentDocument as Document;
-    const fontsHref = "https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap";
-    fdoc.open();
-    fdoc.write(
-      '<!doctype html><html><head><meta charset="utf-8">' +
-      // crossorigin is required — without it the browser blocks JS (and
-      // html2canvas's internal font resolution) from reading this
-      // stylesheet's @font-face rules at all, since it's cross-origin.
-      // The capture then silently falls back to a serif system font.
-      '<link id="fa-fonts-link" rel="stylesheet" crossorigin="anonymous" href="' + fontsHref + '">' +
-      '<style>html,body{margin:0;padding:0;font-family:\'IBM Plex Sans\',sans-serif;}' + reportCss() + '</style>' +
-      '</head><body>' + bodyHtml + '</body></html>'
-    );
-    fdoc.close();
-
-    await new Promise<void>((res) => {
-      if (fdoc.readyState === 'complete') res();
-      else iframe.addEventListener('load', () => res(), { once: true });
-    });
-    // Wait for the Google Fonts stylesheet itself to load (registering its
-    // @font-face rules) before checking fonts.ready — otherwise fonts.ready
-    // can resolve before the stylesheet has even been parsed, and the
-    // capture (or a height measurement) silently uses a serif system font.
-    const fontsLink = fdoc.getElementById('fa-fonts-link') as HTMLLinkElement | null;
-    if (fontsLink) {
-      await new Promise<void>((res) => {
-        if ((fontsLink as any).sheet) res();
-        else { fontsLink.addEventListener('load', () => res(), { once: true }); fontsLink.addEventListener('error', () => res(), { once: true }); }
-      });
-    }
-    const win = iframe.contentWindow as any;
-    if (win.document.fonts) {
-      try {
-        await Promise.all([
-          win.document.fonts.load('700 25pt Archivo'), win.document.fonts.load('600 13pt Archivo'), win.document.fonts.load('500 13pt Archivo'), win.document.fonts.load('400 13pt Archivo'),
-          win.document.fonts.load('400 10pt "IBM Plex Sans"'), win.document.fonts.load('500 10pt "IBM Plex Sans"'), win.document.fonts.load('600 10pt "IBM Plex Sans"'),
-          win.document.fonts.load('500 10pt "IBM Plex Mono"'), win.document.fonts.load('600 10pt "IBM Plex Mono"'),
-        ]);
-        await win.document.fonts.ready;
-      } catch (e) {}
-    }
-    const imgs = Array.from(fdoc.querySelectorAll('img'));
-    await Promise.all(imgs.map((img: any) => img.complete ? Promise.resolve() : new Promise((res) => { img.onload = res; img.onerror = res; })));
-    await new Promise((res) => setTimeout(res, 200));
-
-    return { fdoc, win, remove: () => { if (iframe.parentNode) iframe.parentNode.removeChild(iframe); } };
-  }
-
-  // Lays out the internal report by each finding card's ACTUAL rendered
-  // height rather than a fixed count-per-page — a card's height varies with
-  // its "what to do" text length and peer rows, so a fixed 2-per-page rule
-  // either wastes most of a page on short findings or (with overflow:hidden
-  // on .fa-page) silently clips long ones. Bin-packs by real measured height,
-  // then returns the final page HTML ready for htmlPagesToPdf.
-  async function buildInternalReportPages(d: ReportData, findings: ReportFinding[], opts: any): Promise<string> {
-    const company = d.preparedFor.company || '—';
-    const rest = findings.slice(1);
-    if (!rest.length) {
-      return internalCoverPage(d, findings[0], findings.length, opts, 2) + internalClosingPage(d, opts, 2, 2);
-    }
-
-    const cardsHtml = rest.map((f) => findingCard(f, false));
-    const { fdoc, remove } = await renderReportIframe(
-      '<div class="fa-report"><div id="fa-measure" style="width:' + (8.5 - 2 * INTERNAL_PAGE_MARGIN_IN) + 'in;position:absolute;visibility:hidden;">'
-      + cardsHtml.map((c, i) => '<div id="fa-card-' + i + '">' + c + '</div>').join('')
-      + '</div></div>'
-    );
-    const heightsPx = cardsHtml.map((_, i) => {
-      const el = fdoc.getElementById('fa-card-' + i);
-      return el ? el.getBoundingClientRect().height : 260;
-    });
-    remove();
-
-    const PAGE_H_PX = 11 * 96;
-    const budgetPx = PAGE_H_PX - (0.16 + INTERNAL_CONTENT_TOP_IN + INTERNAL_FOOTER_RESERVE_IN) * 96;
-    const gapPx = INTERNAL_CARD_GAP_IN * 96;
-
-    const groups: number[][] = [];
-    let cur: number[] = [], curH = 0;
-    heightsPx.forEach((h, i) => {
-      const addH = h + (cur.length ? gapPx : 0);
-      if (cur.length && curH + addH > budgetPx) { groups.push(cur); cur = []; curH = 0; }
-      cur.push(i); curH += (cur.length > 1 ? gapPx : 0) + h;
-    });
-    if (cur.length) groups.push(cur);
-
-    const totalPages = 1 + groups.length + 1;
-    const cover = internalCoverPage(d, findings[0], findings.length, opts, totalPages);
-    const middle = groups.map((idxs, i) =>
-      internalFindingsPage(idxs.map((idx) => cardsHtml[idx]).join(''), company, i + 2, totalPages)
-    ).join('');
-    const closing = internalClosingPage(d, opts, totalPages, totalPages);
-    return cover + middle + closing;
-  }
-
-  // Captures each .fa-page in the given HTML with html2canvas and assembles a
-  // pixel-accurate Letter PDF. PNG (not JPEG) at a high capture scale — JPEG's
-  // block compression blurs and "grains" sharp text edges, which reads as low
-  // quality on a text-heavy document like this. Client-side only.
-  async function htmlPagesToPdf(html: string): Promise<string | null> {
-    const { fdoc, remove } = await renderReportIframe('<div class="fa-report">' + html + '</div>');
-    try {
-      const pages = Array.from(fdoc.querySelectorAll('.fa-page')) as HTMLElement[];
-      const doc = new jsPDF({ unit: 'in', format: 'letter', compress: true });
-      for (let i = 0; i < pages.length; i++) {
-        const canvas = await html2canvas(pages[i], { scale: 3, backgroundColor: '#ffffff', useCORS: true });
-        const imgData = canvas.toDataURL('image/png');
-        if (i > 0) doc.addPage('letter');
-        doc.addImage(imgData, 'PNG', 0, 0, 8.5, 11, undefined, 'FAST');
-      }
-      return doc.output('datauristring').split(',')[1] || null;
-    } catch (e) { return null; }
-    finally { remove(); }
-  }
 
   async function submitLead(lead: any) {
     const r = currentReport as Report;
@@ -1288,17 +1183,32 @@ import { SITE } from '../lib/site';
     const clientData = buildClientReportData(lead, r, note, clientOpts);
     const reportUrl = location.origin + '/report#r=' + encodeReport(clientData);
 
+    const [logoFortifyUri, logoInettUri] = await Promise.all([
+      imageToDataUri(location.origin + '/assets/brand/fortify-ai-logo.png'),
+      imageToDataUri(location.origin + '/assets/brand/inett-logo.png'),
+    ]);
+    const logoOpts = {
+      glow: false,
+      logoFortify: logoFortifyUri,
+      logoInett: logoInettUri,
+    };
+
     let pdfFull: string | null = null;
     try {
       const { data: internalData, findings: allFindings } = buildInternalReportData(lead, r, note);
-      const logoOpts = {
-        glow: false,
-        logoFortify: location.origin + '/assets/brand/fortify-ai-logo.png',
-        logoInett: location.origin + '/assets/brand/inett-logo.png',
-      };
       const html = await buildInternalReportPages(internalData, allFindings, logoOpts);
-      pdfFull = await htmlPagesToPdf(html);
+      pdfFull = (await htmlPagesToPdf(html)).base64;
     } catch (e) { pdfFull = null; }
+
+    // Client PDF: the exact same 3 full findings + redacted-rest treatment as
+    // their web report at reportUrl — print-clean (no glow). Sent immediately
+    // alongside the link, per the client-visible report; the FULL unredacted
+    // version stays a working-session deliverable.
+    let pdfClient: string | null = null;
+    try {
+      const clientHtml = renderReport(clientData, logoOpts);
+      pdfClient = (await htmlPagesToPdf(clientHtml)).base64;
+    } catch (e) { pdfClient = null; }
 
     fetch(PROXY_URL + '/lead', {
       method: 'POST',
@@ -1312,6 +1222,7 @@ import { SITE } from '../lib/site';
         analystNote: note,
         reportUrl,
         pdfFull,
+        pdfClient,
         pageUrl: location.href,
       }),
     }).catch(() => { /* best-effort; the visitor already has their report */ });

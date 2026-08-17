@@ -1,0 +1,149 @@
+---
+// Dev/QA harness for the report -> PDF pipeline (src/lib/reportPdf.ts).
+//
+// The real pipeline only ever runs inside submitLead(), which also pushes a
+// lead into HubSpot and emails it — so there was previously no way to inspect a
+// generated PDF without creating a fake prospect. This page drives the exact
+// same code path against fixture data, reports what each page capture actually
+// produced, and lets you download the result.
+//
+// noindex + not linked from anywhere. Safe to leave deployed; it sends nothing.
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Report PDF — capture test</title>
+    <style>
+      body { font: 14px/1.5 system-ui, sans-serif; margin: 0; padding: 24px 28px; background: #0a0f16; color: #e6edf3; }
+      h1 { font-size: 18px; margin: 0 0 4px; }
+      p.sub { margin: 0 0 20px; color: #8b9bab; }
+      button { font: inherit; padding: 8px 14px; margin: 0 8px 8px 0; background: #12A5DB; color: #04202e; border: 0; font-weight: 600; cursor: pointer; }
+      button:disabled { opacity: .5; cursor: default; }
+      table { border-collapse: collapse; margin-top: 16px; font-size: 13px; width: 100%; }
+      th, td { border: 1px solid #24323f; padding: 6px 10px; text-align: left; }
+      th { background: #14202b; color: #8b9bab; font-weight: 600; }
+      td.ok { color: #7BE0A8; } td.bad { color: #FF7A6B; font-weight: 600; }
+      pre { background: #10181f; padding: 12px; overflow: auto; font-size: 12px; }
+      #log { margin-top: 14px; color: #8b9bab; white-space: pre-wrap; }
+    </style>
+  </head>
+  <body>
+    <h1>Fortify AI report → PDF capture test</h1>
+    <p class="sub">Drives <code>src/lib/reportPdf.ts</code> against fixtures. Nothing is sent anywhere.</p>
+
+    <div>
+      <button data-fixture="client">Client report (3 findings)</button>
+      <button data-fixture="internal">Internal report (all findings)</button>
+      <button data-fixture="stress">Stress: long note, 15 inputs, long company</button>
+    </div>
+
+    <div id="log"></div>
+    <div id="out"></div>
+
+    <script>
+      import { sampleReport, type ReportData, type ReportFinding } from '../lib/report';
+      import { htmlPagesToPdf, buildInternalReportPages, imageToDataUri, auditPageOverflow } from '../lib/reportPdf';
+      import { renderReport } from '../lib/report';
+
+      const log = (m: string) => { document.getElementById('log')!.textContent += m + '\n'; };
+
+      // A deliberately hostile record: the failure mode this harness exists to
+      // catch is content-length variance, which the sample record never shows.
+      function stressData(): ReportData {
+        const d = sampleReport();
+        d.preparedFor.company = 'Southern California Orthopaedic & Sports Medicine Associates';
+        d.cta.company = d.preparedFor.company;
+        d.analystNote = d.analystNote + ' ' + d.analystNote;
+        d.scanInputs = d.scanInputs.concat([
+          { question: 'Board reporting cadence', answer: 'Quarterly, with an annual risk summary' },
+          { question: 'Existing security vendor', answer: 'In-house, supplemented by an external MSP' },
+          { question: 'Prior AI incident', answer: 'One near-miss involving a shared document link' },
+          { question: 'Data residency requirements', answer: 'US only, contractually required' },
+        ]);
+        return d;
+      }
+
+      async function logos() {
+        const [f, i] = await Promise.all([
+          imageToDataUri(location.origin + '/assets/brand/fortify-ai-logo.png'),
+          imageToDataUri(location.origin + '/assets/brand/inett-logo.png'),
+        ]);
+        return { glow: false, logoFortify: f, logoInett: i };
+      }
+
+      async function run(kind: string) {
+        document.getElementById('log')!.textContent = '';
+        document.getElementById('out')!.innerHTML = '';
+        log('Building ' + kind + ' report…');
+        const opts = await logos();
+        const data = kind === 'stress' ? stressData() : sampleReport();
+
+        let html: string;
+        if (kind === 'internal') {
+          const findings: ReportFinding[] = data.findings.concat(data.findings).slice(0, 6)
+            .map((f, i) => ({ ...f, index: 'FINDING 0' + (i + 1) }));
+          html = await buildInternalReportPages(data, findings, opts);
+        } else {
+          html = renderReport(data, opts);
+        }
+
+        const pageCount = (html.match(/class="fa-page"/g) || []).length;
+        log('Report HTML built: ' + pageCount + ' page(s). Auditing overflow…');
+
+        const overflow = await auditPageOverflow(html);
+        const clipped = overflow.filter((o) => o.clipped);
+        log(clipped.length
+          ? '⚠ ' + clipped.length + ' page(s) OVERFLOW the 11in box — content is being silently cropped.'
+          : '✓ No page overflow.');
+        overflow.forEach((o) => {
+          if (o.clipped) log('   page ' + o.label + ': +' + o.overflowPx + 'px over. Lost: ' + (o.lost.join(' / ') || '(layout only)'));
+        });
+        log('Capturing…');
+
+        const t0 = performance.now();
+        const { base64, captures } = await htmlPagesToPdf(html);
+        const ms = Math.round(performance.now() - t0);
+        log('Capture finished in ' + ms + 'ms. ' + captures.length + ' page(s) captured.');
+
+        const rows = captures.map((c) => {
+          const off = Math.abs(c.aspectError - 1) > 0.01;
+          return '<tr><td>' + c.page + '</td><td>' + c.canvasW + ' × ' + c.canvasH + '</td>'
+            + '<td>' + c.aspect + '</td><td>' + c.targetAspect + '</td>'
+            + '<td class="' + (off ? 'bad' : 'ok') + '">' + c.aspectError + (off ? ' ← OFF-ASPECT' : ' ok') + '</td>'
+            + '<td>' + c.placed.w + '" × ' + c.placed.h + '" @ ' + c.placed.x + ',' + c.placed.y + '</td>'
+            + '<td class="' + (c.letterboxed ? 'bad' : 'ok') + '">' + (c.letterboxed ? 'yes' : 'no') + '</td></tr>';
+        }).join('');
+
+        let html_out = '<table><tr><th>Page</th><th>Canvas px</th><th>Aspect</th><th>Target</th><th>Error</th><th>Placed</th><th>Letterboxed</th></tr>' + rows + '</table>';
+
+        if (base64) {
+          const bytes = Math.round(base64.length * 0.75);
+          html_out += '<p>PDF: <strong>' + (bytes / 1024).toFixed(0) + ' KB</strong> · '
+            + '<a id="dl" download="report-' + kind + '.pdf" href="data:application/pdf;base64,' + base64 + '" style="color:#7FD4F2">download</a></p>';
+          // Also drop it on disk (dev only) so it can be opened and inspected.
+          try {
+            const r = await fetch('/api/save-pdf', {
+              method: 'POST', headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ name: 'report-' + kind, base64 }),
+            });
+            log(r.ok ? 'Saved: ' + (await r.json()).file : 'Save endpoint returned ' + r.status);
+          } catch (e) { log('Save failed: ' + (e as Error).message); }
+        } else {
+          html_out += '<p class="bad">No PDF produced.</p>';
+        }
+        document.getElementById('out')!.innerHTML = html_out;
+      }
+
+      document.querySelectorAll('button[data-fixture]').forEach((b) => {
+        b.addEventListener('click', async () => {
+          document.querySelectorAll('button').forEach((x) => ((x as HTMLButtonElement).disabled = true));
+          try { await run((b as HTMLElement).dataset.fixture!); }
+          catch (e) { log('ERROR: ' + (e as Error).message); }
+          finally { document.querySelectorAll('button').forEach((x) => ((x as HTMLButtonElement).disabled = false)); }
+        });
+      });
+    </script>
+  </body>
+</html>
