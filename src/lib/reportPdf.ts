@@ -93,6 +93,47 @@ export async function auditPageOverflow(html: string): Promise<OverflowInfo[]> {
   } finally { remove(); }
 }
 
+// Workarounds needed ONLY by the html2canvas raster path. Both exist because
+// that rasterizer re-lays-out inline text but keeps block boxes at the
+// positions they were serialized with, and it measures text marginally wider
+// than the browser does.
+//
+//  - text-wrap: a "balanced" heading breaks differently under the rasterizer.
+//    Scoped to h3/p deliberately — text-wrap is a white-space longhand, so a
+//    blanket rule would clobber the intentional nowrap on section headers,
+//    footers, and the score numerals.
+//  - min-height: a headline that occupies ONE line in the DOM (measured:
+//    finding 02, h3 = 22.2px) can wrap to TWO in the capture, and that second
+//    line gets painted straight through the paragraph below it. Reserving two
+//    lines pins the paragraph low enough to absorb the drift.
+//
+// A real browser engine needs neither, and renders better without them.
+const CAPTURE_FIXES_CSS =
+  '.fa-report h3,.fa-report p{text-wrap:wrap!important;}' +
+  '.fa-report .fa-card h3{min-height:2.56em;}';
+
+// crossorigin on the font link is required for the raster path — without it the
+// browser blocks JS from reading this cross-origin stylesheet's @font-face
+// rules at all, and the capture silently falls back to a serif system font.
+export const REPORT_FONTS_HREF =
+  'https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap';
+
+// A complete, standalone report document: fonts + report CSS + body, with no
+// dependency on the host page. Used two ways, and they must stay identical or
+// the PDF stops matching what we measured:
+//   1. written into the capture iframe (client-side raster path)
+//   2. POSTed to the Worker, which renders it with headless Chromium
+// `captureFixes` adds the html2canvas-only workarounds; the real browser engine
+// does not need them and renders better without them.
+export function reportDocument(bodyHtml: string, opts: { captureFixes?: boolean } = {}): string {
+  return '<!doctype html><html><head><meta charset="utf-8">'
+    + '<link id="fa-fonts-link" rel="stylesheet" crossorigin="anonymous" href="' + REPORT_FONTS_HREF + '">'
+    + '<style>html,body{margin:0;padding:0;font-family:\'IBM Plex Sans\',sans-serif;}'
+    + reportCss()
+    + (opts.captureFixes ? CAPTURE_FIXES_CSS : '')
+    + '</style></head><body>' + bodyHtml + '</body></html>';
+}
+
 // Renders arbitrary body HTML inside an isolated iframe (its own document, so
 // none of the site's global CSS — h1 colors, section/div rules, etc. — can leak
 // in and override the report's own styles) with the report's fonts and CSS
@@ -103,50 +144,8 @@ export async function renderReportIframe(bodyHtml: string): Promise<{ fdoc: Docu
   iframe.style.cssText = 'position:fixed;left:-99999px;top:0;width:900px;height:1150px;border:0;';
   document.body.appendChild(iframe);
   const fdoc = iframe.contentDocument as Document;
-  const fontsHref = "https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap";
   fdoc.open();
-  fdoc.write(
-    '<!doctype html><html><head><meta charset="utf-8">' +
-    // crossorigin is required — without it the browser blocks JS (and
-    // html2canvas's internal font resolution) from reading this stylesheet's
-    // @font-face rules at all, since it's cross-origin. The capture then
-    // silently falls back to a serif system font.
-    '<link id="fa-fonts-link" rel="stylesheet" crossorigin="anonymous" href="' + fontsHref + '">' +
-    // No text-wrap override here: html2canvas's own text-layout engine
-    // mis-measured "balance"/"pretty" wrapping (silently dropped spaces, e.g.
-    // "throughpersonalaccounts"), but the actual fix was switching the capture
-    // itself to foreignObjectRendering (real browser text layout) — see
-    // htmlPagesToPdf. A blanket text-wrap override here fought with
-    // intentional white-space:nowrap elsewhere (they share the same underlying
-    // CSS longhand) and broke section headers.
-    '<style>html,body{margin:0;padding:0;font-family:\'IBM Plex Sans\',sans-serif;}' + reportCss() +
-    // text-wrap:balance/pretty are the one place where the rasterizer's line
-    // breaking visibly disagrees with the browser's. When html2canvas breaks a
-    // balanced heading into more lines than the layout box was measured for,
-    // the following paragraph is positioned against the one-line height and
-    // prints ON TOP of the heading's second line — the overlap seen on finding
-    // cards. Forcing plain greedy wrapping for the capture keeps the two
-    // engines in agreement; the web report keeps its nicer wrapping.
-    //
-    // Scoped to h3/p deliberately. text-wrap is a white-space longhand, so a
-    // blanket rule would also clobber the intentional white-space:nowrap on
-    // section headers (h2), footers, and the score numerals.
-    '.fa-report h3,.fa-report p{text-wrap:wrap!important;}' +
-    // The rasterizer re-lays-out inline text but keeps the block boxes at the
-    // positions they were serialized with. It also measures text marginally
-    // wider than the browser does, so a headline that fits on ONE line in the
-    // DOM can wrap to TWO in the capture — and that second line is painted
-    // straight through the paragraph underneath it. (Measured on finding 02:
-    // h3 is 22.2px / 1 line in the DOM, 2 lines in the PNG.)
-    //
-    // Reserving two lines of height pins the paragraph's position low enough to
-    // absorb that one-line drift. Residual risk: a headline that is genuinely
-    // two lines in the DOM and drifts to three still collides. That is not
-    // fixable from CSS — it goes away when the PDF is rendered by a real
-    // browser engine instead of being screenshotted.
-    '.fa-report .fa-card h3{min-height:2.56em;}' + '</style>' +
-    '</head><body>' + bodyHtml + '</body></html>'
-  );
+  fdoc.write(reportDocument(bodyHtml, { captureFixes: true }));
   fdoc.close();
 
   await new Promise<void>((res) => {

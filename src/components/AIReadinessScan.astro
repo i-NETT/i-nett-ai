@@ -502,7 +502,7 @@ import { SITE } from '../lib/site';
   // The capture/assembly pipeline lives in lib/reportPdf.ts so that the exact
   // code path that emails prospects can also be exercised from /report-pdf-test
   // without pushing a real lead through HubSpot.
-  import { buildInternalReportPages, htmlPagesToPdf, imageToDataUri } from '../lib/reportPdf';
+  import { buildInternalReportPages, htmlPagesToPdf, imageToDataUri, reportDocument } from '../lib/reportPdf';
 
   // The report is computed ENTIRELY in this component from the answers, so it
   // renders complete even if the backend is unreachable. The Worker call only
@@ -1183,32 +1183,49 @@ import { SITE } from '../lib/site';
     const clientData = buildClientReportData(lead, r, note, clientOpts);
     const reportUrl = location.origin + '/report#r=' + encodeReport(clientData);
 
-    const [logoFortifyUri, logoInettUri] = await Promise.all([
-      imageToDataUri(location.origin + '/assets/brand/fortify-ai-logo.png'),
-      imageToDataUri(location.origin + '/assets/brand/inett-logo.png'),
-    ]);
-    const logoOpts = {
+    // Two logo treatments, because the two render paths have different needs.
+    // The Worker's headless Chromium fetches https:// assets normally, so it
+    // gets small absolute URLs. The in-browser raster path can't: a same-site
+    // absolute URL still reads as cross-origin from the detached capture
+    // iframe and taints the canvas, so it needs the bytes inlined.
+    const remoteOpts = {
       glow: false,
-      logoFortify: logoFortifyUri,
-      logoInett: logoInettUri,
+      logoFortify: location.origin + '/assets/brand/fortify-ai-logo.png',
+      logoInett: location.origin + '/assets/brand/inett-logo.png',
     };
 
-    let pdfFull: string | null = null;
-    try {
-      const { data: internalData, findings: allFindings } = buildInternalReportData(lead, r, note);
-      const html = await buildInternalReportPages(internalData, allFindings, logoOpts);
-      pdfFull = (await htmlPagesToPdf(html)).base64;
-    } catch (e) { pdfFull = null; }
+    const { data: internalData, findings: allFindings } = buildInternalReportData(lead, r, note);
 
-    // Client PDF: the exact same 3 full findings + redacted-rest treatment as
-    // their web report at reportUrl — print-clean (no glow). Sent immediately
-    // alongside the link, per the client-visible report; the FULL unredacted
-    // version stays a working-session deliverable.
-    let pdfClient: string | null = null;
+    // Server-rendered path (preferred): post the report HTML and let the Worker
+    // turn it into a real vector PDF. Cheap to build — it's just strings.
+    let htmlFull: string | null = null;
+    let htmlClient: string | null = null;
     try {
-      const clientHtml = renderReport(clientData, logoOpts);
-      pdfClient = (await htmlPagesToPdf(clientHtml)).base64;
-    } catch (e) { pdfClient = null; }
+      htmlFull = reportDocument(await buildInternalReportPages(internalData, allFindings, remoteOpts));
+      htmlClient = reportDocument(renderReport(clientData, remoteOpts));
+    } catch (e) { htmlFull = null; htmlClient = null; }
+
+    // Client-side raster fallback. Kept only so the site and the Worker can be
+    // deployed in either order; once server rendering is confirmed live, set
+    // RASTER_FALLBACK to false — that also lets html2canvas + jspdf (~400KB)
+    // drop out of this bundle entirely.
+    const RASTER_FALLBACK = true;
+    let pdfFull: string | null = null;
+    let pdfClient: string | null = null;
+    if (RASTER_FALLBACK) {
+      const [logoFortifyUri, logoInettUri] = await Promise.all([
+        imageToDataUri(location.origin + '/assets/brand/fortify-ai-logo.png'),
+        imageToDataUri(location.origin + '/assets/brand/inett-logo.png'),
+      ]);
+      const captureOpts = { glow: false, logoFortify: logoFortifyUri, logoInett: logoInettUri };
+      try {
+        const html = await buildInternalReportPages(internalData, allFindings, captureOpts);
+        pdfFull = (await htmlPagesToPdf(html)).base64;
+      } catch (e) { pdfFull = null; }
+      try {
+        pdfClient = (await htmlPagesToPdf(renderReport(clientData, captureOpts))).base64;
+      } catch (e) { pdfClient = null; }
+    }
 
     fetch(PROXY_URL + '/lead', {
       method: 'POST',
@@ -1221,6 +1238,8 @@ import { SITE } from '../lib/site';
         },
         analystNote: note,
         reportUrl,
+        htmlFull,
+        htmlClient,
         pdfFull,
         pdfClient,
         pageUrl: location.href,
