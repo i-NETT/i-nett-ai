@@ -740,10 +740,17 @@ import { SITE } from '../lib/site';
     // Compliance (0-18)
     const compliance = flags.length ? (aiGoverned ? Math.min(9, flags.length * 3) : Math.min(18, flags.length * 5)) : 0;
 
-    // Enablement gap (0-16) — the coaching pillar
-    const enable = a.coaching === 'They mostly don’t use it yet' ? 14
-      : a.coaching === 'They’re self-taught — figuring it out alone' ? 12
-      : a.coaching === 'Some ad-hoc training here and there' ? 7
+    // Enablement gap (0-16) — the coaching pillar.
+    // Self-taught is the HIGHEST exposure here, not "not using it yet": a team
+    // using AI at scale with no guardrails is actively creating risk, whereas
+    // "we don't really use it" almost always means the org isn't tracking usage
+    // and simply can't see what's already happening (that invisibility is
+    // scored on the usage axis above, as shadow AI). Previously this was
+    // inverted — "mostly don't use yet" (14) outscored self-taught (12), so
+    // not adopting rated as riskier than adopting badly.
+    const enable = a.coaching === 'They’re self-taught — figuring it out alone' ? 14
+      : a.coaching === 'They mostly don’t use it yet' ? 8
+      : a.coaching === 'Some ad-hoc training here and there' ? 6
       : 3;
 
     // Insurance + vendor exposure (0-14)
@@ -756,7 +763,26 @@ import { SITE } from '../lib/site';
     // Agent / automation opportunity (0-12)
     const agentOpp = a.busywork === 'More than 40' ? 12 : a.busywork === '15-40' ? 9 : a.busywork === '5-15' ? 6 : a.busywork === 'No idea' ? 6 : 2;
 
-    const score = Math.max(4, Math.min(100, shadow + compliance + enable + insureExp + agentOpp));
+    // Risk floors. A single catastrophic gap should establish a MINIMUM score
+    // regardless of how the additive components land — one client file pasted
+    // into a free tool is a material incident whether or not the org scores
+    // well elsewhere, and the additive model was diluting exactly that (a
+    // maxed-out shadow-AI profile still only reached 71). max(additive, floor)
+    // keeps the additive score discriminating ABOVE the floor.
+    // Approved 2026-08-18 — see fortify-scan-v2-spec.
+    //   shadow AI (confirmed OR untracked/invisible) OR vendors never vetted -> 75
+    //   both -> 85 ; both + no signed employee policy -> 88
+    //   +4 (cap 95) if regulated data is in play ; 90+ stays reserved for
+    //   genuinely worst-case so the number keeps meaning something.
+    const shadowUngoverned = a.ai === 'On personal accounts — no rules' || a.ai === 'Not that I know of';
+    const vendorGap = a.vendorterms === 'No — we’ve never asked' || a.vendorterms === 'Not sure';
+    let floor = 0;
+    if (shadowUngoverned || vendorGap) floor = 75;
+    if (shadowUngoverned && vendorGap) floor = 85;
+    if (shadowUngoverned && vendorGap && empNone) floor = 88;
+    if (floor && sensitive.length) floor = Math.min(95, floor + 4);
+
+    const score = Math.max(4, Math.min(100, Math.max(shadow + compliance + enable + insureExp + agentOpp, floor)));
     const band = score >= 70 ? 'HIGH' : score >= 45 ? 'ELEVATED' : score >= 25 ? 'MODERATE' : 'LOW';
 
     const shadowLevel = shadow >= 22 ? 'HIGH' : shadow >= 12 ? 'MODERATE' : 'LOW';
