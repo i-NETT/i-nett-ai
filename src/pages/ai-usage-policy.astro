@@ -35,17 +35,17 @@ const faqs = [
   },
   {
     q: 'How is a policy actually enforced?',
-    a: 'A policy you cannot see being followed is a hope, not a control. Every i-NETT managed plan includes Shadow AI Discovery — visibility into which AI tools your team is using, and the ability to block unapproved LLMs from being accessed at all — so the rules are backed by technology, not just goodwill.',
+    a: 'A policy you cannot see being followed is a hope, not a control. Every Fortify AI managed plan includes Shadow AI Discovery — visibility into which AI tools your team is using, and the ability to block unapproved LLMs from being accessed at all — so the rules are backed by technology, not just goodwill.',
   },
 ];
 
 // The policy, in full, for the page. Mirrors the framework document.
 const sections = [
   { h: '1. Purpose & scope', b: 'This policy governs the use of AI tools by everyone who acts on behalf of the company — employees, contractors, temporary staff, and volunteers. It applies to any AI tool used for company work, whether company-provided or public, and whether used on a company or personal device. Its purpose: let our people use AI to do better work, faster, while making sure no confidential, regulated, or client information leaves our control through a tool nobody approved and nobody is watching.' },
-  { h: '2. Roles & responsibilities', b: 'A named policy owner (not a committee) owns this document and the approved-tools list, approves new tools, and oversees incidents. Leadership sponsors and models compliant use. Managers ensure their teams have read and signed the acknowledgment. Employees use only approved tools and report incidents. IT / i-NETT configures and maintains the enforcement layer.' },
+  { h: '2. Roles & responsibilities', b: 'A named policy owner (not a committee) owns this document and the approved-tools list, approves new tools, and oversees incidents. Leadership sponsors and models compliant use. Managers ensure their teams have read and signed the acknowledgment. Employees use only approved tools and report incidents. IT / Fortify AI configures and maintains the enforcement layer.' },
   { h: '3. Acceptable use', b: 'Employees are encouraged to use approved AI tools to draft, summarize, research, translate, analyze, and automate repetitive work — provided the information is properly classified for that tool and the output is reviewed by a qualified person before use. The guiding principle: AI assists; people remain accountable.' },
   { h: '4. Prohibited use', b: 'Never enter confidential, regulated, or client data into a public or personal AI account. Never use tools that are not on the approved list, present unreviewed output as verified, let AI make a final decision about a person without human judgment, or attempt to bypass the company’s AI monitoring or blocking controls.' },
-  { h: '5. Approved AI tools', b: 'Only tools approved in the policy may be used for company work. Our standard is deliberately strict: i-NETT Fortify AI is the only tool approved out of the box, because it is secure by default. Every other tool — including Microsoft 365 Copilot — must pass an AI readiness assessment and be configured and approved in writing first. Copilot in particular surfaces whatever a user can already open, so a misconfigured OneDrive/SharePoint/Teams estate can make HR, accounting, and other files instantly discoverable; that oversharing must be remediated before rollout. Any tool not on the approved list is prohibited, and personal or consumer AI accounts may never be used for company work.' },
+  { h: '5. Approved AI tools', b: 'Only tools approved in the policy may be used for company work. Our standard is deliberately strict: Fortify AI is the only tool approved out of the box, because it is secure by default. Every other tool — including Microsoft 365 Copilot — must pass an AI readiness assessment and be configured and approved in writing first. Copilot in particular surfaces whatever a user can already open, so a misconfigured OneDrive/SharePoint/Teams estate can make HR, accounting, and other files instantly discoverable; that oversharing must be remediated before rollout. Any tool not on the approved list is prohibited, and personal or consumer AI accounts may never be used for company work.' },
   { h: '6. Data classification standard', b: 'The most important section. Public information may be used with any approved tool. Internal information: approved business-tier tools only. Confidential information: only tools contractually cleared for it. Regulated information (PHI, PII, card data, government data) is never entered into public or personal AI — only a cleared, compliant environment. Map these tiers to the regimes you answer to (HIPAA, GDPR, CCPA, PCI, CMMC).' },
   { h: '7. Human review & accountability', b: 'A qualified person must review AI output before it is sent to a client, filed, billed, published, or used in any decision about a person. Whoever signs, sends, or acts on the output owns the result. Accountability stays with people, not the model.' },
   { h: '8. Third-party & vendor requirements', b: 'Every vendor that touches company data must confirm, in writing, that they will not put your data into ungoverned AI, will not let providers train on your data, isolate your data, disclose any AI processing, meet your residency requirements, and notify you of incidents. New AI vendors are approved before they handle company data.' },
@@ -57,7 +57,7 @@ const sections = [
 ];
 ---
 <PageLayout
-  title="Free AI Usage Policy Framework, Letters & Rollout Kit | Fortify AI by i-NETT"
+  title="Free AI Usage Policy Framework, Letters & Rollout Kit | Fortify AI"
   description="A complete, deployable AI governance framework for business: the full policy free on this page, plus editable employee and vendor letters and a 30-day rollout checklist. Enforced by Shadow AI Discovery."
   eyebrow="Free framework"
   pageHeading="The complete AI governance framework your team can deploy in 30 days."
@@ -108,10 +108,10 @@ const sections = [
         </div>
 
         <div class="pol-enforce">
-          <span class="pol-enforce__eyebrow">Enforcement · included on every i-NETT managed plan</span>
+          <span class="pol-enforce__eyebrow">Enforcement · included on every Fortify AI managed plan</span>
           <h2>Shadow AI Discovery</h2>
           <p>
-            A policy you cannot see being followed is a hope, not a control. Every i-NETT managed plan
+            A policy you cannot see being followed is a hope, not a control. Every Fortify AI managed plan
             includes the enforcement layer that makes this framework real:
           </p>
           <ul class="pol-enforce__list">
