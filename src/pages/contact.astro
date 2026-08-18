@@ -6,13 +6,26 @@ const breadcrumbs = [
   { name: 'Home', url: '/' },
   { name: 'Contact', url: '/contact' },
 ];
+
+// Native HubSpot embedded form (portal 39725947, region NA2). A HubSpot-hosted
+// form is guaranteed to land in HubSpot and stays presentable/editable from
+// HubSpot without code changes.
+//
+// TODO(Nick): create the dedicated "Contact — i-nett.ai" form in HubSpot and
+// paste its GUID here. While this is empty, the page shows the booking-first
+// layout (no broken/empty form). The existing scan form can't be used here —
+// it was built for API submission and renders as an empty embed.
+const HS_PORTAL = '39725947';
+const HS_REGION = 'na2';
+const CONTACT_FORM_GUID = '';
+const hasForm = CONTACT_FORM_GUID.length > 0;
 ---
 <PageLayout
   title="Contact : Book a 30 minute Fortify AI consultation"
   description="Book a 30 minute Fortify AI consultation with our team. Direct contact for partnerships, press, and general inquiries about managed AI for organizations of any size."
   eyebrow="Contact"
   pageHeading="Talk to the team behind Fortify AI."
-  pageLead="The fastest path is to book a 30 minute consultation directly. For partnerships, press, and general inquiries, use the channels below."
+  pageLead="Send us a message and the right person will get back to you, or book a 30-minute consultation directly. Partnerships, press, and general inquiries all welcome."
   breadcrumbs={breadcrumbs}
   pageType="ContactPage"
   hideFinalCta={true}
@@ -20,21 +33,37 @@ const breadcrumbs = [
   <section class="section">
     <div class="container">
       <div class="grid grid-2 contact-grid">
-        <div class="contact-primary">
-          <span class="eyebrow">Primary path</span>
-          <h2>Book a 30 minute consultation</h2>
-          <p class="lead">
-            Scope your environment, identify the highest-leverage AI deployments for
-            your firm, and walk through what a Fortify AI rollout looks like. Held by
-            our team directly, no qualification gate.
-          </p>
-          <a href={SITE.bookingUrl} class="btn btn-accent btn-lg" target="_blank" rel="noopener">
-            Open the booking calendar
-          </a>
-          <p class="contact-note">
-            Calendar opens in a new tab. We use HubSpot Meetings for scheduling.
-          </p>
-        </div>
+        {hasForm ? (
+          <div class="contact-primary contact-primary--form">
+            <span class="eyebrow">Send us a message</span>
+            <h2>Tell us what you need</h2>
+            <p class="lead">
+              Questions, partnerships, press, or a project — send a note and the right
+              person on our team will get back to you. Prefer to talk it through? Book a
+              30-minute consultation instead.
+            </p>
+            <div id="hs-contact-form" class="hs-contact-form"></div>
+            <p class="contact-note">
+              <a href={SITE.bookingUrl} target="_blank" rel="noopener">Or book a 30-minute consultation &rarr;</a>
+            </p>
+          </div>
+        ) : (
+          <div class="contact-primary">
+            <span class="eyebrow">Primary path</span>
+            <h2>Book a 30 minute consultation</h2>
+            <p class="lead">
+              Scope your environment, identify the highest-leverage AI deployments for
+              your firm, and walk through what a Fortify AI rollout looks like. Held by
+              our team directly, no qualification gate.
+            </p>
+            <a href={SITE.bookingUrl} class="btn btn-accent btn-lg" target="_blank" rel="noopener">
+              Open the booking calendar
+            </a>
+            <p class="contact-note">
+              Calendar opens in a new tab. We use HubSpot Meetings for scheduling.
+            </p>
+          </div>
+        )}
 
         <div class="contact-secondary">
           <span class="eyebrow">Other channels</span>
@@ -76,6 +105,26 @@ const breadcrumbs = [
       </div>
     </div>
   </section>
+
+  {hasForm && (
+    <>
+      <!-- Native HubSpot embedded form. HubSpot-hosted → guaranteed capture, and
+           the form's fields/styling are editable in HubSpot without a code change. -->
+      <script src={`https://js-${HS_REGION}.hsforms.net/forms/embed/v2.js`} is:inline></script>
+      <script is:inline define:vars={{ portalId: HS_PORTAL, formId: CONTACT_FORM_GUID, region: HS_REGION }}>
+        (function () {
+          function build() {
+            if (window.hbspt && window.hbspt.forms) {
+              window.hbspt.forms.create({ region: region, portalId: portalId, formId: formId, target: '#hs-contact-form' });
+            } else {
+              setTimeout(build, 200);
+            }
+          }
+          build();
+        })();
+      </script>
+    </>
+  )}
 </PageLayout>
 
 <style>
@@ -92,7 +141,35 @@ const breadcrumbs = [
   .contact-note {
     margin-top: var(--space-4);
     font-size: var(--fs-xs);
-    color: rgba(183, 198, 216, 0.7);
+    color: var(--color-text-muted);
+  }
+  .contact-note a { color: var(--color-accent-600, #0E7FB0); text-decoration: underline; }
+
+  /* The form panel is LIGHT: HubSpot renders its embedded form in its own
+     iframe with light styling, so a light card makes it sit naturally and stay
+     presentable no matter how the form is later edited in HubSpot. When a
+     HubSpot form renders inline (not iframe), these rules also keep it tidy. */
+  .contact-primary--form {
+    background: var(--color-bg-soft);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+  .contact-primary--form h2 { color: var(--color-ink-900, #0B2440); }
+  .contact-primary--form .lead { color: var(--color-text); }
+  .contact-primary--form .eyebrow { color: var(--color-accent-600, #0E7FB0); }
+  .hs-contact-form { margin-top: var(--space-5); min-height: 320px; }
+  .hs-contact-form :global(iframe) { width: 100% !important; }
+  /* Inline-render fallback styling (applies only if the form is set to raw HTML). */
+  .hs-contact-form :global(.hs-form-field) { margin-bottom: var(--space-4); }
+  .hs-contact-form :global(.hs-input) {
+    width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: var(--radius-md);
+    border: 1px solid var(--color-border); background: #fff; font-size: var(--fs-sm); font-family: inherit;
+  }
+  .hs-contact-form :global(textarea.hs-input) { min-height: 120px; resize: vertical; }
+  .hs-contact-form :global(.hs-button) {
+    margin-top: var(--space-2); padding: 13px 22px; border: none; cursor: pointer;
+    border-radius: var(--radius-md); background: var(--color-accent-500, #00B4FF); color: #04202e;
+    font-weight: 700; font-size: var(--fs-sm); font-family: inherit;
   }
   .contact-secondary {
     padding: var(--space-6);
