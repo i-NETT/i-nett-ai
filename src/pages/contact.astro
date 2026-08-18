@@ -11,13 +11,13 @@ const breadcrumbs = [
 // form is guaranteed to land in HubSpot and stays presentable/editable from
 // HubSpot without code changes.
 //
-// TODO(Nick): create the dedicated "Contact — i-nett.ai" form in HubSpot and
-// paste its GUID here. While this is empty, the page shows the booking-first
-// layout (no broken/empty form). The existing scan form can't be used here —
-// it was built for API submission and renders as an empty embed.
+// Dedicated "Contact us" HubSpot form (First/Last name, Company, Job Title,
+// Email, Phone). New-platform native embed → guaranteed capture, editable in
+// HubSpot. GUID taken from the "contact us" share link the user provided;
+// confirm against the form's Embed code if the live form ever renders empty.
 const HS_PORTAL = '39725947';
 const HS_REGION = 'na2';
-const CONTACT_FORM_GUID = '';
+const CONTACT_FORM_GUID = '3846a46b-b390-4b40-8b27-1aed32120ac1';
 const hasForm = CONTACT_FORM_GUID.length > 0;
 ---
 <PageLayout
@@ -42,7 +42,13 @@ const hasForm = CONTACT_FORM_GUID.length > 0;
               person on our team will get back to you. Prefer to talk it through? Book a
               30-minute consultation instead.
             </p>
-            <div id="hs-contact-form" class="hs-contact-form"></div>
+            <div
+              id="hs-contact-form"
+              class="hs-contact-form hs-form-frame"
+              data-region={HS_REGION}
+              data-form-id={CONTACT_FORM_GUID}
+              data-portal-id={HS_PORTAL}
+            ></div>
             <p class="contact-note">
               <a href={SITE.bookingUrl} target="_blank" rel="noopener">Or book a 30-minute consultation &rarr;</a>
             </p>
@@ -108,21 +114,10 @@ const hasForm = CONTACT_FORM_GUID.length > 0;
 
   {hasForm && (
     <>
-      <!-- Native HubSpot embedded form. HubSpot-hosted → guaranteed capture, and
-           the form's fields/styling are editable in HubSpot without a code change. -->
-      <script src={`https://js-${HS_REGION}.hsforms.net/forms/embed/v2.js`} is:inline></script>
-      <script is:inline define:vars={{ portalId: HS_PORTAL, formId: CONTACT_FORM_GUID, region: HS_REGION }}>
-        (function () {
-          function build() {
-            if (window.hbspt && window.hbspt.forms) {
-              window.hbspt.forms.create({ region: region, portalId: portalId, formId: formId, target: '#hs-contact-form' });
-            } else {
-              setTimeout(build, 200);
-            }
-          }
-          build();
-        })();
-      </script>
+      <!-- Native HubSpot embedded form (new forms platform). The per-portal
+           loader auto-renders any .hs-form-frame div by its data-form-id.
+           HubSpot-hosted → guaranteed capture, editable in HubSpot without code. -->
+      <script src={`https://js-${HS_REGION}.hsforms.net/forms/embed/${HS_PORTAL}.js`} defer is:inline></script>
     </>
   )}
 </PageLayout>
