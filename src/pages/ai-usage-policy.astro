@@ -5,43 +5,61 @@ import { SITE } from '@lib/site';
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
-  { name: 'AI Usage Policy Template', url: '/ai-usage-policy' },
+  { name: 'AI Usage Policy Framework', url: '/ai-usage-policy' },
 ];
 
-const DOWNLOAD = '/downloads/ai-usage-policy-template.docx';
+// The kit files live in /public/downloads. The policy itself is readable in
+// full on this page (free, no gate); the kit — the letters and the rollout
+// checklist — is revealed after an email, captured to HubSpot.
+const KIT = [
+  { file: '/downloads/AI-Usage-Policy-Framework.docx', title: 'AI Usage Policy & Governance Framework', blurb: 'The full policy in an editable Word document, ready to brand and adopt.' },
+  { file: '/downloads/Employee-AI-Acknowledgment-Letter.docx', title: 'Employee Acknowledgment Letter', blurb: 'A short letter every employee reads and signs, so the policy is enforceable.' },
+  { file: '/downloads/Vendor-AI-Agreement-Letter.docx', title: 'Third-Party Vendor Letter', blurb: 'A written AI data-handling commitment for every vendor that touches your data.' },
+  { file: '/downloads/AI-Policy-Rollout-Checklist.docx', title: '30-Day Rollout Checklist', blurb: 'A step-by-step plan to put the whole framework in place in about a month.' },
+];
 
 const faqs = [
   {
     q: 'What is an AI usage policy?',
-    a: 'An AI usage policy is a written document that defines how employees may use AI tools at work, which tools are approved, what data may and may not be entered into them, and who is accountable for compliant use.',
+    a: 'An AI usage policy is a written document that defines how employees may use AI tools at work, which tools are approved, what data may and may not be entered into them, and who is accountable for compliant use. This framework goes further, adding the employee and vendor letters that make the policy enforceable and a checklist to roll it out.',
   },
   {
-    q: 'Is this template free?',
-    a: 'Yes. You can read it in full on this page and download an editable copy. There is no paywall and no required form.',
+    q: 'Is this framework free?',
+    a: 'Yes. The full policy is readable on this page with no gate. The downloadable kit — the editable policy, the employee and vendor letters, and the rollout checklist — is free in exchange for a work email.',
   },
   {
-    q: 'Can we use this as-is?',
-    a: 'It is a strong starting point built for a mid-sized business. Review it with qualified counsel and adapt the specifics, such as your approved tools and data tiers, before you adopt it.',
+    q: 'Can we adopt it as-is?',
+    a: 'It is a strong, deployable starting point for a mid-sized business. Replace the bracketed placeholders with your specifics and review with qualified counsel before you adopt it.',
+  },
+  {
+    q: 'How is a policy actually enforced?',
+    a: 'A policy you cannot see being followed is a hope, not a control. Every i-NETT managed plan includes Shadow AI Discovery — visibility into which AI tools your team is using, and the ability to block unapproved LLMs from being accessed at all — so the rules are backed by technology, not just goodwill.',
   },
 ];
 
+// The policy, in full, for the page. Mirrors the framework document.
 const sections = [
-  { h: '1. Purpose and scope', b: 'This policy governs the use of artificial intelligence tools by all employees, contractors, and anyone acting on behalf of the company. It applies to any AI tool used for company work, whether company-provided or publicly available.' },
-  { h: '2. Acceptable use', b: 'Employees may use approved AI tools to draft, summarize, research, analyze, and assist with properly classified information. AI output must be reviewed by a qualified person before it is sent to a client, filed, billed, or used in a decision. AI assists. People remain accountable.' },
-  { h: '3. Approved tools', b: 'Only tools on the company approved-tools list may be used for company work. Tools cleared for confidential or regulated data are listed separately from tools acceptable only for public, non-sensitive content. If a tool is not on the list, it is not approved. Request additions through the defined process.' },
-  { h: '4. Data classification', b: 'Public information may be used with any approved tool. Internal information may be used with approved tools only. Confidential information is restricted to tools cleared for confidential data. Regulated information, including protected health information and personal data under GDPR or CCPA, is never entered into a public or personal AI tool. The bright line: never paste client, patient, financial, or personally identifiable information into a public or personal AI account.' },
-  { h: '5. Human review and accountability', b: 'A qualified person must review AI-generated output before it is used externally or in any decision about a person. The individual who signs, sends, or acts on the output owns the result.' },
-  { h: '6. Vendor and data-residency requirements', b: 'Any AI tool that handles company data must not train its models on your inputs, must isolate your data from other customers, and must operate under contractual terms the company has reviewed. New AI vendors must be approved before they handle company data.' },
-  { h: '7. Incident handling', b: 'If sensitive data is exposed to an unapproved tool, report it promptly through the defined channel. The goal is fast containment, not blame. Early reporting limits exposure.' },
-  { h: '8. Ownership and review', b: 'A named owner maintains this policy and the approved-tools list. The policy is reviewed on a set cadence, at least twice per year, and updated as tools and regulations change.' },
+  { h: '1. Purpose & scope', b: 'This policy governs the use of AI tools by everyone who acts on behalf of the company — employees, contractors, temporary staff, and volunteers. It applies to any AI tool used for company work, whether company-provided or public, and whether used on a company or personal device. Its purpose: let our people use AI to do better work, faster, while making sure no confidential, regulated, or client information leaves our control through a tool nobody approved and nobody is watching.' },
+  { h: '2. Roles & responsibilities', b: 'A named policy owner (not a committee) owns this document and the approved-tools list, approves new tools, and oversees incidents. Leadership sponsors and models compliant use. Managers ensure their teams have read and signed the acknowledgment. Employees use only approved tools and report incidents. IT / i-NETT configures and maintains the enforcement layer.' },
+  { h: '3. Acceptable use', b: 'Employees are encouraged to use approved AI tools to draft, summarize, research, translate, analyze, and automate repetitive work — provided the information is properly classified for that tool and the output is reviewed by a qualified person before use. The guiding principle: AI assists; people remain accountable.' },
+  { h: '4. Prohibited use', b: 'Never enter confidential, regulated, or client data into a public or personal AI account. Never use tools that are not on the approved list, present unreviewed output as verified, let AI make a final decision about a person without human judgment, or attempt to bypass the company’s AI monitoring or blocking controls.' },
+  { h: '5. Approved tools', b: 'Only tools on the approved-tools list may be used for company work. Tools cleared for confidential or regulated data are listed separately from tools acceptable only for public, non-sensitive content. If a tool is not on the list, it is not approved — request additions through the policy owner.' },
+  { h: '6. Data classification standard', b: 'The most important section. Public information may be used with any approved tool. Internal information: approved business-tier tools only. Confidential information: only tools contractually cleared for it. Regulated information (PHI, PII, card data, government data) is never entered into public or personal AI — only a cleared, compliant environment. Map these tiers to the regimes you answer to (HIPAA, GDPR, CCPA, PCI, CMMC).' },
+  { h: '7. Human review & accountability', b: 'A qualified person must review AI output before it is sent to a client, filed, billed, published, or used in any decision about a person. Whoever signs, sends, or acts on the output owns the result. Accountability stays with people, not the model.' },
+  { h: '8. Third-party & vendor requirements', b: 'Every vendor that touches company data must confirm, in writing, that they will not put your data into ungoverned AI, will not let providers train on your data, isolate your data, disclose any AI processing, meet your residency requirements, and notify you of incidents. New AI vendors are approved before they handle company data.' },
+  { h: '9. Data residency, retention & privacy', b: 'AI tools that handle company data must operate under reviewed contractual terms, must not retain inputs beyond what is necessary, and must meet residency requirements. Regulated data requires the appropriate agreement (e.g., a HIPAA Business Associate Agreement) before processing.' },
+  { h: '10. Monitoring & enforcement', b: 'Most organizations cannot produce a list, today, of every AI tool their team used this week — which means the usage they worry about is the usage they cannot see. Enforcement makes the policy real: visibility into what is in use, and the ability to block what should not be. See Shadow AI Discovery below.' },
+  { h: '11. Incident handling', b: 'If sensitive data is exposed to an unapproved tool, report it promptly through the defined channel. The goal is fast containment, not blame; early reporting limits exposure. The policy owner logs the incident and ties into the company’s existing breach-response process where regulated data is involved.' },
+  { h: '12. Training & enablement', b: 'Skill with AI is the difference between a toy and a tool. Every employee should receive practical coaching on using approved tools well and safely, and new hires complete it as part of onboarding.' },
+  { h: '13. Ownership & review', b: 'The named owner maintains this policy and the approved-tools list. It is reviewed at least every six months, and immediately after any material change in tools, regulation, or an incident. Each version is dated and numbered.' },
 ];
 ---
 <PageLayout
-  title="Free AI Usage Policy Template for Business | Fortify AI by i-NETT"
-  description="A free, deployable AI usage policy template for mid-sized businesses. Read it in full and download an editable copy. Acceptable use, data rules, vendor terms, and more."
-  eyebrow="Free template"
-  pageHeading="An AI usage policy your team can deploy today."
-  pageLead="A practical, deployable AI usage policy template for a mid-sized business. Read it in full below, then download an editable copy to adapt for your organization."
+  title="Free AI Usage Policy Framework, Letters & Rollout Kit | Fortify AI by i-NETT"
+  description="A complete, deployable AI governance framework for business: the full policy free on this page, plus editable employee and vendor letters and a 30-day rollout checklist. Enforced by Shadow AI Discovery."
+  eyebrow="Free framework"
+  pageHeading="The complete AI governance framework your team can deploy in 30 days."
+  pageLead="Not just a policy — a framework. The full policy is free to read below. The kit adds the employee and vendor letters that make it enforceable, plus a step-by-step rollout plan."
   breadcrumbs={breadcrumbs}
   faqs={faqs}
   speakable={['.answer-block__a']}
@@ -51,21 +69,20 @@ const sections = [
       <div class="pol-wrap">
         <AnswerBlock label="What this is">
           <p>
-            This is a free, ready-to-adapt AI usage policy for a mid-sized business. It defines
-            acceptable use, an approved-tools list, a data classification standard for what may never
-            be pasted into public AI tools, a human-review rule, vendor and data-residency
-            requirements, incident handling, and ownership. Read it in full below or download an
-            editable copy.
+            This is a complete, adopt-ready AI governance framework for a mid-sized business that wants
+            the productivity of AI without the exposure. It has four parts: the <strong>policy</strong> (readable
+            in full below), an <strong>employee acknowledgment letter</strong>, a <strong>third-party vendor letter</strong>,
+            and a <strong>30-day rollout checklist</strong> — and it is built to be enforceable, not aspirational.
           </p>
         </AnswerBlock>
 
-        <div class="pol-download">
-          <a class="btn btn-accent btn-lg" href={DOWNLOAD} download>Download the editable template</a>
-          <a class="pol-related" href="/ai-governance/corporate-ai-usage-policy">Read the full guide to what belongs in an AI usage policy</a>
+        <div class="pol-jump">
+          <a class="btn btn-accent btn-lg" href="#kit">Get the full kit &darr;</a>
+          <a class="pol-related" href="/ai-governance/corporate-ai-usage-policy">Read the guide to what belongs in an AI usage policy</a>
         </div>
 
         <div class="pol-doc">
-          <h2>AI Usage Policy Template</h2>
+          <h2>AI Usage Policy — read it in full</h2>
           {sections.map((s) => (
             <section class="pol-section">
               <h3>{s.h}</h3>
@@ -73,41 +90,164 @@ const sections = [
             </section>
           ))}
 
+          <div class="pol-bright">
+            <span class="pol-bright__label">The bright line</span>
+            <p>
+              Never paste client, patient, financial, or personally identifiable information into a
+              public or personal AI account. If in doubt, treat it as confidential — use only a tool
+              cleared for that data, or ask the policy owner first.
+            </p>
+          </div>
+
           <p class="pol-footer">
-            This template is a starting point, not legal advice. Review with qualified counsel before
+            This framework is a starting point, not legal advice. Review with qualified counsel before
             adoption in your organization.
           </p>
         </div>
 
+        <div class="pol-enforce">
+          <span class="pol-enforce__eyebrow">Enforcement · included on every i-NETT managed plan</span>
+          <h2>Shadow AI Discovery</h2>
+          <p>
+            A policy you cannot see being followed is a hope, not a control. Every i-NETT managed plan
+            includes the enforcement layer that makes this framework real:
+          </p>
+          <ul class="pol-enforce__list">
+            <li><strong>Visibility</strong> — see exactly which AI tools and LLMs your team is using, across company and personal accounts.</li>
+            <li><strong>Control</strong> — block specific or unapproved LLMs from being accessed at all, so sensitive data can’t leave through a tool you never approved.</li>
+            <li><strong>Enablement</strong> — keep the tools that help, shut off the ones that put you at risk, and give every employee a compliant path that’s also the convenient one.</li>
+          </ul>
+        </div>
+
+        <!-- Email-gated kit -->
+        <div class="pol-kit" id="kit">
+          <div class="pol-kit__head">
+            <h2>Get the full deployable kit</h2>
+            <p>Four editable documents — the policy, the employee letter, the vendor letter, and the 30-day rollout checklist. Free, in exchange for a work email.</p>
+          </div>
+
+          <form class="pol-form" id="kitForm" novalidate>
+            <div class="pol-form__row">
+              <input class="pol-input" id="kitName" type="text" autocomplete="name" placeholder="Your name" required />
+              <input class="pol-input" id="kitCompany" type="text" autocomplete="organization" placeholder="Company" />
+            </div>
+            <div class="pol-form__row">
+              <input class="pol-input" id="kitEmail" type="email" autocomplete="email" placeholder="Work email" required />
+              <button class="btn btn-accent btn-lg" type="submit" id="kitSubmit">Send me the kit &rarr;</button>
+            </div>
+            <p class="pol-form__err" id="kitErr" hidden></p>
+            <p class="pol-form__fine">No spam. We’ll email you occasionally about AI governance; unsubscribe anytime.</p>
+          </form>
+
+          <div class="pol-downloads" id="kitDownloads" hidden>
+            <p class="pol-downloads__ready">✓ Your kit is ready — download below. We’ve also noted your interest so we can help if you’d like.</p>
+            {KIT.map((k) => (
+              <a class="pol-dl" href={k.file} download>
+                <span class="pol-dl__title">{k.title}</span>
+                <span class="pol-dl__blurb">{k.blurb}</span>
+                <span class="pol-dl__cta">Download .docx &darr;</span>
+              </a>
+            ))}
+          </div>
+        </div>
+
         <div class="pol-cta">
-          <p>Want help configuring AI safely, not just writing the policy?</p>
-          <a class="btn btn-accent" href={SITE.bookingUrl} target="_blank" rel="noopener">Book a 30 minute consultation</a>
+          <p>Want us to configure the enforcement layer and stand this up for you, not just hand you the documents?</p>
+          <a class="btn btn-accent" href={SITE.bookingUrl} target="_blank" rel="noopener">Book a 30-minute consultation</a>
         </div>
       </div>
     </div>
   </section>
 </PageLayout>
 
+<script>
+  // HubSpot Forms API (public endpoint — no secret). Captures the lead, then
+  // reveals the downloads. Reveal happens even if capture fails, so a backend
+  // hiccup never withholds a free kit from a real prospect.
+  const PORTAL = '39725947';
+  const FORM_GUID = '75738be2-d147-4aac-8eb0-0250a37c46a6'; // TODO: swap for a dedicated "AI Policy Kit" form when created
+
+  const form = document.getElementById('kitForm') as HTMLFormElement | null;
+  const err = document.getElementById('kitErr') as HTMLElement | null;
+  const downloads = document.getElementById('kitDownloads') as HTMLElement | null;
+  const submit = document.getElementById('kitSubmit') as HTMLButtonElement | null;
+
+  function val(id: string) { return (document.getElementById(id) as HTMLInputElement | null)?.value.trim() || ''; }
+
+  function reveal() {
+    if (form) form.hidden = true;
+    if (downloads) { downloads.hidden = false; downloads.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }
+  }
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = val('kitEmail');
+    const name = val('kitName');
+    if (!email || !/.+@.+\..+/.test(email)) {
+      if (err) { err.textContent = 'Please enter a valid work email.'; err.hidden = false; }
+      return;
+    }
+    if (err) err.hidden = true;
+    if (submit) { submit.disabled = true; submit.textContent = 'Sending…'; }
+
+    const parts = name.split(/\s+/);
+    const fields = [
+      { name: 'email', value: email },
+      { name: 'firstname', value: parts.shift() || '' },
+      { name: 'lastname', value: parts.join(' ') },
+      { name: 'company', value: val('kitCompany') },
+      { name: 'message', value: 'Downloaded the AI Usage Policy Framework kit' },
+    ].filter((f) => f.value !== '');
+
+    try {
+      await fetch(`https://api.hsforms.com/submissions/v3/integration/submit/${PORTAL}/${FORM_GUID}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fields,
+          context: { pageUri: location.href, pageName: 'AI Usage Policy Framework' },
+        }),
+      });
+    } catch (_) { /* best-effort — never block the download */ }
+
+    reveal();
+  });
+</script>
+
 <style>
   .pol-wrap { max-width: var(--container-narrow); margin: 0 auto; }
-  .pol-download { margin: var(--space-5) 0 var(--space-8); display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }
+  .pol-jump { margin: var(--space-5) 0 var(--space-8); display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }
   .pol-related { color: var(--color-ink-600); text-decoration: underline; font-size: var(--fs-sm); }
-  .pol-doc {
-    padding: var(--space-7);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-bg-soft);
-  }
+  .pol-doc { padding: var(--space-7); border: 1px solid var(--color-border); border-radius: var(--radius-lg); background: var(--color-bg-soft); }
   .pol-doc h2 { font-size: var(--fs-xl); margin-bottom: var(--space-5); }
   .pol-section { margin-bottom: var(--space-5); }
   .pol-section h3 { font-size: var(--fs-md); margin-bottom: var(--space-2); }
-  .pol-footer {
-    margin-top: var(--space-6);
-    padding-top: var(--space-5);
-    border-top: 1px solid var(--color-border);
-    font-size: var(--fs-sm);
-    color: var(--color-text-muted);
-    font-style: italic;
-  }
+  .pol-bright { margin-top: var(--space-6); border-left: 4px solid var(--color-accent-500); background: var(--color-bg); padding: var(--space-4) var(--space-5); border-radius: 0 var(--radius-md) var(--radius-md) 0; }
+  .pol-bright__label { display: block; font: 700 12px/1 var(--font-mono, monospace); letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-accent-600, #0E7FB0); margin-bottom: var(--space-2); }
+  .pol-bright p { margin: 0; font-weight: 500; }
+  .pol-footer { margin-top: var(--space-6); padding-top: var(--space-5); border-top: 1px solid var(--color-border); font-size: var(--fs-sm); color: var(--color-text-muted); font-style: italic; }
+
+  .pol-enforce { margin-top: var(--space-8); padding: var(--space-6) var(--space-7); border-radius: var(--radius-lg); background: linear-gradient(160deg, rgba(0,180,255,0.07), rgba(0,180,255,0.01)); border: 1px solid var(--color-border); }
+  .pol-enforce__eyebrow { display: block; font: 700 12px/1 var(--font-mono, monospace); letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-accent-600, #0E7FB0); margin-bottom: var(--space-3); }
+  .pol-enforce h2 { font-size: var(--fs-xl); margin-bottom: var(--space-3); }
+  .pol-enforce__list { margin: var(--space-4) 0 0; padding-left: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
+
+  .pol-kit { margin-top: var(--space-8); padding: var(--space-7); border-radius: var(--radius-lg); background: var(--color-ink-900, #0B2440); color: #fff; }
+  .pol-kit__head h2 { font-size: var(--fs-xl); margin-bottom: var(--space-2); color: #fff; }
+  .pol-kit__head p { color: rgba(255,255,255,0.72); margin-bottom: var(--space-5); }
+  .pol-form__row { display: flex; gap: var(--space-3); margin-bottom: var(--space-3); flex-wrap: wrap; }
+  .pol-input { flex: 1 1 220px; padding: 13px 15px; border-radius: var(--radius-md); border: 1px solid rgba(255,255,255,0.22); background: rgba(255,255,255,0.06); color: #fff; font-size: var(--fs-sm); }
+  .pol-input::placeholder { color: rgba(255,255,255,0.5); }
+  .pol-form__row .btn { flex: 0 0 auto; }
+  .pol-form__err { color: #FF9B8A; font-size: var(--fs-sm); margin: 0 0 var(--space-2); }
+  .pol-form__fine { color: rgba(255,255,255,0.5); font-size: 12px; margin: var(--space-2) 0 0; }
+
+  .pol-downloads__ready { color: #7BE0A8; font-weight: 600; margin-bottom: var(--space-4); }
+  .pol-dl { display: block; padding: var(--space-4) var(--space-5); margin-bottom: var(--space-3); border-radius: var(--radius-md); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); text-decoration: none; transition: background .15s, border-color .15s; }
+  .pol-dl:hover { background: rgba(255,255,255,0.1); border-color: var(--color-accent-400, #7FD4F2); }
+  .pol-dl__title { display: block; color: #fff; font-weight: 700; font-size: var(--fs-md); }
+  .pol-dl__blurb { display: block; color: rgba(255,255,255,0.66); font-size: var(--fs-sm); margin: 4px 0 6px; }
+  .pol-dl__cta { display: inline-block; color: var(--color-accent-400, #7FD4F2); font-weight: 600; font-size: var(--fs-sm); }
+
   .pol-cta { margin-top: var(--space-8); display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }
 </style>
