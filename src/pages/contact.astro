@@ -42,13 +42,14 @@ const hasForm = CONTACT_FORM_GUID.length > 0;
               person on our team will get back to you. Prefer to talk it through? Book a
               30-minute consultation instead.
             </p>
-            <div
-              id="hs-contact-form"
-              class="hs-contact-form hs-form-frame"
-              data-region={HS_REGION}
-              data-form-id={CONTACT_FORM_GUID}
-              data-portal-id={HS_PORTAL}
-            ></div>
+            <div id="hs-contact-form" class="hs-contact-form">
+              <div
+                class="hs-form-frame"
+                data-region={HS_REGION}
+                data-form-id={CONTACT_FORM_GUID}
+                data-portal-id={HS_PORTAL}
+              ></div>
+            </div>
             <p class="contact-note">
               <a href={SITE.bookingUrl} target="_blank" rel="noopener">Or book a 30-minute consultation &rarr;</a>
             </p>
@@ -152,20 +153,13 @@ const hasForm = CONTACT_FORM_GUID.length > 0;
   .contact-primary--form h2 { color: var(--color-ink-900, #0B2440); }
   .contact-primary--form .lead { color: var(--color-text); }
   .contact-primary--form .eyebrow { color: var(--color-accent-600, #0E7FB0); }
-  .hs-contact-form { margin-top: var(--space-5); min-height: 320px; }
-  .hs-contact-form :global(iframe) { width: 100% !important; }
-  /* Inline-render fallback styling (applies only if the form is set to raw HTML). */
-  .hs-contact-form :global(.hs-form-field) { margin-bottom: var(--space-4); }
-  .hs-contact-form :global(.hs-input) {
-    width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: var(--radius-md);
-    border: 1px solid var(--color-border); background: #fff; font-size: var(--fs-sm); font-family: inherit;
-  }
-  .hs-contact-form :global(textarea.hs-input) { min-height: 120px; resize: vertical; }
-  .hs-contact-form :global(.hs-button) {
-    margin-top: var(--space-2); padding: 13px 22px; border: none; cursor: pointer;
-    border-radius: var(--radius-md); background: var(--color-accent-500, #00B4FF); color: #04202e;
-    font-weight: 700; font-size: var(--fs-sm); font-family: inherit;
-  }
+  /* Wrapper only provides spacing. The inner .hs-form-frame is left entirely to
+     HubSpot's embed loader, which sizes its own iframe — do NOT constrain its
+     height or the form gets clipped. A small min-height avoids a layout jump
+     while the form loads. */
+  .hs-contact-form { margin-top: var(--space-5); min-height: 220px; }
+  .hs-contact-form :global(.hs-form-frame) { width: 100%; }
+  .hs-contact-form :global(iframe) { width: 100% !important; border: 0; }
   .contact-secondary {
     padding: var(--space-6);
     background: var(--color-bg-soft);
