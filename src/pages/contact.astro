@@ -153,13 +153,14 @@ const hasForm = CONTACT_FORM_GUID.length > 0;
   .contact-primary--form h2 { color: var(--color-ink-900, #0B2440); }
   .contact-primary--form .lead { color: var(--color-text); }
   .contact-primary--form .eyebrow { color: var(--color-accent-600, #0E7FB0); }
-  /* Wrapper only provides spacing. The inner .hs-form-frame is left entirely to
-     HubSpot's embed loader, which sizes its own iframe — do NOT constrain its
-     height or the form gets clipped. A small min-height avoids a layout jump
-     while the form loads. */
-  .hs-contact-form { margin-top: var(--space-5); min-height: 220px; }
+  /* HubSpot's new-platform embed does not fire its iframe auto-resize inside
+     this layout (the iframe stays at height:100% and collapses to ~320px,
+     clipping most of the form). Give the iframe a min-height floor that fits
+     the current ~6-field form (~942px) with buffer, so the whole form shows.
+     If the form's fields change materially in HubSpot, adjust this floor. */
+  .hs-contact-form { margin-top: var(--space-5); }
   .hs-contact-form :global(.hs-form-frame) { width: 100%; }
-  .hs-contact-form :global(iframe) { width: 100% !important; border: 0; }
+  .hs-contact-form :global(iframe) { width: 100% !important; min-height: 980px; height: auto !important; border: 0; }
   .contact-secondary {
     padding: var(--space-6);
     background: var(--color-bg-soft);
