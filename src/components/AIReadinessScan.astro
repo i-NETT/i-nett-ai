@@ -324,6 +324,38 @@ import { SITE } from '../lib/site';
   .scan__opt.selected .scan__optMark::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--color-accent-500); }
   .scan__skip { margin-top: var(--space-4); max-width: 300px; margin-left: auto; margin-right: auto; }
 
+  /* Task inventory grid — dense, multi-column, so the breadth of automatable
+     work is the visual message. Auto-fills to as many columns as fit. */
+  .scan__taskGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 8px; }
+  .scan__task {
+    display: flex; align-items: center; gap: 10px; padding: 11px 13px; text-align: left;
+    background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md);
+    color: var(--color-text); cursor: pointer; font-size: var(--fs-sm); font-weight: 500; line-height: 1.3;
+    box-shadow: var(--shadow-sm);
+    transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out),
+                transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
+  }
+  .scan__task:hover { border-color: var(--color-accent-500); background: var(--color-bg-soft); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .scan__task.selected { border-color: var(--color-accent-500); background: rgba(0,180,255,0.08); color: var(--color-ink-800); font-weight: 600; }
+  .scan__task .scan__optMark { width: 18px; height: 18px; }
+  .scan__task:hover .scan__optMark { border-color: var(--color-accent-400); }
+  .scan__task.selected .scan__optMark { border-color: var(--color-accent-500); }
+  .scan__task.selected .scan__optMark::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--color-accent-500); }
+  .scan__taskLabel { flex: 1; }
+
+  /* Per-area headcount steppers */
+  .scan__hcRow { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 14px;
+    background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); margin-bottom: 8px; }
+  .scan__hcLabel { font-size: var(--fs-sm); font-weight: 600; color: var(--color-ink-800); }
+  .scan__hcCtl { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .scan__hcBtn { width: 32px; height: 32px; border-radius: var(--radius-sm); border: 1px solid var(--color-border-strong);
+    background: var(--color-bg-soft); color: var(--color-ink-800); font-size: 18px; line-height: 1; cursor: pointer; font-weight: 600; }
+  .scan__hcBtn:hover { border-color: var(--color-accent-500); color: var(--color-accent-500); }
+  .scan__hcNum { width: 56px; height: 32px; text-align: center; border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+    font-size: var(--fs-sm); font-weight: 600; color: var(--color-ink-800); background: var(--color-bg); -moz-appearance: textfield; }
+  .scan__hcNum::-webkit-outer-spin-button, .scan__hcNum::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .scan__hcEmpty { padding: 20px; text-align: center; color: var(--color-text-muted); font-size: var(--fs-sm); }
+
   /* ===== Analysis theater (dark console accent) ===== */
   .scan__consoleHead { font-family: var(--font-mono); font-size: 12px; color: var(--color-accent-500); letter-spacing: 2px; margin-bottom: var(--space-4); min-height: 20px; }
   .scan__consoleHead::before { content: "\25AE "; }
@@ -503,6 +535,10 @@ import { SITE } from '../lib/site';
   // code path that emails prospects can also be exercised from /report-pdf-test
   // without pushing a real lead through HubSpot.
   import { buildInternalReportPages, htmlPagesToPdf, imageToDataUri, reportDocument } from '../lib/reportPdf';
+  import {
+    computeRecoverable, tasksForIndustry, AREA_LABEL, METHODOLOGY_NOTE,
+    type TaskArea, type RecoverableResult,
+  } from '../lib/taskInventory';
 
   // The report is computed ENTIRELY in this component from the answers, so it
   // renders complete even if the backend is unreachable. The Worker call only
@@ -513,7 +549,7 @@ import { SITE } from '../lib/site';
 
   let capturedLead: any = null; // for booking prefill after unlock
 
-  type Q = { id: string; label: string; type: 'single' | 'multi'; note?: string; options: string[] };
+  type Q = { id: string; label: string; type: 'single' | 'multi' | 'tasks' | 'headcount'; note?: string; options?: string[] };
 
   const QUESTIONS: Q[] = [
     { id: 'industry', label: 'What industry are you in?', type: 'single', options: ['Healthcare / Medical', 'Legal', 'Financial services', 'Professional services', 'Manufacturing', 'Retail / E-commerce', 'Real estate', 'Education / Schools', 'Nonprofit', 'Government / Public sector', 'Technology', 'Other'] },
@@ -525,7 +561,8 @@ import { SITE } from '../lib/site';
     { id: 'data', label: 'Does your organization handle any of the following?', note: 'Select all that apply', type: 'multi', options: ['Medical or health records', 'Card payments', 'Legal or financial documents', 'Government / CJIS / CMMC data', 'Children’s data', 'Personal data (PII) of customers', 'None of these'] },
     { id: 'vendorterms', label: 'Do your outside vendors have a written AI agreement with you?', note: 'Bookkeeper, marketing, IT — anyone who touches your data', type: 'single', options: ['Yes — it’s in our vendor contracts', 'No — we’ve never asked', 'Not sure'] },
     { id: 'insurance', label: 'Do you know whether your cyber insurance covers an AI-related incident?', type: 'single', options: ['Yes — we’ve confirmed it', 'We have cyber insurance but haven’t checked AI specifically', 'We don’t have cyber insurance', 'Not sure'] },
-    { id: 'busywork', label: 'How many hours a week does your team spend on repetitive admin?', note: 'Scheduling, data entry, follow-up, copy-paste between systems', type: 'single', options: ['Less than 5', '5-15', '15-40', 'More than 40', 'No idea'] },
+    { id: 'tasks', label: 'Which of these does your team still do by hand?', note: 'Tick all that apply — most people are surprised by the total', type: 'tasks' },
+    { id: 'headcount', label: 'Roughly how many people spend time on this kind of work?', note: 'A rough number is fine — it’s how we size the opportunity', type: 'headcount' },
     { id: 'goal', label: 'What would make the biggest difference in the next 12 months?', type: 'single', options: ['Get governance & security right first', 'Roll AI out to the whole team', 'Build custom agents for our workflows', 'Cut time on repetitive work', 'Not sure yet'] },
   ];
 
@@ -544,10 +581,11 @@ import { SITE } from '../lib/site';
     'Technology': ['Personal data (PII) of customers', 'Legal or financial documents'],
   };
   function orderedOptions(q: Q): string[] {
-    if (q.id !== 'data') return q.options;
+    const opts = q.options || [];
+    if (q.id !== 'data') return opts;
     const none = 'None of these';
-    const pri = (DATA_PRIORITY[answers.industry] || []).filter((o) => q.options.indexOf(o) >= 0);
-    const rest = q.options.filter((o) => pri.indexOf(o) < 0 && o !== none);
+    const pri = (DATA_PRIORITY[answers.industry] || []).filter((o) => opts.indexOf(o) >= 0);
+    const rest = opts.filter((o) => pri.indexOf(o) < 0 && o !== none);
     return pri.concat(rest).concat([none]);
   }
 
@@ -593,8 +631,11 @@ import { SITE } from '../lib/site';
   };
   type Report = {
     score: number; band: string; shadowLevel: string; shadowSub: string; flags: string[];
-    hoursVal: string; hoursSub: string; findings: Finding[]; fallbackNote: string;
+    hoursVal: string; hoursSub: string; rec: RecoverableResult; findings: Finding[]; fallbackNote: string;
   };
+
+  // Whole-dollar USD, e.g. $245,200. Used across the report and the PDF.
+  const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
 
   const answers: Record<string, any> = {};
   let currentQ = 0, scanProg = 0, blinkOn = true;
@@ -654,6 +695,73 @@ import { SITE } from '../lib/site';
   $('calClose')?.addEventListener('click', () => $('calOverlay')?.classList.remove('active'));
   $('calOverlay')?.addEventListener('click', function (this: HTMLElement, e) { if (e.target === this) this.classList.remove('active'); });
 
+  // Areas that have at least one task ticked — drives which headcount rows show.
+  function activeAreas(): TaskArea[] {
+    const ids: string[] = answers.tasks || [];
+    const areas: TaskArea[] = [];
+    tasksForIndustry(answers.industry || 'Other').forEach((t) => {
+      if (ids.indexOf(t.id) >= 0 && areas.indexOf(t.area) < 0) areas.push(t.area);
+    });
+    return areas;
+  }
+
+  function toggleTask(id: string) {
+    const cur: string[] = answers.tasks || [];
+    const i = cur.indexOf(id);
+    answers.tasks = i >= 0 ? cur.filter((x: string) => x !== id) : cur.concat([id]);
+    loadQ();
+  }
+
+  // The task inventory — vertical tasks float to the top, then the base 20.
+  // Shown as a dense grid so the breadth of what AI can take off their plate is
+  // the visual message.
+  function renderTaskGrid() {
+    const tasks = tasksForIndustry(answers.industry || 'Other');
+    const sel: string[] = answers.tasks || [];
+    ($('optionsList') as HTMLElement).innerHTML =
+      '<div class="scan__taskGrid">' + tasks.map((t) => {
+        const on = sel.indexOf(t.id) >= 0;
+        return '<button class="scan__task' + (on ? ' selected' : '') + '" data-taskid="' + t.id + '">'
+          + '<span class="scan__optMark">' + (on ? '▪' : '○') + '</span><span class="scan__taskLabel">' + t.label + '</span></button>';
+      }).join('') + '</div>';
+    document.querySelectorAll('#optionsList .scan__task').forEach((btn) => {
+      btn.addEventListener('click', () => toggleTask((btn as HTMLElement).dataset.taskid || ''));
+    });
+  }
+
+  // One "how many people do this work?" stepper per area they selected tasks in.
+  // Deliberately NOT "how many people in accounting?" — a 6-person department
+  // doesn't have 6 people doing AP, and asking the honest question gets the
+  // honest multiplier.
+  function renderHeadcount() {
+    const areas = activeAreas();
+    const hc = answers.headcount || (answers.headcount = {});
+    const list = $('optionsList') as HTMLElement;
+    if (!areas.length) {
+      list.innerHTML = '<div class="scan__hcEmpty">No tasks selected — that’s fine, you can continue.</div>';
+      return;
+    }
+    list.innerHTML = areas.map((area) => {
+      const v = hc[area] || 1;
+      return '<div class="scan__hcRow" data-area="' + area + '">'
+        + '<span class="scan__hcLabel">' + AREA_LABEL[area] + '</span>'
+        + '<span class="scan__hcCtl">'
+        + '<button class="scan__hcBtn" data-step="-1" type="button" aria-label="fewer people">−</button>'
+        + '<input class="scan__hcNum" type="number" min="1" max="500" value="' + v + '" inputmode="numeric" aria-label="people in ' + AREA_LABEL[area] + '">'
+        + '<button class="scan__hcBtn" data-step="1" type="button" aria-label="more people">+</button>'
+        + '</span></div>';
+    }).join('');
+    document.querySelectorAll('#optionsList .scan__hcRow').forEach((row) => {
+      const area = (row as HTMLElement).dataset.area as TaskArea;
+      const input = row.querySelector('.scan__hcNum') as HTMLInputElement;
+      const setVal = (n: number) => { const c = Math.max(1, Math.min(500, Math.round(n) || 1)); input.value = String(c); hc[area] = c; };
+      input.addEventListener('input', () => { const n = Number(input.value); if (Number.isFinite(n) && input.value !== '') hc[area] = Math.max(1, Math.min(500, Math.round(n))); });
+      input.addEventListener('blur', () => setVal(Number(input.value)));
+      row.querySelectorAll('.scan__hcBtn').forEach((b) =>
+        b.addEventListener('click', () => setVal((hc[area] || 1) + Number((b as HTMLElement).dataset.step))));
+    });
+  }
+
   function loadQ() {
     const q = QUESTIONS[currentQ];
     ($('progressFill') as HTMLElement).style.width = ((currentQ / QUESTIONS.length) * 100) + '%';
@@ -663,6 +771,24 @@ import { SITE } from '../lib/site';
     if (q.note) { ne.textContent = q.note; ne.style.display = 'block'; } else { ne.style.display = 'none'; }
     ($('qDots') as HTMLElement).innerHTML = QUESTIONS.map((_, i) =>
       '<div class="scan__qDot' + (i < currentQ ? ' done' : i === currentQ ? ' active' : '') + '"></div>').join('');
+    const nb = $('multiNextBtn') as HTMLElement;
+
+    if (q.type === 'tasks') {
+      renderTaskGrid();
+      const n = (answers.tasks || []).length;
+      nb.style.display = 'flex';
+      nb.innerHTML = (n > 0 ? 'Continue (' + n + ' selected) ' : 'Skip ') + '<span aria-hidden="true">→</span>';
+      nb.onclick = advanceQ;
+      return;
+    }
+    if (q.type === 'headcount') {
+      renderHeadcount();
+      nb.style.display = 'flex';
+      nb.innerHTML = 'Continue <span aria-hidden="true">→</span>';
+      nb.onclick = advanceQ;
+      return;
+    }
+
     const sel = answers[q.id] || (q.type === 'multi' ? [] : '');
     ($('optionsList') as HTMLElement).innerHTML = orderedOptions(q).map((opt) => {
       const isSel = q.type === 'multi' ? sel.indexOf(opt) >= 0 : sel === opt;
@@ -672,7 +798,6 @@ import { SITE } from '../lib/site';
     document.querySelectorAll('#optionsList .scan__opt').forEach((btn) => {
       btn.addEventListener('click', () => handleAnswer(decodeURIComponent((btn as HTMLElement).dataset.val || '')));
     });
-    const nb = $('multiNextBtn') as HTMLElement;
     if (q.type === 'multi') {
       nb.style.display = 'flex';
       nb.innerHTML = sel.length > 0 ? 'Continue (' + sel.length + ' selected) <span aria-hidden="true">→</span>' : 'Skip <span aria-hidden="true">→</span>';
@@ -760,8 +885,11 @@ import { SITE } from '../lib/site';
     insureExp += a.vendorterms === 'No — we’ve never asked' ? 4 : a.vendorterms === 'Not sure' ? 3 : 0;
     insureExp = Math.min(14, insureExp);
 
-    // Agent / automation opportunity (0-12)
-    const agentOpp = a.busywork === 'More than 40' ? 12 : a.busywork === '15-40' ? 9 : a.busywork === '5-15' ? 6 : a.busywork === 'No idea' ? 6 : 2;
+    // Agent / automation opportunity (0-12), derived from the task inventory —
+    // the recoverable weekly hours the tasks they ticked add up to (capped per
+    // area so it stays believable). See lib/taskInventory.
+    const rec = computeRecoverable(a.tasks || [], a.headcount || {}, a.industry || 'Other');
+    const agentOpp = rec.weeklyHigh >= 40 ? 12 : rec.weeklyHigh >= 20 ? 9 : rec.weeklyHigh >= 8 ? 6 : rec.weeklyHigh > 0 ? 3 : 2;
 
     // Risk floors. A single catastrophic gap should establish a MINIMUM score
     // regardless of how the additive components land — one client file pasted
@@ -793,8 +921,8 @@ import { SITE } from '../lib/site';
       : a.ai === 'We’ve banned it' ? 'Bans push AI use underground rather than stopping it'
       : aiManaged ? 'Usage governed by clear rules — keep them current' : 'Unknown usage profile';
 
-    const hoursVal = a.busywork === 'Less than 5' ? '2–4 hrs' : a.busywork === '5-15' ? '5–12 hrs' : a.busywork === '15-40' ? '12–30 hrs' : a.busywork === 'More than 40' ? '30+ hrs' : 'Untracked';
-    const hoursSub = a.busywork === 'No idea' ? 'Not knowing this number is itself a cost' : 'Repetitive work a custom agent could take off your team';
+    const hoursVal = rec.weeklyHigh > 0 ? rec.weeklyLow + '–' + rec.weeklyHigh + ' hrs' : 'Untracked';
+    const hoursSub = rec.weeklyHigh > 0 ? 'Up to ' + usd(rec.annualHigh) + '/yr recoverable with automation' : 'Pick the tasks your team does by hand to size this';
 
     const cands: Finding[] = [];
 
@@ -854,13 +982,14 @@ import { SITE } from '../lib/site';
     }
 
     // CUSTOM AGENTS (pillar 3)
-    const busyW = a.busywork === 'More than 40' ? 14 : a.busywork === '15-40' ? 10 : a.busywork === '5-15' ? 6 : a.busywork === 'No idea' ? 7 : 2;
+    const busyW = rec.weeklyHigh >= 40 ? 14 : rec.weeklyHigh >= 20 ? 10 : rec.weeklyHigh >= 8 ? 6 : rec.weeklyHigh > 0 ? 4 : 2;
     if (busyW >= 6 || a.goal === 'Build custom agents for our workflows') {
       cands.push({
         w: busyW, sev: 'info', tag: 'CUSTOM AGENTS',
-        head: a.busywork === 'No idea' ? 'You can’t reclaim hours you aren’t counting.'
-          : 'Your team is spending ' + hoursVal + ' a week on work a custom agent should do.',
-        detail: 'Scheduling, data entry, follow-up, and copy-paste between systems are exactly the tasks a purpose-built agent removes first — and the tasks your best people resent most.',
+        head: rec.weeklyHigh > 0
+          ? 'Your team is spending up to ' + rec.weeklyHigh + ' hours a week — ' + usd(rec.annualHigh) + ' a year — on work a custom agent should do.'
+          : 'The repetitive work your team does by hand is exactly what agents are built for.',
+        detail: 'Invoice processing, data entry, follow-up, resume screening, and copy-paste between systems are exactly the tasks a purpose-built agent removes first — and the tasks your best people resent most. Estimates are deliberately conservative; the real number is usually higher.',
         fix: 'We build custom agents with you — starting with the task your team hates most — so the hours go back into work that actually earns.',
       });
     }
@@ -915,7 +1044,7 @@ import { SITE } from '../lib/site';
       + (findings.length ? 'The place to start is the top finding: ' + findings[0].head.toLowerCase().replace(/\.$/, '') + '. ' : '')
       + 'None of this requires a big IT project — the first Fortify AI deployment is usually live within 30 days, and a free 30-minute review turns this report into that plan.';
 
-    return { score, band, shadowLevel, shadowSub, flags, hoursVal, hoursSub, findings, fallbackNote };
+    return { score, band, shadowLevel, shadowSub, flags, hoursVal, hoursSub, rec, findings, fallbackNote };
   }
 
   /* ===== Scan theater + AI note ===== */
@@ -1178,7 +1307,7 @@ import { SITE } from '../lib/site';
       cta: { headline: 'These need to be walked through, not skimmed.', body: 'In a free 30-minute working session we go through each finding, what it means for you, and what to do first.', url: bookingUrl(), company: lead.company || '' },
       scanInputs: answerRows().map((a) => ({ question: a.label, answer: a.value })),
       preparedBy: { name: 'Nick Dreyfus', title: 'Vice President, Business Development · i-NETT / Fortify AI', contactLine: 'i-nett.ai · (858) 337-2866 · nickd@i-nett.com' },
-      disclaimer: 'This report is for general information only and is meant to be reviewed together with the i-NETT team. It is not a formal audit or assessment, and not legal, compliance, security, or insurance advice. Scores and estimates are illustrative and industry-informed; any frameworks named may or may not apply to your organization.',
+      disclaimer: METHODOLOGY_NOTE + ' This report is for general information only and is meant to be reviewed together with the i-NETT team. It is not a formal audit or assessment, and not legal, compliance, security, or insurance advice. Scores and estimates are illustrative and industry-informed; any frameworks named may or may not apply to your organization.',
     };
   }
 
@@ -1298,8 +1427,20 @@ import { SITE } from '../lib/site';
   }
 
   function answerRows(): { label: string; value: string }[] {
+    // Map task ids -> readable labels for the scan-inputs appendix.
+    const taskLabels: Record<string, string> = {};
+    tasksForIndustry(answers.industry || 'Other').forEach((t) => { taskLabels[t.id] = t.label; });
     return QUESTIONS.map((q) => {
       const v = answers[q.id];
+      if (q.id === 'tasks') {
+        const ids: string[] = Array.isArray(v) ? v : [];
+        return { label: 'Tasks still done by hand', value: ids.length ? ids.map((id) => taskLabels[id] || id).join(', ') : '(none selected)' };
+      }
+      if (q.id === 'headcount') {
+        const hc = v && typeof v === 'object' ? v : {};
+        const parts = Object.keys(hc).map((area) => (AREA_LABEL[area as TaskArea] || area) + ': ' + hc[area]);
+        return { label: 'People doing that work', value: parts.length ? parts.join(' · ') : '(not specified)' };
+      }
       return { label: q.label, value: Array.isArray(v) ? (v.join(', ') || '(skipped)') : (v || '(skipped)') };
     });
   }

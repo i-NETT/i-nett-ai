@@ -46,6 +46,7 @@
       import { sampleReport, type ReportData, type ReportFinding } from '../lib/report';
       import { htmlPagesToPdf, buildInternalReportPages, imageToDataUri, auditPageOverflow } from '../lib/reportPdf';
       import { renderReport } from '../lib/report';
+      import { METHODOLOGY_NOTE } from '../lib/taskInventory';
 
       const log = (m: string) => { document.getElementById('log')!.textContent += m + '\n'; };
 
@@ -56,6 +57,9 @@
         d.preparedFor.company = 'Southern California Orthopaedic & Sports Medicine Associates';
         d.cta.company = d.preparedFor.company;
         d.analystNote = d.analystNote + ' ' + d.analystNote;
+        // Mirror what the live scan does — prepend the sourced methodology note
+        // to the disclaimer — so the overflow audit exercises the real footer length.
+        d.disclaimer = METHODOLOGY_NOTE + ' ' + d.disclaimer;
         d.scanInputs = d.scanInputs.concat([
           { question: 'Board reporting cadence', answer: 'Quarterly, with an annual risk summary' },
           { question: 'Existing security vendor', answer: 'In-house, supplemented by an external MSP' },
