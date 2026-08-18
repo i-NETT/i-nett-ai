@@ -120,8 +120,15 @@ export type RecoverableResult = {
   annualHigh: number;
   rate: number;
   byArea: AreaBreakdown[];
+  byTask: TaskBreakdown[];
   anyCapped: boolean;
 };
+
+// Per-task hours for the "where your team's week goes" itemized list. Within a
+// capped area the per-task hours are scaled down proportionally so they still
+// sum to the (capped) area total — otherwise the line items wouldn't add up to
+// the headline number.
+export type TaskBreakdown = { id: string; label: string; area: TaskArea; low: number; high: number };
 
 // selectedIds: task ids the prospect ticked.
 // peopleByArea: how many people spend time on that area's work (their answer).
@@ -138,6 +145,7 @@ export function computeRecoverable(
   const rate = rateFor(industry);
 
   const areas = Array.from(new Set(picked.map((t) => t.area))) as TaskArea[];
+  const byTask: TaskBreakdown[] = [];
   const byArea: AreaBreakdown[] = areas.map((area) => {
     const people = Math.max(1, Math.round(peopleByArea[area] || 1));
     const areaTasks = picked.filter((t) => t.area === area);
@@ -146,8 +154,18 @@ export function computeRecoverable(
     const cap = CAP_FRACTION * people * 40;
     const low = Math.min(rawLow, cap);
     const high = Math.min(rawHigh, cap);
+    // Distribute the (possibly capped) area total back across its tasks so the
+    // itemized list still sums to the headline.
+    const scaleLow = rawLow > 0 ? low / rawLow : 0;
+    const scaleHigh = rawHigh > 0 ? high / rawHigh : 0;
+    areaTasks.forEach((t) => byTask.push({
+      id: t.id, label: t.label, area,
+      low: Math.round(t.hrsLow * people * scaleLow),
+      high: Math.round(t.hrsHigh * people * scaleHigh),
+    }));
     return { area, people, low, high, capped: rawHigh > cap };
   });
+  byTask.sort((a, b) => b.high - a.high);
 
   const weeklyLow = Math.round(byArea.reduce((s, a) => s + a.low, 0));
   const weeklyHigh = Math.round(byArea.reduce((s, a) => s + a.high, 0));
@@ -158,6 +176,7 @@ export function computeRecoverable(
     annualHigh: Math.round(weeklyHigh * rate * WORK_WEEKS),
     rate,
     byArea,
+    byTask,
     anyCapped: byArea.some((a) => a.capped),
   };
 }

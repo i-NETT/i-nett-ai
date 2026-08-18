@@ -38,6 +38,9 @@ export type ReportData = {
   scanInputs: { question: string; answer: string }[];
   preparedBy: { name: string; title: string; contactLine: string };
   disclaimer: string;
+  // Optional itemized recoverable-hours breakdown. When present it replaces the
+  // page-1 navigation block (same footprint, so no overflow change).
+  recoverable?: { heroText: string; subText: string; items: { label: string; hrs: string }[] };
 };
 
 export type RenderOpts = {
@@ -91,6 +94,28 @@ export function sectionHeader(title: string, badge: string): string {
 // print-consultancy report than a SaaS dashboard status chip.
 function pill(text: string, color: string, onDark?: boolean): string {
   return `<span style="display:inline-block;${arch};font-weight:700;font-size:8pt;letter-spacing:0.09em;color:${color};border:1px solid ${color};padding:3px 10px;${onDark ? '' : `background:${color}14;`}">${esc(text)}</span>`;
+}
+
+// Compact itemized "where the week goes" band for page 1 — kept to two lines
+// (a header/hero row + one flowing line of the top items) so it fits the same
+// vertical slot as the navigation block it replaces without pushing the footer
+// off the page. The methodology/citation lives in the page-3 disclaimer, so it
+// is intentionally not repeated here. `subText` is unused in this compact form,
+// retained on the type for the on-screen (flexible-height) version.
+export function recoverableBand(r: { heroText: string; subText: string; items: { label: string; hrs: string }[] }): string {
+  const shown = r.items.slice(0, 5);
+  const extra = r.items.length - shown.length;
+  // "CRM data entry up to 36 · AP up to 18 · …", each item's hrs stripped of the
+  // repeated "hrs/wk" suffix (stated once at the end) to keep the line short.
+  const parts = shown.map((i) => `${esc(i.label)} <span style="${mono};font-weight:700;color:${C.link};">${esc(i.hrs.replace(/\s*hrs\/wk$/, ''))}</span>`);
+  if (extra > 0) parts.push(`<span style="color:${C.muted};">+${extra} more</span>`);
+  return `<div style="margin:0.28in 0.55in 0;border-top:1px solid ${C.border};padding-top:0.14in;">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:0.2in;margin-bottom:7px;">
+      <span style="${mono};font-size:6.6pt;letter-spacing:0.14em;color:${C.link};">WHERE YOUR TEAM’S WEEK GOES</span>
+      <span style="${arch};font-weight:700;font-size:11pt;color:${C.navy};white-space:nowrap;">${esc(r.heroText)}</span>
+    </div>
+    <div style="font-size:8pt;line-height:1.5;color:${C.body};">${parts.join(' &nbsp;·&nbsp; ')} <span style="color:${C.muted};">hrs/wk</span></div>
+  </div>`;
 }
 
 export function findingCard(f: ReportFinding, glow: boolean): string {
@@ -225,11 +250,11 @@ export function renderReport(d: ReportData, opts: RenderOpts = {}): string {
 
     <div style="margin:0.2in 0.55in 0;">${d.findings[0] ? findingCard(d.findings[0], glow) : ''}</div>
 
-    <div style="margin:0.3in 0.55in 0;border-top:1px solid ${C.border};padding-top:0.16in;display:grid;grid-template-columns:repeat(3,1fr);gap:0.24in;">
+    ${d.recoverable ? recoverableBand(d.recoverable) : `<div style="margin:0.3in 0.55in 0;border-top:1px solid ${C.border};padding-top:0.16in;display:grid;grid-template-columns:repeat(3,1fr);gap:0.24in;">
       <div style="display:flex;flex-direction:column;gap:4px;"><span style="${mono};font-size:6.6pt;letter-spacing:0.14em;color:${C.cyan};">PAGE 02</span><span style="font-size:8.6pt;font-weight:500;color:${C.ink};">Findings 02–03 &amp; the rest of your report</span><span style="font-size:7.8pt;line-height:1.4;color:${C.muted};">Third-party access, cyber insurance, and the areas reviewed in session.</span></div>
       <div style="display:flex;flex-direction:column;gap:4px;"><span style="${mono};font-size:6.6pt;letter-spacing:0.14em;color:${C.cyan};">PAGE 03</span><span style="font-size:8.6pt;font-weight:500;color:${C.ink};">Analyst note, next step &amp; scan inputs</span><span style="font-size:7.8pt;line-height:1.4;color:${C.muted};">Where to start, how to book the review, and every answer this was based on.</span></div>
       <div style="display:flex;flex-direction:column;gap:4px;"><span style="${mono};font-size:6.6pt;letter-spacing:0.14em;color:${C.cyan};">HOW TO READ THIS</span><span style="font-size:8.6pt;font-weight:500;color:${C.ink};">Findings are ordered by priority</span><span style="font-size:7.8pt;line-height:1.4;color:${C.muted};">Each one pairs what we saw with the specific action we recommend.</span></div>
-    </div>
+    </div>`}
     ${footer(company, 1)}
   </section>`;
 

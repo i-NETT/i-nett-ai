@@ -60,6 +60,21 @@
         // Mirror what the live scan does — prepend the sourced methodology note
         // to the disclaimer — so the overflow audit exercises the real footer length.
         d.disclaimer = METHODOLOGY_NOTE + ' ' + d.disclaimer;
+        // And the page-1 recoverable breakdown band (8 items -> exercises the "+N more" roll-up).
+        d.recoverable = {
+          heroText: 'Up to $295,200 / year',
+          subText: '40–82 hrs/wk · $72/hr fully loaded · conservative estimate',
+          items: [
+            { label: 'CRM data entry & call logging', hrs: 'up to 36 hrs/wk' },
+            { label: 'Processing supplier invoices (AP)', hrs: 'up to 18 hrs/wk' },
+            { label: 'Chasing overdue invoices (AR)', hrs: 'up to 12 hrs/wk' },
+            { label: 'Compiling recurring reports', hrs: 'up to 10 hrs/wk' },
+            { label: 'Screening resumes & shortlisting', hrs: 'up to 6 hrs/wk' },
+            { label: 'Building quotes & proposals', hrs: 'up to 5 hrs/wk' },
+            { label: 'Lead research & qualification', hrs: 'up to 5 hrs/wk' },
+            { label: 'Meeting notes & action items', hrs: 'up to 4 hrs/wk' },
+          ],
+        };
         d.scanInputs = d.scanInputs.concat([
           { question: 'Board reporting cadence', answer: 'Quarterly, with an annual risk summary' },
           { question: 'Existing security vendor', answer: 'In-house, supplemented by an external MSP' },

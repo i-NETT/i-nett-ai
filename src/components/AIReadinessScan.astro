@@ -126,6 +126,17 @@ import { SITE } from '../lib/site';
               </div>
             </div>
 
+            <!-- Recoverable-capacity hero + itemized breakdown (populated in showResults) -->
+            <div class="scan__recover" id="recoverBox" style="display:none">
+              <div class="scan__recoverTop">
+                <span class="scan__recoverLabel">RECOVERABLE CAPACITY</span>
+                <span class="scan__recoverHero" id="recoverHero">&mdash;</span>
+                <span class="scan__recoverSub" id="recoverSub"></span>
+              </div>
+              <div class="scan__recoverList" id="recoverList"></div>
+              <div class="scan__recoverNote" id="recoverNote"></div>
+            </div>
+
             <div class="scan__findingsLabel" id="shownLabel">YOUR TOP FINDINGS &mdash; AND WHAT TO DO ABOUT EACH</div>
             <div id="findingsList"></div>
 
@@ -355,6 +366,19 @@ import { SITE } from '../lib/site';
     font-size: var(--fs-sm); font-weight: 600; color: var(--color-ink-800); background: var(--color-bg); -moz-appearance: textfield; }
   .scan__hcNum::-webkit-outer-spin-button, .scan__hcNum::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
   .scan__hcEmpty { padding: 20px; text-align: center; color: var(--color-text-muted); font-size: var(--fs-sm); }
+
+  /* Recoverable-capacity hero + itemized breakdown on the results screen. */
+  .scan__recover { border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: 18px 20px; margin: 4px 0 22px;
+    background: linear-gradient(160deg, rgba(0,180,255,0.06), rgba(0,180,255,0.01)); }
+  .scan__recoverTop { display: flex; flex-direction: column; gap: 2px; margin-bottom: 14px; }
+  .scan__recoverLabel { font: 600 11px/1 var(--font-mono, monospace); letter-spacing: 0.14em; color: var(--color-accent-600, #0E7FB0); }
+  .scan__recoverHero { font-size: clamp(28px, 5vw, 40px); font-weight: 800; line-height: 1.05; color: var(--color-ink-900, #0B2440); letter-spacing: -0.02em; margin-top: 4px; }
+  .scan__recoverSub { font-size: var(--fs-sm); color: var(--color-text-muted); margin-top: 4px; }
+  .scan__recoverList { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px 18px; }
+  .scan__recoverItem { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 5px 0; border-bottom: 1px dashed var(--color-border); font-size: var(--fs-sm); }
+  .scan__recoverItem span:first-child { color: var(--color-ink-800, #0C1622); }
+  .scan__recoverItem span:last-child { font-weight: 700; color: var(--color-accent-600, #0E7FB0); white-space: nowrap; }
+  .scan__recoverNote { font-size: 11px; line-height: 1.45; color: var(--color-text-muted); margin-top: 12px; }
 
   /* ===== Analysis theater (dark console accent) ===== */
   .scan__consoleHead { font-family: var(--font-mono); font-size: 12px; color: var(--color-accent-500); letter-spacing: 2px; margin-bottom: var(--space-4); min-height: 20px; }
@@ -1157,6 +1181,23 @@ import { SITE } from '../lib/site';
     ($('hoursVal') as HTMLElement).textContent = r.hoursVal;
     ($('hoursSub') as HTMLElement).textContent = r.hoursSub;
 
+    // Recoverable hero + itemized "where the week goes" breakdown.
+    const rec = r.rec;
+    const recBox = $('recoverBox') as HTMLElement;
+    if (rec && rec.weeklyHigh > 0) {
+      ($('recoverHero') as HTMLElement).textContent = 'Up to ' + usd(rec.annualHigh) + ' / year';
+      ($('recoverSub') as HTMLElement).textContent =
+        rec.weeklyLow + '–' + rec.weeklyHigh + ' hours a week, at $' + rec.rate + '/hr fully loaded — a deliberately conservative estimate.';
+      ($('recoverList') as HTMLElement).innerHTML = rec.byTask
+        .filter((t) => t.high > 0)
+        .map((t) => '<div class="scan__recoverItem"><span>' + t.label + '</span><span>up to ' + t.high + ' hrs/wk</span></div>')
+        .join('');
+      ($('recoverNote') as HTMLElement).textContent = METHODOLOGY_NOTE;
+      recBox.style.display = 'block';
+    } else {
+      recBox.style.display = 'none';
+    }
+
     const cv = genericView(r.findings);
     const shown = cv.findings.slice(0, SHOWN_FINDINGS);
     const hidden = [...cv.findings.slice(SHOWN_FINDINGS), ...cv.teasers, ...cv.locked];
@@ -1308,6 +1349,11 @@ import { SITE } from '../lib/site';
       scanInputs: answerRows().map((a) => ({ question: a.label, answer: a.value })),
       preparedBy: { name: 'Nick Dreyfus', title: 'Vice President, Business Development · i-NETT / Fortify AI', contactLine: 'i-nett.ai · (858) 337-2866 · nickd@i-nett.com' },
       disclaimer: METHODOLOGY_NOTE + ' This report is for general information only and is meant to be reviewed together with the i-NETT team. It is not a formal audit or assessment, and not legal, compliance, security, or insurance advice. Scores and estimates are illustrative and industry-informed; any frameworks named may or may not apply to your organization.',
+      recoverable: r.rec.weeklyHigh > 0 ? {
+        heroText: 'Up to ' + usd(r.rec.annualHigh) + ' / year',
+        subText: r.rec.weeklyLow + '–' + r.rec.weeklyHigh + ' hrs/wk · $' + r.rec.rate + '/hr fully loaded · conservative estimate',
+        items: r.rec.byTask.filter((t) => t.high > 0).map((t) => ({ label: t.label, hrs: 'up to ' + t.high + ' hrs/wk' })),
+      } : undefined,
     };
   }
 
