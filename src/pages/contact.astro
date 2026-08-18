@@ -11,13 +11,19 @@ const breadcrumbs = [
 // form is guaranteed to land in HubSpot and stays presentable/editable from
 // HubSpot without code changes.
 //
-// Dedicated "Contact us" HubSpot form (First/Last name, Company, Job Title,
-// Email, Phone). New-platform native embed → guaranteed capture, editable in
-// HubSpot. GUID taken from the "contact us" share link the user provided;
-// confirm against the form's Embed code if the live form ever renders empty.
+// Contact form embed — temporarily OFF (booking-first layout shows instead).
+//
+// Two issues to resolve before re-enabling:
+//  1. Need the RIGHT form GUID. The GUID 3846a46b-... provided as the "contact
+//     us" form is actually a newsletter form ("Access Our Exclusive Content"),
+//     not a contact form.
+//  2. HubSpot's new-platform embed loader does NOT reveal the form on this site
+//     — it leaves the iframe visibility:hidden / height:0 pending a resize
+//     handshake that never completes. The reliable alternative is to iframe the
+//     form's hosted share URL directly at a fixed height.
 const HS_PORTAL = '39725947';
 const HS_REGION = 'na2';
-const CONTACT_FORM_GUID = '3846a46b-b390-4b40-8b27-1aed32120ac1';
+const CONTACT_FORM_GUID = '';
 const hasForm = CONTACT_FORM_GUID.length > 0;
 ---
 <PageLayout
