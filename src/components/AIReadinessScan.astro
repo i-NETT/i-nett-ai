@@ -1377,12 +1377,56 @@ import { SITE } from '../lib/site';
   }
 
 
+  // Capture the lead into HubSpot FROM THE BROWSER — not via the Worker.
+  // Server-side Forms API submissions (the Worker, curl) return 200 but HubSpot
+  // silently drops them as bot traffic, so scan leads were never becoming
+  // contacts. A browser submission, with the hubspotutk tracking cookie for
+  // context, lands reliably (verified 2026-08-18). Best-effort: never blocks
+  // the report the visitor already has.
+  const HS_PORTAL = '39725947';
+  const HS_FORM_GUID = '75738be2-d147-4aac-8eb0-0250a37c46a6';
+  function cookie(name: string): string {
+    const m = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return m ? decodeURIComponent(m.pop() as string) : '';
+  }
+  async function hubspotCapture(lead: any, r: Report, reportUrl: string) {
+    const parts = String(lead.name || '').trim().split(/\s+/);
+    const preferred = Array.isArray(lead.contact) ? lead.contact.join(', ') : (lead.contact || '');
+    const message = `Fortify AI Readiness Scan — exposure ${r.score}/100 (${r.band}). `
+      + `Shadow AI: ${r.shadowLevel}. Compliance flags: ${(r.flags || []).join('; ') || 'none'}. `
+      + (preferred ? `Preferred contact: ${preferred}. ` : '') + `Report: ${reportUrl}`;
+    const fields = [
+      { name: 'email', value: lead.email || '' },
+      { name: 'firstname', value: parts.shift() || '' },
+      { name: 'lastname', value: parts.join(' ') },
+      { name: 'company', value: lead.company || '' },
+      { name: 'phone', value: lead.cell || '' },
+      { name: 'website', value: lead.website || '' },
+      { name: 'message', value: message },
+    ].filter((f) => f.value !== '');
+    const hutk = cookie('hubspotutk');
+    try {
+      await fetch(`https://api.hsforms.com/submissions/v3/integration/submit/${HS_PORTAL}/${HS_FORM_GUID}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fields,
+          context: { ...(hutk ? { hutk } : {}), pageUri: location.href, pageName: 'AI Readiness Scan' },
+        }),
+      });
+    } catch (e) { /* best-effort */ }
+  }
+
   async function submitLead(lead: any) {
     const r = currentReport as Report;
     const note = aiNote || r.fallbackNote;
     const clientOpts: ReportOpts = genericView(r.findings);
     const clientData = buildClientReportData(lead, r, note, clientOpts);
     const reportUrl = location.origin + '/report#r=' + encodeReport(clientData);
+
+    // Fire the browser-side HubSpot capture immediately — this is what actually
+    // creates the contact. The Worker call below still runs for email + PDF.
+    hubspotCapture(lead, r, reportUrl);
 
     // Two logo treatments, because the two render paths have different needs.
     // The Worker's headless Chromium fetches https:// assets normally, so it
