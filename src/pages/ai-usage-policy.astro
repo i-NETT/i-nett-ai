@@ -16,16 +16,18 @@ const KIT = [
   { file: '/downloads/Employee-AI-Acknowledgment-Letter.docx', title: 'Employee Acknowledgment Letter', blurb: 'A short letter every employee reads and signs, so the policy is enforceable.' },
   { file: '/downloads/Vendor-AI-Agreement-Letter.docx', title: 'Third-Party Vendor Letter', blurb: 'A written AI data-handling commitment for every vendor that touches your data.' },
   { file: '/downloads/AI-Policy-Rollout-Checklist.docx', title: '30-Day Rollout Checklist', blurb: 'A step-by-step plan to put the whole framework in place in about a month.' },
+  { file: '/downloads/AI-Fundamentals-Staff-Quiz.docx', title: 'AI Fundamentals Staff Quiz', blurb: 'A 12-question training quiz with answer key, to certify staff before they get AI access.' },
+  { file: '/downloads/Client-AI-Processing-Addendum.docx', title: 'Client AI Processing Addendum', blurb: 'A short-form addendum to attach to client MSAs/DPAs covering how AI handles their data.' },
 ];
 
 const faqs = [
   {
     q: 'What is an AI usage policy?',
-    a: 'An AI usage policy is a written document that defines how employees may use AI tools at work, which tools are approved, what data may and may not be entered into them, and who is accountable for compliant use. This framework goes further, adding the employee and vendor letters that make the policy enforceable and a checklist to roll it out.',
+    a: 'An AI usage policy is a written document that defines how employees may use AI tools at work, which tools are approved, what data may and may not be entered into them, and who is accountable for compliant use. This framework goes further, adding the employee and vendor letters that make it enforceable, a rollout checklist, a staff training quiz, and a client processing addendum.',
   },
   {
     q: 'Is this framework free?',
-    a: 'Yes. The full policy is readable on this page with no gate. The downloadable kit — the editable policy, the employee and vendor letters, and the rollout checklist — is free in exchange for a work email.',
+    a: 'Yes. The full policy is readable on this page with no gate. The downloadable kit — the editable policy, the employee and vendor letters, the rollout checklist, the staff training quiz, and the client processing addendum — is free in exchange for a work email.',
   },
   {
     q: 'Can we adopt it as-is?',
@@ -43,7 +45,7 @@ const sections = [
   { h: '2. Roles & responsibilities', b: 'A named policy owner (not a committee) owns this document and the approved-tools list, approves new tools, and oversees incidents. Leadership sponsors and models compliant use. Managers ensure their teams have read and signed the acknowledgment. Employees use only approved tools and report incidents. IT / i-NETT configures and maintains the enforcement layer.' },
   { h: '3. Acceptable use', b: 'Employees are encouraged to use approved AI tools to draft, summarize, research, translate, analyze, and automate repetitive work — provided the information is properly classified for that tool and the output is reviewed by a qualified person before use. The guiding principle: AI assists; people remain accountable.' },
   { h: '4. Prohibited use', b: 'Never enter confidential, regulated, or client data into a public or personal AI account. Never use tools that are not on the approved list, present unreviewed output as verified, let AI make a final decision about a person without human judgment, or attempt to bypass the company’s AI monitoring or blocking controls.' },
-  { h: '5. Approved tools', b: 'Only tools on the approved-tools list may be used for company work. Tools cleared for confidential or regulated data are listed separately from tools acceptable only for public, non-sensitive content. If a tool is not on the list, it is not approved — request additions through the policy owner.' },
+  { h: '5. Approved AI tools', b: 'Only tools approved in the policy may be used for company work. Our standard is deliberately strict: i-NETT Fortify AI is the only tool approved out of the box, because it is secure by default. Every other tool — including Microsoft 365 Copilot — must pass an AI readiness assessment and be configured and approved in writing first. Copilot in particular surfaces whatever a user can already open, so a misconfigured OneDrive/SharePoint/Teams estate can make HR, accounting, and other files instantly discoverable; that oversharing must be remediated before rollout. Any tool not on the approved list is prohibited, and personal or consumer AI accounts may never be used for company work.' },
   { h: '6. Data classification standard', b: 'The most important section. Public information may be used with any approved tool. Internal information: approved business-tier tools only. Confidential information: only tools contractually cleared for it. Regulated information (PHI, PII, card data, government data) is never entered into public or personal AI — only a cleared, compliant environment. Map these tiers to the regimes you answer to (HIPAA, GDPR, CCPA, PCI, CMMC).' },
   { h: '7. Human review & accountability', b: 'A qualified person must review AI output before it is sent to a client, filed, billed, published, or used in any decision about a person. Whoever signs, sends, or acts on the output owns the result. Accountability stays with people, not the model.' },
   { h: '8. Third-party & vendor requirements', b: 'Every vendor that touches company data must confirm, in writing, that they will not put your data into ungoverned AI, will not let providers train on your data, isolate your data, disclose any AI processing, meet your residency requirements, and notify you of incidents. New AI vendors are approved before they handle company data.' },
@@ -70,9 +72,9 @@ const sections = [
         <AnswerBlock label="What this is">
           <p>
             This is a complete, adopt-ready AI governance framework for a mid-sized business that wants
-            the productivity of AI without the exposure. It has four parts: the <strong>policy</strong> (readable
+            the productivity of AI without the exposure. It has six parts: the <strong>policy</strong> (readable
             in full below), an <strong>employee acknowledgment letter</strong>, a <strong>third-party vendor letter</strong>,
-            and a <strong>30-day rollout checklist</strong> — and it is built to be enforceable, not aspirational.
+            a <strong>30-day rollout checklist</strong>, a <strong>staff training quiz</strong>, and a <strong>client processing addendum</strong> — and it is built to be enforceable, not aspirational.
           </p>
         </AnswerBlock>
 
@@ -123,7 +125,7 @@ const sections = [
         <div class="pol-kit" id="kit">
           <div class="pol-kit__head">
             <h2>Get the full deployable kit</h2>
-            <p>Four editable documents — the policy, the employee letter, the vendor letter, and the 30-day rollout checklist. Free, in exchange for a work email.</p>
+            <p>Six editable documents — the policy, the employee and vendor letters, the 30-day rollout checklist, the staff training quiz, and the client processing addendum. Free, in exchange for a work email.</p>
           </div>
 
           <form class="pol-form" id="kitForm" novalidate>
