@@ -159,8 +159,11 @@ const hasForm = CONTACT_FORM_GUID.length > 0;
      the current ~6-field form (~942px) with buffer, so the whole form shows.
      If the form's fields change materially in HubSpot, adjust this floor. */
   .hs-contact-form { margin-top: var(--space-5); }
-  .hs-contact-form :global(.hs-form-frame) { width: 100%; }
-  .hs-contact-form :global(iframe) { width: 100% !important; min-height: 980px; height: auto !important; border: 0; }
+  /* Height floor on the CONTAINER (in flow, reserves space), iframe fills it.
+     Putting the floor on the iframe instead lets it overflow a collapsed parent
+     and overlap the content below. Adjust the floor if the form's fields change. */
+  .hs-contact-form :global(.hs-form-frame) { width: 100%; min-height: 980px; }
+  .hs-contact-form :global(iframe) { width: 100% !important; height: 100% !important; border: 0; }
   .contact-secondary {
     padding: var(--space-6);
     background: var(--color-bg-soft);
