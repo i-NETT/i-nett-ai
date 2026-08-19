@@ -8,7 +8,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "build:kit": "node scripts/build-kit-zip.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.2.1",

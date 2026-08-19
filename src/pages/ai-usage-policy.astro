@@ -11,13 +11,16 @@ const breadcrumbs = [
 // The kit files live in /public/downloads. The policy itself is readable in
 // full on this page (free, no gate); the kit — the letters and the rollout
 // checklist — is revealed after an email, captured to HubSpot.
+// One-click bundle of the whole kit. Rebuild it whenever a document changes:
+// zip the six files below from /public/downloads into this archive.
+const KIT_ZIP = '/downloads/Fortify-AI-Governance-Kit.zip';
 const KIT = [
-  { file: '/downloads/AI-Usage-Policy-Framework.docx', title: 'AI Usage Policy & Governance Framework', blurb: 'The full policy in an editable Word document, ready to brand and adopt.' },
-  { file: '/downloads/Employee-AI-Acknowledgment-Letter.docx', title: 'Employee Acknowledgment Letter', blurb: 'A short letter every employee reads and signs, so the policy is enforceable.' },
-  { file: '/downloads/Vendor-AI-Agreement-Letter.docx', title: 'Third-Party Vendor Letter', blurb: 'A written AI data-handling commitment for every vendor that touches your data.' },
-  { file: '/downloads/AI-Policy-Rollout-Checklist.docx', title: '30-Day Rollout Checklist', blurb: 'A step-by-step plan to put the whole framework in place in about a month.' },
-  { file: '/downloads/AI-Fundamentals-Staff-Quiz.docx', title: 'AI Fundamentals Staff Quiz', blurb: 'A 12-question training quiz with answer key, to certify staff before they get AI access.' },
-  { file: '/downloads/Fortify-AI-Overview-One-Pager.pdf', title: 'Fortify AI — Leadership One-Pager', blurb: 'A one-page overview for the CEO and CFO: every model, one secure login, one predictable bill.' },
+  { file: '/downloads/AI-Usage-Policy-Framework.docx', fmt: 'docx', title: 'AI Usage Policy & Governance Framework', blurb: 'The full policy in an editable Word document, ready to brand and adopt.' },
+  { file: '/downloads/Employee-AI-Acknowledgment-Letter.docx', fmt: 'docx', title: 'Employee Acknowledgment Letter', blurb: 'A short letter every employee reads and signs, so the policy is enforceable.' },
+  { file: '/downloads/Vendor-AI-Agreement-Letter.docx', fmt: 'docx', title: 'Third-Party Vendor Letter', blurb: 'A written AI data-handling commitment for every vendor that touches your data.' },
+  { file: '/downloads/AI-Policy-Rollout-Checklist.docx', fmt: 'docx', title: '30-Day Rollout Checklist', blurb: 'A step-by-step plan to put the whole framework in place in about a month.' },
+  { file: '/downloads/AI-Fundamentals-Staff-Quiz.docx', fmt: 'docx', title: 'AI Fundamentals Staff Quiz', blurb: 'A 12-question training quiz with answer key, to certify staff before they get AI access.' },
+  { file: '/downloads/Fortify-AI-Executive-Overview.pdf', fmt: 'pdf', title: 'Fortify AI Executive Overview', blurb: 'The two-page leadership overview for the CEO and CFO: every top model, one secure login, one predictable bill — an AI partner, not a tool.' },
 ];
 
 const faqs = [
@@ -125,7 +128,7 @@ const sections = [
         <div class="pol-kit" id="kit">
           <div class="pol-kit__head">
             <h2>Get the full deployable kit</h2>
-            <p>Six documents — the policy, the employee and vendor letters, the 30-day rollout checklist, the staff training quiz, and a leadership one-pager. Free, in exchange for a work email.</p>
+            <p>Six documents — the policy, the employee and vendor letters, the 30-day rollout checklist, the staff training quiz, and the leadership overview — bundled in a single download. Free, in exchange for a work email.</p>
           </div>
 
           <form class="pol-form" id="kitForm" novalidate>
@@ -142,14 +145,26 @@ const sections = [
           </form>
 
           <div class="pol-downloads" id="kitDownloads" hidden>
-            <p class="pol-downloads__ready">✓ Your kit is ready — download below. We’ve also noted your interest so we can help if you’d like.</p>
-            {KIT.map((k) => (
-              <a class="pol-dl" href={k.file} download>
-                <span class="pol-dl__title">{k.title}</span>
-                <span class="pol-dl__blurb">{k.blurb}</span>
-                <span class="pol-dl__cta">Download .docx &darr;</span>
-              </a>
-            ))}
+            <p class="pol-downloads__ready">✓ Your kit is ready — grab all six documents in one download. We’ve also noted your interest so we can help if you’d like.</p>
+            <a class="pol-dl-all" href={KIT_ZIP} download>
+              <span class="pol-dl-all__main">
+                <span class="pol-dl-all__title">Download the complete kit</span>
+                <span class="pol-dl-all__sub">All six documents in one .zip — the policy, both letters, the rollout checklist, the staff quiz, and the leadership overview.</span>
+              </span>
+              <span class="pol-dl-all__cta">Download .zip &darr;</span>
+            </a>
+            <details class="pol-dl-more">
+              <summary>Prefer to grab files one at a time?</summary>
+              <div class="pol-dl-grid">
+                {KIT.map((k) => (
+                  <a class="pol-dl" href={k.file} download>
+                    <span class="pol-dl__title">{k.title}</span>
+                    <span class="pol-dl__blurb">{k.blurb}</span>
+                    <span class="pol-dl__cta">Download .{k.fmt} &darr;</span>
+                  </a>
+                ))}
+              </div>
+            </details>
           </div>
         </div>
 
@@ -245,6 +260,20 @@ const sections = [
   .pol-form__fine { color: rgba(255,255,255,0.5); font-size: 12px; margin: var(--space-2) 0 0; }
 
   .pol-downloads__ready { color: #7BE0A8; font-weight: 600; margin-bottom: var(--space-4); }
+
+  .pol-dl-all { display: flex; align-items: center; gap: var(--space-5); flex-wrap: wrap; justify-content: space-between; padding: var(--space-5) var(--space-6); border-radius: var(--radius-md); text-decoration: none; background: linear-gradient(150deg, rgba(56,182,230,0.22), rgba(56,182,230,0.06)); border: 1px solid var(--color-accent-400, #7FD4F2); transition: transform .12s, box-shadow .15s; }
+  .pol-dl-all:hover { transform: translateY(-1px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+  .pol-dl-all__main { flex: 1 1 300px; }
+  .pol-dl-all__title { display: block; color: #fff; font-weight: 700; font-size: var(--fs-lg, 1.25rem); }
+  .pol-dl-all__sub { display: block; color: rgba(255,255,255,0.72); font-size: var(--fs-sm); margin-top: 4px; }
+  .pol-dl-all__cta { flex: 0 0 auto; display: inline-block; background: var(--color-accent-400, #7FD4F2); color: #0B2440; font-weight: 700; font-size: var(--fs-sm); padding: 11px 18px; border-radius: var(--radius-md); white-space: nowrap; }
+
+  .pol-dl-more { margin-top: var(--space-4); }
+  .pol-dl-more > summary { cursor: pointer; color: rgba(255,255,255,0.66); font-size: var(--fs-sm); font-weight: 600; list-style: none; padding: var(--space-2) 0; }
+  .pol-dl-more > summary::-webkit-details-marker { display: none; }
+  .pol-dl-more > summary::before { content: '▸ '; color: var(--color-accent-400, #7FD4F2); }
+  .pol-dl-more[open] > summary::before { content: '▾ '; }
+  .pol-dl-grid { margin-top: var(--space-3); }
   .pol-dl { display: block; padding: var(--space-4) var(--space-5); margin-bottom: var(--space-3); border-radius: var(--radius-md); background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.14); text-decoration: none; transition: background .15s, border-color .15s; }
   .pol-dl:hover { background: rgba(255,255,255,0.1); border-color: var(--color-accent-400, #7FD4F2); }
   .pol-dl__title { display: block; color: #fff; font-weight: 700; font-size: var(--fs-md); }
