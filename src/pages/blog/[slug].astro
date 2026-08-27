@@ -40,9 +40,14 @@ const breadcrumbs = [
         <h1>{d.title}</h1>
         <p class="article-meta">
           {new Date(d.datePublished).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-          {d.author ? ` · ${d.author}` : ''}
+          {d.author ? ` · By ${d.author}` : ''}
         </p>
-        {d.image && <img class="article-hero" src={d.image} alt="" width="1200" height="1200" loading="eager" />}
+        {(d.authorTitle || d.source) && (
+          <p class="article-attribution">
+            {d.authorTitle}{d.authorTitle && d.source ? ' · ' : ''}{d.source ? `From ${d.source}` : ''}
+          </p>
+        )}
+        {d.image && <img class="article-hero" src={d.image} alt="" width="1536" height="1024" loading="eager" />}
         <div class="article-body">
           <Content />
         </div>
@@ -57,11 +62,44 @@ const breadcrumbs = [
   .article-wrap { max-width: var(--container-narrow); margin: 0 auto; }
   .article-wrap h1 { margin: var(--space-3) 0 var(--space-2); font-size: var(--fs-2xl); line-height: var(--lh-snug); }
   .article-meta { color: var(--color-text-muted); font-size: var(--fs-sm); margin-bottom: var(--space-6); }
-  .article-hero { width: 100%; aspect-ratio: 1 / 1; max-height: 480px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: var(--space-6); background: var(--color-bg-muted); }
+  .article-attribution {
+    margin: calc(var(--space-5) * -1) 0 var(--space-6);
+    color: var(--color-ink-600);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+  }
+  .article-hero { width: 100%; aspect-ratio: 3 / 2; max-height: 520px; object-fit: cover; border-radius: var(--radius-lg); margin-bottom: var(--space-6); background: var(--color-bg-muted); }
   .article-body :global(h2) { margin: var(--space-7) 0 var(--space-3); font-size: var(--fs-xl); }
   .article-body :global(h3) { margin: var(--space-5) 0 var(--space-2); font-size: var(--fs-lg); }
   .article-body :global(p) { margin-bottom: var(--space-4); }
   .article-body :global(ul), .article-body :global(ol) { margin: 0 0 var(--space-4) var(--space-5); }
   .article-body :global(li) { margin-bottom: var(--space-2); }
   .article-body :global(a) { color: var(--color-ink-600); text-decoration: underline; }
+  .article-body :global(.post-fig) {
+    width: min(46%, 340px);
+    margin: var(--space-2) 0 var(--space-5);
+  }
+  .article-body :global(.post-fig.left) { float: left; margin-right: var(--space-5); }
+  .article-body :global(.post-fig.right) { float: right; margin-left: var(--space-5); }
+  .article-body :global(.post-fig img) {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+  .article-body :global(.post-fig figcaption) {
+    margin-top: var(--space-2);
+    color: var(--color-text-muted);
+    font-size: var(--fs-xs);
+    line-height: var(--lh-normal);
+  }
+  .article-body::after { content: ''; display: table; clear: both; }
+  @media (max-width: 640px) {
+    .article-body :global(.post-fig),
+    .article-body :global(.post-fig.left),
+    .article-body :global(.post-fig.right) {
+      float: none;
+      width: 100%;
+      margin: var(--space-5) 0;
+    }
+  }
 </style>

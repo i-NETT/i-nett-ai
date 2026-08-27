@@ -2,7 +2,10 @@
 title: "Every Digital Dilemma Episode Now Lives Here, Plus What We Are Writing for Clients"
 description: "The i-nett.ai blog now publishes every episode of The Digital Dilemma automatically, alongside written guidance on managed AI, compliance, and deployment."
 datePublished: 2026-06-08
-author: "i-NETT"
+author: "Nick Dreyfus"
+authorTitle: "Vice President of Business Development, i-NETT"
+source: "The Digital Dilemma"
+image: "/images/blog/digital-dilemma-archive-hero.jpg"
 answerFirst: "The i-nett.ai blog now combines two things: an automatically updated archive of every Digital Dilemma podcast episode, and written articles from our team on managed AI, compliance, and deployment. New episodes appear here on their own, and new articles publish as we write them."
 ---
 

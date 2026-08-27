@@ -3,6 +3,9 @@ title: "Navigating AI: Tools, Risks, and Solutions for Leaders"
 description: "Unlock AI's potential while safeguarding your business data. Nick Dreyfus on the strengths, weaknesses, and risk profile of every major AI tool — and how Fortify AI changes the calculus for regulated firms."
 datePublished: 2026-06-26
 author: "Nick Dreyfus"
+authorTitle: "Vice President of Business Development, i-NETT"
+source: "The Digital Dilemma"
+image: "/images/blog/navigating-ai-tools-hero.jpg"
 answerFirst: "Every major AI tool (Claude, ChatGPT, Copilot, Perplexity, Gemini, Grok) is excellent at some things and weak at others, and using them in consumer form is a liability for any firm handling regulated data. Fortify AI provides a secure, isolated environment that lets a mid-market team use the best of every model without exposing client information."
 ---
 

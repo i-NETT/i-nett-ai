@@ -34,6 +34,8 @@ const blog = defineCollection({
     description: z.string(),
     datePublished: z.coerce.date(),
     author: z.string().default('i-NETT'),
+    authorTitle: z.string().optional(),
+    source: z.string().optional(),
     draft: z.boolean().default(false),
     answerFirst: z.string().optional(),
     image: z.string().optional(),

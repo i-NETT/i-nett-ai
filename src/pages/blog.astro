@@ -3,105 +3,184 @@ import PageLayout from '@layouts/PageLayout.astro';
 import { getEpisodes, stripHtml } from '@lib/podcast';
 import { getCollection } from 'astro:content';
 
-const breadcrumbs = [
-  { name: 'Home', url: '/' },
-  { name: 'Blog', url: '/blog' },
-];
-
+const breadcrumbs = [{ name: 'Home', url: '/' }, { name: 'Insights', url: '/blog' }];
 const episodes = await getEpisodes();
-const articles = (await getCollection('blog')).filter((a) => !a.data.draft);
+const articles = (await getCollection('blog')).filter((article) => !article.data.draft);
+const latestEpisode = episodes[0];
+const uploadsPlaylistId = 'UUWcdscFXqBjRG838BAFGsUw';
 
-type FeedItem = {
-  kind: 'episode' | 'article';
-  title: string;
-  description: string;
-  href: string;
-  date: Date;
-  tag: string;
-  image?: string;
-};
-
-const feed: FeedItem[] = [
-  ...episodes.map((e) => ({
-    kind: 'episode' as const,
-    title: e.title,
-    description: stripHtml(e.descriptionHtml).slice(0, 180),
-    href: `/podcast/${e.slug}`,
-    date: e.pubDate,
-    tag: e.code ? `Podcast · ${e.code}` : 'Podcast',
-    image: e.image,
+const feed = [
+  ...episodes.map((episode) => ({
+    kind: 'episode',
+    title: episode.title,
+    description: stripHtml(episode.descriptionHtml).slice(0, 190),
+    href: `/podcast/${episode.slug}`,
+    date: episode.pubDate,
+    label: episode.code ? `Episode ${episode.code}` : 'Podcast episode',
+    source: 'The Digital Dilemma',
   })),
-  ...articles.map((a) => ({
-    kind: 'article' as const,
-    title: a.data.title,
-    description: a.data.description,
-    href: `/blog/${a.id}`,
-    date: a.data.datePublished,
-    tag: 'Article',
-    image: a.data.image,
+  ...articles.map((article) => ({
+    kind: 'article',
+    title: article.data.title,
+    description: article.data.description,
+    href: `/blog/${article.id}`,
+    date: article.data.datePublished,
+    label: article.data.source ?? 'Fortify AI article',
+    source: article.data.source,
+    image: article.data.image,
   })),
 ].sort((a, b) => b.date.valueOf() - a.date.valueOf());
+
+const formatDate = (date: Date) => date.valueOf()
+  ? date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
+  : '';
 ---
 <PageLayout
-  title="Blog and Podcast | Fortify AI by i-NETT"
-  description="Every episode of The Digital Dilemma plus written guidance on managed AI, compliance, and the operational realities of deploying AI inside organizations of any size."
-  eyebrow="Insights"
-  pageHeading="The Digital Dilemma, and what we are writing about."
-  pageLead="Every podcast episode, plus articles on managed AI, compliance configuration, and the decisions that matter for business leaders."
+  title="AI Insights and The Digital Dilemma Podcast | Fortify AI by i-NETT"
+  description="Practical guidance on secure AI deployment, governance, compliance, and business operations from the Fortify AI team at i-NETT."
+  eyebrow="Fortify AI intelligence"
+  pageHeading="Make better AI decisions before they become expensive ones."
+  pageLead="Field notes, governance guidance, and candid conversations for leaders deploying AI in organizations where security and accountability matter."
   breadcrumbs={breadcrumbs}
   pageType="CollectionPage"
+  heroCta={false}
 >
-  <section class="section">
+  <section class="latest section-dark" aria-labelledby="latest-heading">
+    <div class="container latest__grid">
+      <div class="latest__copy">
+        <span class="eyebrow">Watch the latest briefing</span>
+        <h2 id="latest-heading">The Digital Dilemma</h2>
+        <p>Nick Dreyfus, Vice President of Business Development at i-NETT, examines the operational choices behind AI, cybersecurity, and modern business growth. The newest public episode appears here automatically.</p>
+        {latestEpisode && (
+          <a class="latest__link" href={`/podcast/${latestEpisode.slug}`}>
+            <span>{latestEpisode.code ?? 'Newest episode'}</span>
+            {latestEpisode.title}
+            <span aria-hidden="true">&rarr;</span>
+          </a>
+        )}
+      </div>
+      <div class="latest__player">
+        <iframe
+          src={`https://www.youtube-nocookie.com/embed/videoseries?list=${uploadsPlaylistId}`}
+          title="Latest video from The Digital Dilemma"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section class="library section" aria-labelledby="library-heading">
     <div class="container">
-      <div class="feed-grid">
-        {feed.map((it) => (
-          <a class="feed-card" href={it.href}>
-            {it.image && (
-              <img class="feed-card__img" src={it.image} alt="" loading="lazy" width="320" height="320" />
-            )}
+      <div class="library__head">
+        <div>
+          <span class="eyebrow">Explore the library</span>
+          <h2 id="library-heading">Ideas your team can put to work</h2>
+          <p class="lead">Browse every podcast episode alongside original Fortify AI guidance.</p>
+        </div>
+        <div class="filters" role="group" aria-label="Filter insights">
+          <button class="filter is-active" type="button" data-filter="all" aria-pressed="true">All insights</button>
+          <button class="filter" type="button" data-filter="article" aria-pressed="false">Articles</button>
+          <button class="filter" type="button" data-filter="episode" aria-pressed="false">Podcast</button>
+        </div>
+      </div>
+
+      <div class="feed-grid" data-feed>
+        {feed.map((item) => (
+          <a class="feed-card" href={item.href} data-kind={item.kind}>
+            <div class:list={['feed-card__visual', item.kind === 'episode' && 'feed-card__visual--episode']}>
+              {item.kind === 'article' && item.image ? (
+                <img src={item.image} alt="" loading="lazy" width="640" height="360" />
+              ) : (
+                <>
+                  <img src="/assets/brand/fortify-ai-logo-mark.png" alt="" width="52" height="52" loading="lazy" />
+                  <span>Fortify AI briefing</span>
+                  <b>{item.label}</b>
+                </>
+              )}
+            </div>
             <div class="feed-card__body">
-              <span class="feed-card__tag">{it.tag}</span>
-              <h2 class="feed-card__title">{it.title}</h2>
-              <p class="feed-card__desc">{it.description}</p>
+              <div class="feed-card__meta">
+                <span>{item.kind === 'episode' ? 'Podcast' : (item.source ?? 'Article')}</span>
+                <time datetime={item.date.toISOString()}>{formatDate(item.date)}</time>
+              </div>
+              <h3>{item.title}</h3>
+              <p>{item.description || 'A practical briefing from the Fortify AI team.'}</p>
+              <span class="feed-card__action">{item.kind === 'episode' ? 'Watch or listen' : 'Read the article'} <span aria-hidden="true">&rarr;</span></span>
             </div>
           </a>
         ))}
       </div>
+      <p class="empty" data-empty hidden>No insights match this filter.</p>
     </div>
   </section>
+
+  <script>
+    const filters = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-filter]'));
+    const cards = Array.from(document.querySelectorAll<HTMLElement>('[data-kind]'));
+    const empty = document.querySelector<HTMLElement>('[data-empty]');
+    filters.forEach((button) => {
+      button.addEventListener('click', () => {
+        const selected = button.dataset.filter ?? 'all';
+        filters.forEach((item) => {
+          const active = item === button;
+          item.classList.toggle('is-active', active);
+          item.setAttribute('aria-pressed', String(active));
+        });
+        let visible = 0;
+        cards.forEach((card) => {
+          const show = selected === 'all' || card.dataset.kind === selected;
+          card.hidden = !show;
+          if (show) visible += 1;
+        });
+        if (empty) empty.hidden = visible !== 0;
+      });
+    });
+  </script>
 </PageLayout>
 
 <style>
-  .feed-grid {
-    display: grid;
-    gap: var(--space-5);
-    grid-template-columns: 1fr;
-  }
-  @media (min-width: 720px) { .feed-grid { grid-template-columns: 1fr 1fr; } }
-  @media (min-width: 1040px) { .feed-grid { grid-template-columns: 1fr 1fr 1fr; } }
-  .feed-card {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-bg);
-    overflow: hidden;
-    text-decoration: none;
-    color: inherit;
-    transition: border-color var(--dur-base) var(--ease-out),
-      box-shadow var(--dur-base) var(--ease-out),
-      transform var(--dur-base) var(--ease-out);
-  }
-  .feed-card:hover { border-color: var(--color-accent-500); box-shadow: var(--shadow-md); transform: translateY(-2px) scale(var(--hover-scale-card)); z-index: 3; }
-  .feed-card__img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; background: var(--color-bg-muted); }
-  .feed-card__body { padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-2); }
-  .feed-card__tag {
-    font-size: var(--fs-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-weight: 600;
-    color: var(--color-accent-500);
-  }
-  .feed-card__title { font-size: var(--fs-md); line-height: var(--lh-snug); }
-  .feed-card__desc { color: var(--color-text-soft); font-size: var(--fs-sm); }
+  .latest { padding: var(--space-9) 0; }
+  .latest__grid { display: grid; gap: var(--space-7); align-items: center; }
+  .latest__copy h2 { font-size: var(--fs-3xl); margin-bottom: var(--space-4); }
+  .latest__copy p { color: var(--color-text-on-dark-soft); }
+  .latest__link { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin-top: var(--space-5); color: #fff; font-weight: 700; }
+  .latest__link > span:first-child { color: var(--color-glow); font-size: var(--fs-xs); letter-spacing: .09em; text-transform: uppercase; }
+  .latest__link:hover { color: var(--color-glow); }
+  .latest__player { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius-xl); border: 1px solid rgba(255,255,255,.16); box-shadow: 0 24px 70px rgba(0,0,0,.42), var(--shadow-glow); background: #000; }
+  .latest__player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  @media (min-width: 900px) { .latest__grid { grid-template-columns: .8fr 1.2fr; } }
+
+  .library { background: linear-gradient(180deg, var(--color-bg-soft), #fff 24rem); }
+  .library__head { display: flex; flex-direction: column; gap: var(--space-6); margin-bottom: var(--space-7); }
+  .library__head h2 { margin-bottom: var(--space-3); }
+  .filters { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .filter { min-height: 44px; padding: .65rem 1rem; border: 1px solid var(--color-border-strong); border-radius: var(--radius-pill); background: #fff; color: var(--color-ink-700); font-size: var(--fs-sm); font-weight: 700; }
+  .filter:hover, .filter.is-active { color: var(--color-ink-900); border-color: var(--color-accent-500); background: rgba(0,180,255,.1); }
+  @media (min-width: 850px) { .library__head { flex-direction: row; justify-content: space-between; align-items: end; } }
+
+  .feed-grid { display: grid; gap: var(--space-5); grid-template-columns: 1fr; }
+  @media (min-width: 700px) { .feed-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 1080px) { .feed-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .feed-card { display: flex; flex-direction: column; overflow: hidden; color: inherit; text-decoration: none; background: #fff; border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out), border-color var(--dur-base) var(--ease-out); }
+  .feed-card:hover { color: inherit; border-color: var(--color-accent-500); box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+  .feed-card[hidden] { display: none; }
+  .feed-card__visual { aspect-ratio: 16 / 9; overflow: hidden; background: var(--color-bg-muted); }
+  .feed-card__visual > img { width: 100%; height: 100%; object-fit: cover; }
+  .feed-card__visual--episode { position: relative; display: flex; flex-direction: column; justify-content: end; align-items: flex-start; gap: var(--space-1); padding: var(--space-5); color: #fff; background: radial-gradient(circle at 78% 24%, rgba(0,224,255,.35), transparent 28%), linear-gradient(135deg, #071525, #0e3a5f); }
+  .feed-card__visual--episode::after { content: ''; position: absolute; inset: 0; opacity: .18; background-image: linear-gradient(rgba(255,255,255,.13) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.13) 1px, transparent 1px); background-size: 26px 26px; }
+  .feed-card__visual--episode img { position: absolute; z-index: 1; top: var(--space-5); right: var(--space-5); width: 52px; height: 52px; object-fit: contain; }
+  .feed-card__visual--episode span, .feed-card__visual--episode b { position: relative; z-index: 1; }
+  .feed-card__visual--episode span { color: var(--color-glow); text-transform: uppercase; letter-spacing: .1em; font-size: .7rem; font-weight: 700; }
+  .feed-card__visual--episode b { font-size: var(--fs-md); }
+  .feed-card__body { display: flex; flex: 1; flex-direction: column; gap: var(--space-3); padding: var(--space-5); }
+  .feed-card__meta { display: flex; justify-content: space-between; gap: var(--space-3); color: var(--color-text-muted); font-size: var(--fs-xs); }
+  .feed-card__meta > span { color: var(--color-accent-500); font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+  .feed-card h3 { font-size: var(--fs-lg); }
+  .feed-card p { color: var(--color-text-soft); font-size: var(--fs-sm); }
+  .feed-card__action { margin-top: auto; padding-top: var(--space-2); color: var(--color-ink-700); font-size: var(--fs-sm); font-weight: 800; }
+  .feed-card:hover .feed-card__action { color: var(--color-accent-500); }
+  .empty { margin: var(--space-8) auto; text-align: center; color: var(--color-text-muted); }
 </style>
