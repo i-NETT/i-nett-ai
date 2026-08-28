@@ -1,5 +1,5 @@
 ---
-import { getEpisodes } from '@lib/podcast';
+import { getEpisodeArtwork, getEpisodes, splitEpisodeNotes } from '@lib/podcast';
 import BaseLayout from '@layouts/BaseLayout.astro';
 import Breadcrumbs from '@components/Breadcrumbs.astro';
 import CTASection from '@components/CTASection.astro';
@@ -7,10 +7,13 @@ import { SITE } from '@lib/site';
 
 export async function getStaticPaths() {
   const episodes = await getEpisodes();
-  return episodes.map((ep) => ({ params: { slug: ep.slug }, props: { ep } }));
+  return episodes.map((ep, episodeIndex) => ({ params: { slug: ep.slug }, props: { ep, episodeIndex } }));
 }
 
-const { ep } = Astro.props;
+const { ep, episodeIndex } = Astro.props;
+const artwork = getEpisodeArtwork(ep);
+const noteSections = splitEpisodeNotes(ep.descriptionHtml);
+const startsWithImage = episodeIndex % 2 !== 0;
 const path = `/podcast/${ep.slug}`;
 const url = `${SITE.url}${path}`;
 const iso = ep.pubDate.toISOString();
@@ -31,7 +34,7 @@ const episodeSchema = {
   datePublished: iso,
   ...(ep.episode ? { episodeNumber: ep.episode } : {}),
   ...(ep.season ? { partOfSeason: { '@type': 'PodcastSeason', seasonNumber: ep.season } } : {}),
-  ...(ep.image ? { image: ep.image } : {}),
+  image: `${SITE.url}${artwork.cover}`,
   ...(ep.audioUrl
     ? { associatedMedia: { '@type': 'MediaObject', contentUrl: ep.audioUrl, encodingFormat: 'audio/mpeg' } }
     : {}),
@@ -68,6 +71,10 @@ const episodeSchema = {
         <h1>{ep.title}</h1>
         <p class="episode-meta">{dateLabel}{ep.durationText ? ` · ${ep.durationText}` : ''}</p>
 
+        <figure class="episode-cover">
+          <img src={artwork.cover} alt={artwork.coverAlt} width="1280" height="720" decoding="async" fetchpriority="high" />
+        </figure>
+
         <div class="episode-player">
           {ep.youtubeId ? (
             <div class="episode-video">
@@ -85,7 +92,16 @@ const episodeSchema = {
           ) : null}
         </div>
 
-        <div class="episode-notes" set:html={ep.descriptionHtml}></div>
+        <div class:list={['episode-notes', { 'episode-notes--reverse': startsWithImage }] }>
+          {artwork.supporting.map((src, index) => (
+            <section class="episode-note-row">
+              <div class="episode-note-copy" set:html={noteSections[index] ?? ''}></div>
+              <figure class="episode-note-art">
+                <img src={src} alt="" width="1280" height="720" loading="lazy" decoding="async" />
+              </figure>
+            </section>
+          ))}
+        </div>
 
         <div class="episode-actions">
           <a class="btn btn-accent" href={SITE.podcastUrl} target="_blank" rel="noopener">Listen on Apple Podcasts</a>
@@ -103,6 +119,8 @@ const episodeSchema = {
   .episode-wrap { max-width: var(--container-narrow); margin: 0 auto; }
   .episode-wrap h1 { margin: var(--space-3) 0 var(--space-2); font-size: var(--fs-2xl); line-height: var(--lh-snug); }
   .episode-meta { color: var(--color-text-muted); font-size: var(--fs-sm); margin-bottom: var(--space-6); }
+  .episode-cover { margin: 0 0 var(--space-6); aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius-lg); background: var(--color-ink-900); }
+  .episode-cover img, .episode-note-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
   .episode-video {
     position: relative;
     aspect-ratio: 16 / 9;
@@ -114,6 +132,18 @@ const episodeSchema = {
   .episode-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   .episode-audio { width: 100%; margin-bottom: var(--space-6); }
   .episode-notes { font-size: var(--fs-base); line-height: var(--lh-normal); }
+  .episode-note-row { display: grid; gap: var(--space-5); align-items: center; margin: 0 0 var(--space-7); }
+  .episode-note-art { margin: 0; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius-md); background: var(--color-ink-900); }
+  @media (min-width: 760px) {
+    .episode-wrap { max-width: var(--container-wide); }
+    .episode-note-row { grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr); }
+    .episode-note-row:nth-child(even) .episode-note-copy { order: 2; }
+    .episode-note-row:nth-child(even) .episode-note-art { order: 1; }
+    .episode-notes--reverse .episode-note-row:nth-child(odd) .episode-note-copy { order: 2; }
+    .episode-notes--reverse .episode-note-row:nth-child(odd) .episode-note-art { order: 1; }
+    .episode-notes--reverse .episode-note-row:nth-child(even) .episode-note-copy { order: 1; }
+    .episode-notes--reverse .episode-note-row:nth-child(even) .episode-note-art { order: 2; }
+  }
   .episode-notes :global(p) { margin-bottom: var(--space-4); }
   .episode-notes :global(ul), .episode-notes :global(ol) { margin: 0 0 var(--space-4) var(--space-5); }
   .episode-notes :global(li) { margin-bottom: var(--space-2); }

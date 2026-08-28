@@ -1,4 +1,5 @@
 import { buildVideoMap } from '@lib/youtubeMap';
+import podcastFeedFallback from '../data/podcast-feed.xml?raw';
 
 const FEED_URL = 'https://api.riverside.fm/hosting/QL16ouQn.rss';
 
@@ -16,6 +17,33 @@ export interface Episode {
   audioUrl?: string;
   descriptionHtml: string;
   youtubeId?: string;
+}
+
+export interface EpisodeArtwork {
+  cover: string;
+  supporting: [string, string, string];
+  coverAlt: string;
+}
+
+export function getEpisodeArtwork(ep: Episode): EpisodeArtwork {
+  const base = `/images/podcast/${ep.slug}`;
+  return {
+    cover: `${base}/cover-editorial.webp`,
+    supporting: [`${base}/support-1.webp`, `${base}/support-2.webp`, `${base}/support-3.webp`],
+    coverAlt: `Editorial artwork for ${ep.title}`,
+  };
+}
+
+export function splitEpisodeNotes(html: string, sections = 3): string[] {
+  const blocks = html.match(/<(?:p|h2|h3|ul|ol)[^>]*>[\s\S]*?<\/(?:p|h2|h3|ul|ol)>/gi);
+  if (!blocks?.length) return [html];
+
+  const result: string[] = [];
+  const perSection = Math.ceil(blocks.length / sections);
+  for (let i = 0; i < blocks.length; i += perSection) {
+    result.push(blocks.slice(i, i + perSection).join(''));
+  }
+  return result;
 }
 
 function slugify(s: string): string {
@@ -36,12 +64,15 @@ function pick(block: string, re: RegExp): string | undefined {
 export async function getEpisodes(): Promise<Episode[]> {
   let xml = '';
   try {
-    const res = await fetch(FEED_URL, { headers: { 'User-Agent': 'i-nett.ai-build' } });
+    const res = await fetch(FEED_URL, {
+      headers: { 'User-Agent': 'i-nett.ai-build' },
+      signal: AbortSignal.timeout(5000),
+    });
     if (!res.ok) throw new Error(`feed responded ${res.status}`);
     xml = await res.text();
   } catch (e) {
-    console.warn('[podcast] feed fetch failed, building with no episodes:', (e as Error)?.message ?? e);
-    return [];
+    console.warn('[podcast] live feed fetch failed, using the cached feed:', (e as Error)?.message ?? e);
+    xml = podcastFeedFallback;
   }
 
   const videoMap = await buildVideoMap();

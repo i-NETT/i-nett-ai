@@ -1,7 +1,7 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
 import { SITE } from '@lib/site';
-import { getEpisodes } from '@lib/podcast';
+import { getEpisodeArtwork, getEpisodes } from '@lib/podcast';
 
 const breadcrumbs = [
   { name: 'Home', url: '/' },
@@ -96,12 +96,15 @@ const featuredEpisodes = episodes.slice(0, 5);
                 )}
               </div>
             </div>
-            <div class="ep-card__art" aria-hidden="true">
-              {ep.image ? (
-                <img src={ep.image} alt="" loading="lazy" />
-              ) : (
-                <span class="ep-card__art-num">{ep.code ?? `EP ${i + 1}`}</span>
-              )}
+            <div class="ep-card__art">
+              <img
+                src={getEpisodeArtwork(ep).cover}
+                alt={getEpisodeArtwork(ep).coverAlt}
+                loading={i === 0 ? 'eager' : 'lazy'}
+                decoding="async"
+                width="1280"
+                height="720"
+              />
             </div>
           </li>
         ))}
@@ -309,7 +312,7 @@ const featuredEpisodes = episodes.slice(0, 5);
     transition: transform 320ms var(--ease-out), border-color 320ms var(--ease-out), box-shadow 320ms var(--ease-out);
   }
   @media (min-width: 720px) {
-    .ep-card { grid-template-columns: 1fr 160px; align-items: center; }
+    .ep-card { grid-template-columns: minmax(0, 1fr) minmax(260px, 42%); align-items: center; }
   }
   .ep-card:hover {
     transform: translateY(-2px) scale(var(--hover-scale-card));
@@ -352,7 +355,7 @@ const featuredEpisodes = episodes.slice(0, 5);
     border-radius: var(--radius-md);
   }
   .ep-card__art {
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 16 / 9;
     border-radius: var(--radius-md);
     background: linear-gradient(135deg, var(--color-ink-900) 0%, var(--color-accent-500) 130%);
     display: grid;
