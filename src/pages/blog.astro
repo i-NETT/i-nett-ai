@@ -1,6 +1,7 @@
 ---
 import PageLayout from '@layouts/PageLayout.astro';
 import { getEpisodeArtwork, getEpisodes, stripHtml } from '@lib/podcast';
+import { getLatestChannelVideos } from '@lib/youtubeMap';
 import { getCollection } from 'astro:content';
 
 const breadcrumbs = [{ name: 'Home', url: '/' }, { name: 'Insights', url: '/blog' }];
@@ -8,6 +9,10 @@ const episodes = await getEpisodes();
 const articles = (await getCollection('blog')).filter((article) => !article.data.draft);
 const latestEpisode = episodes[0];
 const uploadsPlaylistId = 'UUWcdscFXqBjRG838BAFGsUw';
+const latestVideos = await getLatestChannelVideos();
+const featuredVideoSrc = latestVideos.fullVideoId
+  ? `https://www.youtube-nocookie.com/embed/${latestVideos.fullVideoId}`
+  : `https://www.youtube-nocookie.com/embed/videoseries?list=${uploadsPlaylistId}`;
 
 const feed = [
   ...episodes.map((episode) => ({
@@ -62,15 +67,33 @@ const formatDate = (date: Date) => date.valueOf()
           </a>
         )}
       </div>
-      <div class="latest__player">
-        <iframe
-          src={`https://www.youtube-nocookie.com/embed/videoseries?list=${uploadsPlaylistId}`}
-          title="Latest video from The Digital Dilemma"
-          loading="lazy"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen
-          referrerpolicy="strict-origin-when-cross-origin"
-        ></iframe>
+      <div class="latest__media">
+        <div class="latest__player">
+          <iframe
+            src={featuredVideoSrc}
+            title="Latest full-length video from The Digital Dilemma"
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        </div>
+        {latestVideos.shorts.length > 0 && (
+          <div class="latest__shorts" aria-label="Latest YouTube Shorts">
+            {latestVideos.shorts.map((short) => (
+              <div class="latest__short">
+                <iframe
+                  src={`https://www.youtube-nocookie.com/embed/${short.id}`}
+                  title={short.title}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowfullscreen
+                  referrerpolicy="strict-origin-when-cross-origin"
+                ></iframe>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   </section>
@@ -152,9 +175,17 @@ const formatDate = (date: Date) => date.valueOf()
   .latest__link { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin-top: var(--space-5); color: #fff; font-weight: 700; }
   .latest__link > span:first-child { color: var(--color-glow); font-size: var(--fs-xs); letter-spacing: .09em; text-transform: uppercase; }
   .latest__link:hover { color: var(--color-glow); }
-  .latest__player { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: var(--radius-xl); border: 1px solid rgba(255,255,255,.16); box-shadow: 0 24px 70px rgba(0,0,0,.42), var(--shadow-glow); background: #000; }
-  .latest__player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-  @media (min-width: 900px) { .latest__grid { grid-template-columns: .8fr 1.2fr; } }
+  .latest__media { display: grid; gap: var(--space-3); min-width: 0; }
+  .latest__player, .latest__short { position: relative; overflow: hidden; border-radius: var(--radius-xl); border: 1px solid var(--color-border-strong); box-shadow: var(--shadow-lg); background: var(--color-ink-900); }
+  .latest__player { aspect-ratio: 16 / 9; }
+  .latest__short { aspect-ratio: 9 / 16; }
+  .latest__player iframe, .latest__short iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .latest__shorts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); }
+  @media (min-width: 900px) {
+    .latest__grid { grid-template-columns: minmax(15rem, .72fr) minmax(0, 1.28fr); }
+    .latest__media { grid-template-columns: minmax(0, 1fr) minmax(10rem, .48fr); align-items: stretch; }
+    .latest__shorts { min-width: 0; }
+  }
 
   .library { background: linear-gradient(180deg, var(--color-bg-soft), #fff 24rem); }
   .library__head { display: flex; flex-direction: column; gap: var(--space-6); margin-bottom: var(--space-7); }
