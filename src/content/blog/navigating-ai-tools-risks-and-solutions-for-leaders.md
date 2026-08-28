@@ -29,6 +29,11 @@ Using these powerful tools in their consumer form is a potential liability for a
 
 That is not an argument against AI. It is an argument for putting the right structure around it.
 
+<figure class="post-fig left">
+  <img src="/images/blog/navigating-ai-tools-governance.jpg" alt="Multiple AI systems passing through a secure governance gateway with access controls and audit trails" width="1024" height="1536" loading="lazy" />
+  <figcaption>The right governance layer lets teams choose capable models without giving up control of sensitive data.</figcaption>
+</figure>
+
 ## A new approach with Fortify AI
 
 Fortify AI gives your team a secure, locked-down environment where your data stays isolated and protected. It includes a prompt coach that improves AI interactions and saves your team time.

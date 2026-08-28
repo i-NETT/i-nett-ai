@@ -15,6 +15,11 @@ This blog brings two streams of work into one place.
 
 Every episode of The Digital Dilemma, hosted by Nick Dreyfus, now appears here on its own. When a new episode publishes, it shows up as a post with the full show notes and a player, without anyone having to copy anything over. If you want the running conversation on AI adoption, cybersecurity, and the technology decisions that affect your bottom line, this is the archive.
 
+<figure class="post-fig right">
+  <img src="/images/blog/digital-dilemma-archive-library.jpg" alt="An executive browsing a searchable digital library of podcast episodes and business technology insights" width="1024" height="1536" loading="lazy" />
+  <figcaption>One searchable destination brings the full Digital Dilemma conversation together.</figcaption>
+</figure>
+
 ## What we are writing for clients
 
 Alongside the podcast, our team publishes written guidance on the questions we hear most from mid-market leaders. Expect practical pieces on managed AI, compliance configuration, and the operational realities of running AI inside a real business, written for executives rather than engineers.
