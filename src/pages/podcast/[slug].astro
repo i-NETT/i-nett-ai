@@ -7,13 +7,21 @@ import { SITE } from '@lib/site';
 
 export async function getStaticPaths() {
   const episodes = await getEpisodes();
-  return episodes.map((ep, episodeIndex) => ({ params: { slug: ep.slug }, props: { ep, episodeIndex } }));
+  return episodes.map((ep) => ({ params: { slug: ep.slug }, props: { ep } }));
 }
 
-const { ep, episodeIndex } = Astro.props;
+const { ep } = Astro.props;
 const artwork = getEpisodeArtwork(ep);
 const noteSections = splitEpisodeNotes(ep.descriptionHtml);
-const startsWithImage = episodeIndex % 2 !== 0;
+// Which side the first image sits on alternates BY ARTICLE: even episodes
+// lead with the image on the left, odd episodes lead on the right, and the
+// images then alternate down the page from there.
+//
+// This is keyed to the episode NUMBER, not its position in the feed. The
+// previous version used the list index, which shifts by one every time a new
+// episode publishes, so every article silently flipped its layout each week.
+const ordinal = ep.episode ?? Number(ep.code?.match(/E(\d+)$/)?.[1] ?? 0);
+const imageFirst = ordinal % 2 === 0;
 const path = `/podcast/${ep.slug}`;
 const url = `${SITE.url}${path}`;
 const iso = ep.pubDate.toISOString();
@@ -105,7 +113,7 @@ const episodeSchema = {
           ) : null}
         </div>
 
-        <div class:list={['episode-notes', { 'episode-notes--reverse': startsWithImage }] }>
+        <div class:list={['episode-notes', { 'episode-notes--reverse': imageFirst }] }>
           {artwork.supporting.map((src, index) => (
             <section class:list={['episode-note-row', { 'episode-note-row--no-art': !src }]}>
               <div class="episode-note-copy" set:html={noteSections[index] ?? ''}></div>
