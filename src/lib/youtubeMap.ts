@@ -16,6 +16,18 @@ import { PODCAST_VIDEOS_FALLBACK } from './podcastVideos';
 
 const CHANNEL_ID = 'UCWcdscFXqBjRG838BAFGsUw'; // The Digital Dilemma Podcast
 const SEASON_EPISODE_RE = /S\s*(\d+)\s*E\s*(\d+)/i;
+// From E39 onward the show dropped the season prefix: titles are now
+// "E45 - ...", not "S3 E15 - ...". Anchored to the start so a stray "E12"
+// mid-title cannot be mistaken for an episode number.
+const BARE_EPISODE_RE = /^E\s*(\d+)\b/i;
+
+export function episodeCodeFromTitle(title: string): string | undefined {
+  const se = title.match(SEASON_EPISODE_RE);
+  if (se) return `S${Number(se[1])}E${Number(se[2])}`;
+  const be = title.trim().match(BARE_EPISODE_RE);
+  if (be) return `E${Number(be[1])}`;
+  return undefined;
+}
 
 interface YTPlaylistItem {
   snippet?: {
@@ -82,9 +94,8 @@ export async function buildVideoMap(): Promise<Record<string, string>> {
         if (!videoId) continue;
         // Skip obvious shorts (we want long-form episodes only).
         if (/#shorts?\b/i.test(title)) continue;
-        const m = title.match(SEASON_EPISODE_RE);
-        if (!m) continue;
-        const code = `S${Number(m[1])}E${Number(m[2])}`;
+        const code = episodeCodeFromTitle(title);
+        if (!code) continue;
         // First match wins. Channels often have a duplicate upload; the older
         // (later in the uploads list, but iterated first because uploads are
         // newest-first) is usually the canonical one, but we trust the order.

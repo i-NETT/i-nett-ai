@@ -1,4 +1,7 @@
-import { buildVideoMap } from '@lib/youtubeMap';
+import { buildVideoMap, episodeCodeFromTitle } from '@lib/youtubeMap';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import podcastFeedFallback from '../data/podcast-feed.xml?raw';
 
 const FEED_URL = 'https://api.riverside.fm/hosting/QL16ouQn.rss';
@@ -21,17 +24,41 @@ export interface Episode {
 
 export interface EpisodeArtwork {
   cover: string;
-  supporting: [string, string, string];
+  // null where no artwork file exists, so the template skips the figure
+  // rather than rendering a 404 as a black box.
+  supporting: Array<string | null>;
   coverAlt: string;
 }
 
+const PUBLIC_DIR = fileURLToPath(new URL('../../public', import.meta.url));
+const publicFileExists = (webPath: string): boolean => {
+  try {
+    return fs.existsSync(path.join(PUBLIC_DIR, webPath.replace(/^\//, '')));
+  } catch {
+    return false;
+  }
+};
+
 export function getEpisodeArtwork(ep: Episode): EpisodeArtwork {
   const base = `/images/podcast/${ep.slug}`;
-  return {
-    cover: `${base}/cover-editorial.webp`,
-    supporting: [`${base}/support-1.webp`, `${base}/support-2.webp`, `${base}/support-3.webp`],
-    coverAlt: `Editorial artwork for ${ep.title}`,
-  };
+
+  // Artwork is produced per episode by hand, so anything published since
+  // the last run has no files at all. These paths were emitted regardless,
+  // which is why a new episode showed four broken images. Fall back to the
+  // YouTube thumbnail for the cover and drop the supporting art.
+  const coverPath = `${base}/cover-editorial.webp`;
+  const cover = publicFileExists(coverPath)
+    ? coverPath
+    : ep.youtubeId
+      ? `https://i.ytimg.com/vi/${ep.youtubeId}/maxresdefault.jpg`
+      : '/assets/brand/fortify-ai-logo-mark.png';
+
+  const supporting = [1, 2, 3].map((n) => {
+    const p = `${base}/support-${n}.webp`;
+    return publicFileExists(p) ? p : null;
+  });
+
+  return { cover, supporting, coverAlt: `Editorial artwork for ${ep.title}` };
 }
 
 export function splitEpisodeNotes(html: string, sections = 3): string[] {
@@ -88,8 +115,25 @@ export async function getEpisodes(): Promise<Episode[]> {
 
     const season = Number(pick(block, /<itunes:season>(\d+)<\/itunes:season>/)) || undefined;
     const episode = Number(pick(block, /<itunes:episode>(\d+)<\/itunes:episode>/)) || undefined;
-    const code = season && episode ? `S${season}E${episode}` : undefined;
-    const title = rawTitle.replace(/^S\d+\s*E\d+\s*[-:–]\s*/i, '').trim();
+    // Slug rules are FROZEN. They are reproduced here exactly as first
+    // published, because anything else moves a live URL. Widening the code
+    // below without this pinned first moved three of them: E42 gained a
+    // "-day" once the prefix stopped eating the 80-character budget, and
+    // S3E6/S3E3 gained an "s3e6-" prefix they never had.
+    const slugCode = season && episode ? `S${season}E${episode}` : undefined;
+    const slugTitle = rawTitle.replace(/^S\d+\s*E\d+\s*[-:–]\s*/i, '').trim();
+
+    // The code is for the video lookup and the label only. The feed still
+    // tags <itunes:episode> for the newer run but stopped sending
+    // <itunes:season>; requiring both left E39-E45 with no code at all,
+    // which skipped the YouTube lookup and left those pages audio-only.
+    const code =
+      slugCode
+      ?? (episode ? `E${episode}` : episodeCodeFromTitle(rawTitle));
+
+    // Display title drops whichever prefix it carries, so the heading does
+    // not repeat the episode number the eyebrow already shows.
+    const title = slugTitle.replace(/^E\d+\s*[-:–]\s*/i, '').trim();
 
     const pubRaw = pick(block, /<pubDate>([\s\S]*?)<\/pubDate>/);
     const pubDate = pubRaw ? new Date(pubRaw) : new Date(0);
@@ -100,7 +144,7 @@ export async function getEpisodes(): Promise<Episode[]> {
       pick(block, /<description>(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?<\/description>/) ?? '';
     const guid = pick(block, /<guid[^>]*>([\s\S]*?)<\/guid>/) ?? audioUrl ?? rawTitle;
 
-    let slug = code ? `${code.toLowerCase()}-${slugify(title)}` : slugify(title) || `episode-${episodes.length + 1}`;
+    let slug = slugCode ? `${slugCode.toLowerCase()}-${slugify(slugTitle)}` : slugify(slugTitle) || `episode-${episodes.length + 1}`;
     while (seen.has(slug)) slug = `${slug}-2`;
     seen.add(slug);
 

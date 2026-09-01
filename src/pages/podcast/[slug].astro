@@ -72,7 +72,20 @@ const episodeSchema = {
         <p class="episode-meta">{dateLabel}{ep.durationText ? ` · ${ep.durationText}` : ''}</p>
 
         <figure class="episode-cover">
-          <img src={artwork.cover} alt={artwork.coverAlt} width="1280" height="720" decoding="async" fetchpriority="high" />
+          {/* maxresdefault only exists for videos uploaded at 720p or above.
+              hqdefault always exists, so fall back to it rather than let a
+              future episode show a broken cover again. */}
+          <img
+            src={artwork.cover}
+            alt={artwork.coverAlt}
+            width="1280"
+            height="720"
+            decoding="async"
+            fetchpriority="high"
+            onerror={artwork.cover.includes("i.ytimg.com")
+              ? "this.onerror=null;this.src=this.src.replace('maxresdefault','hqdefault')"
+              : undefined}
+          />
         </figure>
 
         <div class="episode-player">
@@ -94,11 +107,14 @@ const episodeSchema = {
 
         <div class:list={['episode-notes', { 'episode-notes--reverse': startsWithImage }] }>
           {artwork.supporting.map((src, index) => (
-            <section class="episode-note-row">
+            <section class:list={['episode-note-row', { 'episode-note-row--no-art': !src }]}>
               <div class="episode-note-copy" set:html={noteSections[index] ?? ''}></div>
-              <figure class="episode-note-art">
-                <img src={src} alt="" width="1280" height="720" loading="lazy" decoding="async" />
-              </figure>
+              {src && (
+                <figure class="episode-note-art">
+                  <img src={src} alt="" width="1280" height="720" loading="lazy" decoding="async" />
+                </figure>
+              )}
+            </section>
             </section>
           ))}
         </div>
@@ -137,6 +153,9 @@ const episodeSchema = {
   @media (min-width: 760px) {
     .episode-wrap { max-width: var(--container-wide); }
     .episode-note-row { grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr); }
+    /* No artwork for this row: the copy takes the full width rather than
+       leaving a hole where the image would have been. */
+    .episode-note-row--no-art { grid-template-columns: 1fr; }
     .episode-note-row:nth-child(even) .episode-note-copy { order: 2; }
     .episode-note-row:nth-child(even) .episode-note-art { order: 1; }
     .episode-notes--reverse .episode-note-row:nth-child(odd) .episode-note-copy { order: 2; }

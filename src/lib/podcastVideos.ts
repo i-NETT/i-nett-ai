@@ -12,4 +12,14 @@
 // canonical "S# E#" prefix.
 export const PODCAST_VIDEOS_FALLBACK: Record<string, string> = {
   S3E14: 'IstQKqxCRQY',
+  // The run from E39 onward dropped the season prefix. Pinned here as well
+  // as resolved by the API, so a missing key or an exhausted quota can never
+  // silently strip the video off these pages again.
+  E39: 'kM94EpYlNyE',
+  E40: 'l_Fk6RR3Yrg',
+  E41: 'KrB8ev6SkTw',
+  E42: 'JpGumpIJFn4',
+  E43: 'GvpeIG3EJz4',
+  E44: 'hEWmoiukbds',
+  E45: 'qGPgV7K-qVI',
 };
