@@ -181,6 +181,55 @@ export function computeRecoverable(
   };
 }
 
+// ---------------------------------------------------------------------------
+// Headcount estimation. Nobody wants to type how many people touch AP or CRM
+// entry, so the scan pre-fills every area from the organization's size and
+// industry and lets the prospect adjust. The shares are the fraction of ALL
+// staff who spend meaningful time on that kind of work (not department size),
+// so they overlap across areas on purpose. They are rough industry averages,
+// stated as such on the page; the point is to be close, not exact.
+
+// Midpoint headcount for each scan size answer.
+export const SIZE_MIDPOINT: Record<string, number> = {
+  'Just me': 1,
+  '2-10': 6,
+  '11-25': 18,
+  '26-100': 60,
+  '101-250': 170,
+  '250+': 400,
+};
+
+type Shares = Record<TaskArea, number>;
+const DEFAULT_SHARE: Shares = { finance: 0.06, hr: 0.04, sales: 0.15, service: 0.15, ops: 0.20, docs: 0.25, marketing: 0.05 };
+export const AREA_SHARE: Record<string, Shares> = {
+  'Healthcare / Medical':       { finance: 0.06, hr: 0.04, sales: 0.04, service: 0.18, ops: 0.25, docs: 0.30, marketing: 0.03 },
+  'Legal':                      { finance: 0.06, hr: 0.03, sales: 0.06, service: 0.10, ops: 0.15, docs: 0.45, marketing: 0.04 },
+  'Financial services':         { finance: 0.15, hr: 0.04, sales: 0.20, service: 0.15, ops: 0.18, docs: 0.30, marketing: 0.05 },
+  'Professional services':      { finance: 0.07, hr: 0.04, sales: 0.15, service: 0.12, ops: 0.18, docs: 0.30, marketing: 0.06 },
+  'Manufacturing':              { finance: 0.05, hr: 0.03, sales: 0.08, service: 0.08, ops: 0.30, docs: 0.15, marketing: 0.03 },
+  'Retail / E-commerce':        { finance: 0.04, hr: 0.03, sales: 0.30, service: 0.30, ops: 0.20, docs: 0.10, marketing: 0.06 },
+  'Real estate':                { finance: 0.06, hr: 0.03, sales: 0.35, service: 0.15, ops: 0.18, docs: 0.25, marketing: 0.08 },
+  'Education / Schools':        { finance: 0.05, hr: 0.05, sales: 0.02, service: 0.15, ops: 0.25, docs: 0.30, marketing: 0.04 },
+  'Nonprofit':                  { finance: 0.08, hr: 0.05, sales: 0.10, service: 0.15, ops: 0.25, docs: 0.25, marketing: 0.08 },
+  'Government / Public sector': { finance: 0.06, hr: 0.06, sales: 0.01, service: 0.25, ops: 0.25, docs: 0.35, marketing: 0.03 },
+  'Technology':                 { finance: 0.05, hr: 0.05, sales: 0.20, service: 0.15, ops: 0.15, docs: 0.15, marketing: 0.08 },
+};
+
+// Estimated people per area for a given industry and size answer. Always at
+// least 1 so the multiplier never zeroes out a task the prospect ticked.
+export function estimateHeadcount(industry: string, sizeAnswer: string): Record<TaskArea, number> {
+  const total = SIZE_MIDPOINT[sizeAnswer] ?? 25;
+  const shares = AREA_SHARE[industry] ?? DEFAULT_SHARE;
+  const out = {} as Record<TaskArea, number>;
+  (Object.keys(shares) as TaskArea[]).forEach((area) => {
+    out[area] = Math.max(1, Math.round(total * shares[area]));
+  });
+  return out;
+}
+
+export const ESTIMATE_NOTE =
+  'Pre-filled from industry averages for an organization of your size and sector. These are estimates, not exact figures. Adjust anything that looks off, or just continue.';
+
 // One-line source note printed on the web result and the PDF, so the math has a
 // citation on the document a CEO forwards to their CFO or attorney.
 export const METHODOLOGY_NOTE =

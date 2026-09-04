@@ -137,7 +137,10 @@ import { SITE } from '../lib/site';
               <div class="scan__recoverNote" id="recoverNote"></div>
             </div>
 
-            <div class="scan__findingsLabel" id="shownLabel">YOUR TOP FINDINGS &mdash; AND WHAT TO DO ABOUT EACH</div>
+            <div class="scan__findingsLabel">YOUR SCORECARD &mdash; EVERY AREA WE ASSESSED, BEST TO WORST</div>
+            <div id="scorecard"></div>
+
+            <div class="scan__findingsLabel" id="shownLabel" style="margin-top:22px">YOUR TOP FINDINGS &mdash; AND WHAT TO DO ABOUT EACH</div>
             <div id="findingsList"></div>
 
             <!-- LEAD GATE -->
@@ -339,26 +342,57 @@ import { SITE } from '../lib/site';
      work is the visual message. Flexbox (not CSS grid) so the leftover items on
      the final row center under the rows above for a uniform, professional look.
      4 across on wide screens, 3 on laptops/tablets, 2 then 1 on phones. */
-  .scan__taskGrid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  /* Three equal columns (two on phones). Every tile is the same width, rows
+     stretch to the tallest tile, the label is centred, and a lone tile on
+     the last row spans the full width so no row ever looks unfinished. */
+  .scan__taskGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; align-items: stretch; }
+  .scan__task:last-child:nth-child(3n + 1) { grid-column: 1 / -1; }
   .scan__task {
-    flex: 0 0 calc(25% - 6px); min-height: 48px;
-    display: flex; align-items: center; gap: 10px; padding: 11px 13px; text-align: left;
+    min-height: 64px; position: relative;
+    display: flex; align-items: center; justify-content: center; gap: 0; padding: 12px 22px; text-align: center;
     background: var(--color-bg); border: 1px solid var(--color-border); border-radius: var(--radius-md);
     color: var(--color-text); cursor: pointer; font-size: var(--fs-sm); font-weight: 500; line-height: 1.3;
     box-shadow: var(--shadow-sm);
     transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out),
                 transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out);
   }
-  @media (max-width: 1000px) { .scan__task { flex-basis: calc(33.333% - 6px); } }  /* 3 across */
-  @media (max-width: 640px)  { .scan__task { flex-basis: calc(50% - 4px); } }        /* 2 across */
-  @media (max-width: 400px)  { .scan__task { flex-basis: 100%; } }                   /* 1 across */
+  @media (max-width: 560px) {
+    .scan__taskGrid { grid-template-columns: repeat(2, 1fr); }
+    .scan__task:last-child:nth-child(3n + 1) { grid-column: auto; }
+    .scan__task:last-child:nth-child(2n + 1) { grid-column: 1 / -1; }
+  }
   .scan__task:hover { border-color: var(--color-accent-500); background: var(--color-bg-soft); transform: translateY(-1px); box-shadow: var(--shadow-md); }
   .scan__task.selected { border-color: var(--color-accent-500); background: rgba(0,180,255,0.08); color: var(--color-ink-800); font-weight: 600; }
-  .scan__task .scan__optMark { width: 18px; height: 18px; flex: 0 0 18px; }
+  .scan__task .scan__optMark { position: absolute; top: 7px; right: 7px; width: 14px; height: 14px; flex: 0 0 14px; }
+  .scan__task.selected .scan__optMark::after { inset: 2px; }
   .scan__task:hover .scan__optMark { border-color: var(--color-accent-400); }
   .scan__task.selected .scan__optMark { border-color: var(--color-accent-500); }
   .scan__task.selected .scan__optMark::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--color-accent-500); }
-  .scan__taskLabel { flex: 1; }
+  .scan__taskLabel { flex: 0 1 auto; }
+
+  /* Headcount step: intro line and per-row "industry average" hint */
+  .scan__hcIntro { font-size: var(--fs-sm); line-height: 1.55; color: var(--color-text-soft); padding: 10px 12px; margin-bottom: 10px; border-left: 3px solid var(--color-accent-500); background: rgba(0,180,255,0.06); border-radius: var(--radius-sm); }
+  .scan__hcHint { display: block; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-text-muted); margin-top: 2px; }
+  .scan__hcUnit { font-size: 12px; color: var(--color-text-muted); margin-left: 2px; }
+
+  /* Five-band score badge (top-right of every scored box):
+     75+ red, 60-74 burnt orange, 35-59 yellow, 20-34 grey, 19 and under green. */
+  .scan__band { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; padding: 3px 9px; border-radius: var(--radius-pill); font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.02em; color: #fff; white-space: nowrap; box-shadow: 0 1px 2px rgba(0,0,0,0.18); }
+  .scan__band--red { background: #C13030; }
+  .scan__band--orange { background: #C25A0C; }
+  .scan__band--yellow { background: #D9A400; color: #1a1400; }
+  .scan__band--gray { background: #7A8594; }
+  .scan__band--green { background: #0F8B5F; }
+
+  /* Scorecard: one row per area, best to worst, badge top-right */
+  .scan__card { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: start; padding: 12px 14px; margin-bottom: 8px; border: 1px solid var(--color-border); border-left-width: 4px; border-radius: var(--radius-md); background: var(--color-bg); box-shadow: var(--shadow-sm); }
+  .scan__card--red { border-left-color: #C13030; } .scan__card--orange { border-left-color: #C25A0C; } .scan__card--yellow { border-left-color: #D9A400; } .scan__card--gray { border-left-color: #7A8594; } .scan__card--green { border-left-color: #0F8B5F; }
+  .scan__cardTag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 2px; color: var(--color-text-muted); }
+  .scan__cardHead { font-weight: 700; font-size: var(--fs-sm); color: var(--color-ink-800); margin-top: 2px; line-height: 1.35; }
+  .scan__cardSub { grid-column: 1 / -1; font-size: 12px; line-height: 1.5; color: var(--color-text-soft); }
+  .scan__cardKey { display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 8px 0 14px; font-size: 11px; color: var(--color-text-muted); }
+  .scan__cardKey span { display: inline-flex; align-items: center; gap: 5px; }
+  .scan__cardKey i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
 
   /* Per-area headcount steppers */
   .scan__hcRow { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 12px 14px;
@@ -567,6 +601,7 @@ import { SITE } from '../lib/site';
   import { buildInternalReportPages, htmlPagesToPdf, imageToDataUri, reportDocument } from '../lib/reportPdf';
   import {
     computeRecoverable, tasksForIndustry, AREA_LABEL, METHODOLOGY_NOTE,
+    estimateHeadcount, ESTIMATE_NOTE, SIZE_MIDPOINT,
     type TaskArea, type RecoverableResult,
   } from '../lib/taskInventory';
 
@@ -592,7 +627,7 @@ import { SITE } from '../lib/site';
     { id: 'vendorterms', label: 'Do your outside vendors have a written AI agreement with you?', note: 'Bookkeeper, marketing, IT — anyone who touches your data', type: 'single', options: ['Yes — it’s in our vendor contracts', 'No — we’ve never asked', 'Not sure'] },
     { id: 'insurance', label: 'Do you know whether your cyber insurance covers an AI-related incident?', type: 'single', options: ['Yes — we’ve confirmed it', 'We have cyber insurance but haven’t checked AI specifically', 'We don’t have cyber insurance', 'Not sure'] },
     { id: 'tasks', label: 'Which of these does your team still do by hand?', note: 'Tick all that apply — most people are surprised by the total', type: 'tasks' },
-    { id: 'headcount', label: 'Roughly how many people spend time on this kind of work?', note: 'A rough number is fine — it’s how we size the opportunity', type: 'headcount' },
+    { id: 'headcount', label: 'We estimated how many people touch this work. Adjust anything that looks off.', note: 'Industry averages for your size and sector, not exact figures. Close is all we need.', type: 'headcount' },
     { id: 'goal', label: 'What would make the biggest difference in the next 12 months?', type: 'single', options: ['Get governance & security right first', 'Roll AI out to the whole team', 'Build custom agents for our workflows', 'Cut time on repetitive work', 'Not sure yet'] },
   ];
 
@@ -659,10 +694,22 @@ import { SITE } from '../lib/site';
     'WORKFLOWS': 5, 'CUSTOM AGENTS': 3, 'SHADOW AI': 3,
     'COMPLIANCE': 2, 'VENDOR AI TERMS': 1,
   };
+  // One row of the scorecard: an area we assess, its 0-100 exposure score
+  // (higher = more exposure), and a one-line status in plain language.
+  type AreaScore = { tag: string; score: number; head: string; sub: string };
   type Report = {
     score: number; band: string; shadowLevel: string; shadowSub: string; flags: string[];
     hoursVal: string; hoursSub: string; rec: RecoverableResult; findings: Finding[]; fallbackNote: string;
+    areas: AreaScore[];
   };
+
+  // Five-band colour for any 0-100 exposure score.
+  function bandFor(score: number): string {
+    return score >= 75 ? 'red' : score >= 60 ? 'orange' : score >= 35 ? 'yellow' : score >= 20 ? 'gray' : 'green';
+  }
+  function bandBadge(score: number): string {
+    return '<span class="scan__band scan__band--' + bandFor(score) + '" aria-label="exposure score ' + score + ' out of 100">' + score + '</span>';
+  }
 
   // Whole-dollar USD, e.g. $245,200. Used across the report and the PDF.
   const usd = (n: number) => '$' + Math.round(n).toLocaleString('en-US');
@@ -763,29 +810,43 @@ import { SITE } from '../lib/site';
   // Deliberately NOT "how many people in accounting?" — a 6-person department
   // doesn't have 6 people doing AP, and asking the honest question gets the
   // honest multiplier.
+  // Every area is pre-filled from industry averages for the organization's
+  // size and sector (see estimateHeadcount), so the prospect can simply hit
+  // Continue. Anything they change is remembered and flagged as their own
+  // figure rather than our estimate.
   function renderHeadcount() {
     const areas = activeAreas();
     const hc = answers.headcount || (answers.headcount = {});
+    const edited: Record<string, boolean> = answers.headcountEdited || (answers.headcountEdited = {});
+    const est = estimateHeadcount(answers.industry || 'Other', answers.size || '');
     const list = $('optionsList') as HTMLElement;
     if (!areas.length) {
       list.innerHTML = '<div class="scan__hcEmpty">No tasks selected — that’s fine, you can continue.</div>';
       return;
     }
-    list.innerHTML = areas.map((area) => {
-      const v = hc[area] || 1;
-      return '<div class="scan__hcRow" data-area="' + area + '">'
-        + '<span class="scan__hcLabel">' + AREA_LABEL[area] + '</span>'
-        + '<span class="scan__hcCtl">'
-        + '<button class="scan__hcBtn" data-step="-1" type="button" aria-label="fewer people">−</button>'
-        + '<input class="scan__hcNum" type="number" min="1" max="500" value="' + v + '" inputmode="numeric" aria-label="people in ' + AREA_LABEL[area] + '">'
-        + '<button class="scan__hcBtn" data-step="1" type="button" aria-label="more people">+</button>'
-        + '</span></div>';
-    }).join('');
+    areas.forEach((area) => { if (!edited[area]) hc[area] = est[area]; });
+    const sizeTxt = answers.size ? (SIZE_MIDPOINT[answers.size] ? 'about ' + SIZE_MIDPOINT[answers.size] + ' people' : answers.size) : 'your size';
+    const indTxt = answers.industry && answers.industry !== 'Other' ? answers.industry.toLowerCase() : 'your sector';
+    list.innerHTML =
+      '<div class="scan__hcIntro">Based on a ' + indTxt + ' organization of ' + sizeTxt + '. ' + ESTIMATE_NOTE + '</div>'
+      + areas.map((area) => {
+        const v = hc[area] || 1;
+        return '<div class="scan__hcRow" data-area="' + area + '">'
+          + '<span class="scan__hcLabel">' + AREA_LABEL[area] + '<span class="scan__hcHint" data-hint>' + (edited[area] ? 'your figure' : 'industry average, est.') + '</span></span>'
+          + '<span class="scan__hcCtl">'
+          + '<button class="scan__hcBtn" data-step="-1" type="button" aria-label="fewer people">−</button>'
+          + '<input class="scan__hcNum" type="number" min="1" max="500" value="' + v + '" inputmode="numeric" aria-label="people in ' + AREA_LABEL[area] + '">'
+          + '<button class="scan__hcBtn" data-step="1" type="button" aria-label="more people">+</button>'
+          + '<span class="scan__hcUnit">people</span>'
+          + '</span></div>';
+      }).join('');
     document.querySelectorAll('#optionsList .scan__hcRow').forEach((row) => {
       const area = (row as HTMLElement).dataset.area as TaskArea;
       const input = row.querySelector('.scan__hcNum') as HTMLInputElement;
-      const setVal = (n: number) => { const c = Math.max(1, Math.min(500, Math.round(n) || 1)); input.value = String(c); hc[area] = c; };
-      input.addEventListener('input', () => { const n = Number(input.value); if (Number.isFinite(n) && input.value !== '') hc[area] = Math.max(1, Math.min(500, Math.round(n))); });
+      const hint = row.querySelector('[data-hint]') as HTMLElement;
+      const mark = () => { edited[area] = true; if (hint) hint.textContent = 'your figure'; };
+      const setVal = (n: number) => { const c = Math.max(1, Math.min(500, Math.round(n) || 1)); input.value = String(c); hc[area] = c; mark(); };
+      input.addEventListener('input', () => { const n = Number(input.value); if (Number.isFinite(n) && input.value !== '') { hc[area] = Math.max(1, Math.min(500, Math.round(n))); mark(); } });
       input.addEventListener('blur', () => setVal(Number(input.value)));
       row.querySelectorAll('.scan__hcBtn').forEach((b) =>
         b.addEventListener('click', () => setVal((hc[area] || 1) + Number((b as HTMLElement).dataset.step))));
@@ -1074,7 +1135,62 @@ import { SITE } from '../lib/site';
       + (findings.length ? 'The place to start is the top finding: ' + findings[0].head.toLowerCase().replace(/\.$/, '') + '. ' : '')
       + 'None of this requires a big IT project — the first Fortify AI deployment is usually live within 30 days, and a free 30-minute review turns this report into that plan.';
 
-    return { score, band, shadowLevel, shadowSub, flags, hoursVal, hoursSub, rec, findings, fallbackNote };
+    // Scorecard: every area we assess gets its own 0-100 exposure score so the
+    // report shows what is going well as plainly as what is not.
+    const areas: AreaScore[] = [
+      {
+        tag: 'SHADOW AI', score: Math.round((shadow / 30) * 100),
+        head: aiManaged ? 'AI use is governed with company accounts and clear rules.'
+          : aiMostly ? 'Rules are mostly in place; finishing and enforcing them closes the gap.'
+          : a.ai === 'We just started putting rules together' ? 'Rules are just getting started, so the exposure is still open.'
+          : a.ai === 'We’ve banned it' ? 'A ban tends to hide AI use rather than stop it.'
+          : a.ai === 'Not that I know of' ? 'Untracked. Most teams are already using AI quietly.'
+          : 'AI is in use on personal accounts with no rules.',
+        sub: shadowSub,
+      },
+      {
+        tag: 'COMPLIANCE', score: flags.length ? Math.min(95, (aiGoverned ? 35 : 55) + flags.length * (aiGoverned ? 8 : 12)) : 12,
+        head: flags.length ? (aiGoverned ? 'Regulated data is handled and AI use is governed. Keep the two aligned.' : 'Regulated data is handled, but AI use is not yet governed around it.')
+          : 'No regulated data categories reported.',
+        sub: flags.length ? flags.join(' · ') : 'Nothing here to reconcile with AI use today.',
+      },
+      {
+        tag: 'ENABLEMENT', score: a.coaching === 'They’re self-taught — figuring it out alone' ? 78 : a.coaching === 'They mostly don’t use it yet' ? 55 : a.coaching === 'Some ad-hoc training here and there' ? 42 : 15,
+        head: a.coaching === 'Every employee gets structured coaching' ? 'Every employee gets structured coaching. That is rare and it shows in output quality.'
+          : a.coaching === 'Some ad-hoc training here and there' ? 'Some training happens, but it is ad hoc, so quality varies by person.'
+          : a.coaching === 'They mostly don’t use it yet' ? 'The team is not really using AI yet, so the productivity gain is still on the table.'
+          : 'The team is self-taught, which usually means weak prompts and uneven results.',
+        sub: 'How well your people use AI decides whether it is a toy or a tool.',
+      },
+      {
+        tag: 'EMPLOYEE POLICY', score: empNone ? 72 : empSigned ? 14 : 48,
+        head: empSigned ? 'A signed AI and data policy is in place for every employee.'
+          : empNone ? 'No signed AI and data policy the team is held to.'
+          : 'A policy exists, but not everyone has signed it.',
+        sub: empSigned ? 'Enforceable, documented, and what an insurer or regulator asks for first.' : 'A policy nobody signed is a suggestion, not a control.',
+      },
+      {
+        tag: 'VENDOR AI TERMS', score: a.vendorterms === 'No — we’ve never asked' ? 88 : a.vendorterms === 'Not sure' ? 70 : 36,
+        head: a.vendorterms === 'Yes — it’s in our vendor contracts' ? 'Vendor contracts address AI. Worth confirming the clause names AI, not only data.'
+          : a.vendorterms === 'Not sure' ? 'Unknown whether vendors who touch your data have AI terms.'
+          : 'Vendors who touch your data have never been asked about AI use.',
+        sub: 'The most overlooked exposure we find, and the easiest to close on paper.',
+      },
+      {
+        tag: 'CYBER INSURANCE', score: a.insurance === 'We don’t have cyber insurance' ? 76 : a.insurance === 'Yes — we’ve confirmed it' ? 18 : 62,
+        head: a.insurance === 'Yes — we’ve confirmed it' ? 'Cyber coverage confirmed to include AI-related incidents.'
+          : a.insurance === 'We don’t have cyber insurance' ? 'No cyber insurance in place.'
+          : 'Cyber insurance exists, but AI-related incidents have not been checked.',
+        sub: 'Many policies written before the last renewal carry silent AI exclusions.',
+      },
+      {
+        tag: 'THIRD-PARTY ACCESS', score: a.vendorterms === 'Yes — it’s in our vendor contracts' ? 42 : 58,
+        head: 'Bookkeepers, agencies and IT contractors can reach your data; their AI use is exposure you inherit.',
+        sub: 'Mapping who can reach what is a short exercise with a long payoff.',
+      },
+    ];
+
+    return { score, band, shadowLevel, shadowSub, flags, hoursVal, hoursSub, rec, findings, fallbackNote, areas };
   }
 
   /* ===== Scan theater + AI note ===== */
@@ -1140,18 +1256,14 @@ import { SITE } from '../lib/site';
   function renderFinding(f: Finding, i: number): string {
     const fc = f.sev === 'danger' ? 'scan__finding--danger' : f.sev === 'info' ? 'scan__finding--info' : 'scan__finding--warn';
     const ft = f.sev === 'danger' ? 'scan-tag--danger' : f.sev === 'info' ? 'scan-tag--info' : 'scan-tag--warn';
+    // Shorter on screen: score badge top-right, headline, one detail line and
+    // the fix. The prevalence bars now live in the PDF only.
     return '<div class="scan__finding ' + fc + '">'
-      + '<div class="scan__findingTop"><span class="scan-tag ' + ft + '">' + f.tag + '</span><span class="scan__findingNum">FINDING 0' + (i + 1) + '</span></div>'
+      + '<div class="scan__findingTop"><span><span class="scan-tag ' + ft + '">' + f.tag + '</span> <span class="scan__findingNum">FINDING 0' + (i + 1) + '</span></span>' + scoreBadge(f) + '</div>'
       + '<div class="scan__findingHead">' + f.head + '</div>'
       + '<div class="scan__findingDetail">' + f.detail + '</div>'
       + '<div class="scan__findingFix"><strong>What to do:</strong> ' + f.fix + '</div>'
-      + (f.prev
-        ? '<div class="scan__prev"><div class="scan__prevLead">How common is this gap?</div>'
-          + prevRow('Small businesses', 'sm', f.prev.s)
-          + prevRow('Mid-sized', 'mid', f.prev.m)
-          + prevRow('Enterprises', 'ent', f.prev.e)
-          + '<div class="scan__prevEdge">' + f.prev.edge + '</div></div>'
-        : '')
+      + (f.prev ? '<div class="scan__prevEdge">' + f.prev.edge + '</div>' : '')
       + '</div>';
   }
 
@@ -1192,8 +1304,10 @@ import { SITE } from '../lib/site';
     const recBox = $('recoverBox') as HTMLElement;
     if (rec && rec.weeklyHigh > 0) {
       ($('recoverHero') as HTMLElement).textContent = 'Up to ' + usd(rec.annualHigh) + ' / year';
+      const anyEdited = Object.keys(answers.headcountEdited || {}).length > 0;
       ($('recoverSub') as HTMLElement).textContent =
-        rec.weeklyLow + '–' + rec.weeklyHigh + ' hours a week, at $' + rec.rate + '/hr fully loaded — a deliberately conservative estimate.';
+        rec.weeklyLow + '–' + rec.weeklyHigh + ' hours a week, at $' + rec.rate + '/hr fully loaded — a deliberately conservative estimate'
+        + (anyEdited ? '.' : ', using industry-average headcounts for your size and sector.');
       ($('recoverList') as HTMLElement).innerHTML = rec.byTask
         .filter((t) => t.high > 0)
         .map((t) => '<div class="scan__recoverItem"><span>' + t.label + '</span><span>up to ' + t.high + ' hrs/wk</span></div>')
@@ -1203,6 +1317,21 @@ import { SITE } from '../lib/site';
     } else {
       recBox.style.display = 'none';
     }
+
+    // Scorecard: every area, best to worst, so strengths read first and the
+    // three biggest exposures sit at the bottom, right above what to do.
+    const sorted = [...r.areas].sort((x, y) => x.score - y.score);
+    const worst = sorted.slice(-3).map((s) => s.tag);
+    ($('scorecard') as HTMLElement).innerHTML =
+      '<div class="scan__cardKey">'
+      + '<span><i style="background:#0F8B5F"></i>0-19 strong</span><span><i style="background:#7A8594"></i>20-34 minor</span>'
+      + '<span><i style="background:#D9A400"></i>35-59 worth fixing</span><span><i style="background:#C25A0C"></i>60-74 elevated</span>'
+      + '<span><i style="background:#C13030"></i>75-100 high</span></div>'
+      + sorted.map((s) => '<div class="scan__card scan__card--' + bandFor(s.score) + '">'
+        + '<div><div class="scan__cardTag">' + s.tag + (worst.indexOf(s.tag) >= 0 ? ' · START HERE' : '') + '</div><div class="scan__cardHead">' + s.head + '</div></div>'
+        + bandBadge(s.score)
+        + '<div class="scan__cardSub">' + s.sub + '</div>'
+        + '</div>').join('');
 
     const cv = genericView(r.findings);
     const shown = cv.findings.slice(0, SHOWN_FINDINGS);
@@ -1259,11 +1388,15 @@ import { SITE } from '../lib/site';
   // Score badge: red/amber/green traffic-light read on the finding's risk,
   // shown on every "rest of your report" box so a glance signals good vs. bad
   // news — without revealing what the finding actually is.
-  function scoreBadgeClass(f: Finding): string {
-    return f.sev === 'danger' ? 'scan__scoreBadge--high' : f.sev === 'warn' ? 'scan__scoreBadge--mid' : 'scan__scoreBadge--low';
+  // A finding's badge shows the same number as its row on the scorecard, so
+  // the two never disagree. Findings without a scorecard row (e.g. WORKFLOWS,
+  // CUSTOM AGENTS) fall back to the illustrative risk score.
+  function findingScore(f: Finding): number {
+    const row = currentReport?.areas.find((s) => s.tag === f.tag);
+    return row ? row.score : riskScore(f);
   }
   function scoreBadge(f: Finding): string {
-    return '<span class="scan__scoreBadge ' + scoreBadgeClass(f) + '">' + riskScore(f) + '%</span>';
+    return bandBadge(findingScore(f));
   }
 
   // Redacted item: full-size box, same treatment throughout — no headline
