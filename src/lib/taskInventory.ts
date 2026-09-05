@@ -237,7 +237,7 @@ export const ESTIMATE_NOTE =
 // One-line source note printed on the web result and the PDF, so the math has a
 // citation on the document a CEO forwards to their CFO or attorney.
 export const METHODOLOGY_NOTE =
-  'Estimates use conservative, per-task hour ranges multiplied by the number of people who do that work, capped at '
-  + Math.round(CAP_FRACTION * 100) + '% of each team’s capacity, at a fully-loaded hourly cost (wages + benefits + payroll tax) '
-  + 'benchmarked to U.S. Bureau of Labor Statistics Employer Costs for Employee Compensation (March 2026) and i-NETT industry data, '
-  + 'over ' + WORK_WEEKS + ' working weeks. Figures are deliberately conservative; actual recoverable value is typically higher.';
+  'Estimates use low, per-task hour ranges multiplied by the number of people who do that work, capped at '
+  + Math.round(CAP_FRACTION * 100) + '% of each team’s time, at an hourly cost that includes wages, benefits and payroll tax, '
+  + 'based on United States Bureau of Labor Statistics employer cost data (March 2026) and i-NETT industry data, '
+  + 'over ' + WORK_WEEKS + ' working weeks. Figures are on purpose low. The real value is usually higher.';

@@ -115,14 +115,14 @@ export function recoverableBand(r: { heroText: string; subText: string; items: {
   const extra = r.items.length - shown.length;
   // "CRM data entry up to 36 · AP up to 18 · …", each item's hrs stripped of the
   // repeated "hrs/wk" suffix (stated once at the end) to keep the line short.
-  const parts = shown.map((i) => `${esc(i.label)} <span style="${mono};font-weight:700;color:${C.link};">${esc(i.hrs.replace(/\s*hrs\/wk$/, ''))}</span>`);
+  const parts = shown.map((i) => `${esc(i.label)} <span style="${mono};font-weight:700;color:${C.link};">${esc(i.hrs.replace(/\s*(hrs\/wk|hours a week)$/, ''))}</span>`);
   if (extra > 0) parts.push(`<span style="color:${C.muted};">+${extra} more</span>`);
   return `<div style="margin:0.28in 0.55in 0;border-top:1px solid ${C.border};padding-top:0.14in;">
     <div style="display:flex;align-items:baseline;justify-content:space-between;gap:0.2in;margin-bottom:7px;">
       <span style="${mono};font-size:6.6pt;letter-spacing:0.14em;color:${C.link};">WHERE YOUR TEAM’S WEEK GOES</span>
       <span style="${arch};font-weight:700;font-size:11pt;color:${C.navy};white-space:nowrap;">${esc(r.heroText)}</span>
     </div>
-    <div style="font-size:8pt;line-height:1.5;color:${C.body};">${parts.join(' &nbsp;·&nbsp; ')} <span style="color:${C.muted};">hrs/wk</span></div>
+    <div style="font-size:8pt;line-height:1.5;color:${C.body};">${parts.join(' &nbsp;·&nbsp; ')} <span style="color:${C.muted};">hours a week</span></div>
   </div>`;
 }
 

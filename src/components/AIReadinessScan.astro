@@ -99,17 +99,17 @@ import { SITE } from '../lib/site';
               </div>
               <div class="scan__statsCol">
                 <div class="scan__stat scan__stat--warn">
-                  <div class="scan__statLabel">SHADOW AI EXPOSURE</div>
+                  <div class="scan__statLabel">UNAPPROVED AI USE</div>
                   <div class="scan__statVal" id="shadowEst">&mdash;</div>
                   <div class="scan__statSub" id="shadowSub"></div>
                 </div>
                 <div class="scan__stat scan__stat--danger">
-                  <div class="scan__statLabel">COMPLIANCE FLAGS</div>
+                  <div class="scan__statLabel">RULES THAT MAY APPLY TO YOUR DATA</div>
                   <div class="scan__statVal" id="compFlags">&mdash;</div>
                   <div class="scan__statSub" id="compSub"></div>
                 </div>
                 <div class="scan__stat scan__stat--teal">
-                  <div class="scan__statLabel">RECOVERABLE HOURS / WEEK</div>
+                  <div class="scan__statLabel">HOURS YOU COULD WIN BACK EACH WEEK</div>
                   <div class="scan__statVal" id="hoursVal">&mdash;</div>
                   <div class="scan__statSub" id="hoursSub"></div>
                 </div>
@@ -119,7 +119,7 @@ import { SITE } from '../lib/site';
             <!-- Recoverable-capacity hero + itemized breakdown (populated in showResults) -->
             <div class="scan__recover" id="recoverBox" style="display:none">
               <div class="scan__recoverTop">
-                <span class="scan__recoverLabel">RECOVERABLE CAPACITY</span>
+                <span class="scan__recoverLabel">TIME AND MONEY YOU COULD WIN BACK</span>
                 <span class="scan__recoverHero" id="recoverHero">&mdash;</span>
                 <span class="scan__recoverSub" id="recoverSub"></span>
               </div>
@@ -127,23 +127,18 @@ import { SITE } from '../lib/site';
               <div class="scan__recoverNote" id="recoverNote"></div>
             </div>
 
-            <div class="scan__findingsLabel">YOUR SCORECARD &mdash; EVERY AREA WE ASSESSED, BEST TO WORST</div>
-            <div id="scorecard"></div>
-
-            <div class="scan__findingsLabel" id="shownLabel" style="margin-top:22px">YOUR TOP FINDINGS &mdash; AND WHAT TO DO ABOUT EACH</div>
-            <div id="findingsList"></div>
+            <div class="scan__findingsLabel" id="areaLabel">YOUR RESULTS, AREA BY AREA &mdash; BEST TO WORST</div>
+            <div id="areaList"></div>
 
             <!-- LEAD GATE -->
             <div id="gateSection">
-              <div class="scan__findingsLabel" id="lockedLabel"></div>
-              <div id="lockedCards"></div>
               <div class="scan__gate">
-                <div class="scan__gateTitle">See your top priorities</div>
+                <div class="scan__gateTitle">Unlock what to do about each one</div>
                 <div class="scan__gateSub">
-                  Enter your details to see your three highest-priority findings and what to do about
-                  each, plus a short analyst note &mdash; right here on screen, with a private link to
-                  your full report emailed to you. A member of the i-NETT team also gets a copy so we
-                  can prepare before we talk.
+                  Add your details and the locked areas above open up right here, with what to do
+                  first for each. We email you a private link to your full report, and one of our
+                  team gets a copy so we can prepare before we talk.
+                </div>
                 </div>
                 <div class="scan__gateFields">
                   <input class="scan__input" id="leadName" type="text" autocomplete="name" placeholder="Your name">
@@ -161,28 +156,26 @@ import { SITE } from '../lib/site';
                   </div>
                 </div>
                 <div class="scan__gateError" id="gateError" style="display:none"></div>
-                <button class="btn btn-accent btn-block" id="unlockBtn">Show my top priorities <span aria-hidden="true">&rarr;</span></button>
-                <div class="scan__gateFine">No spam. One follow-up from a real person &mdash; usually with something useful.</div>
+                <button class="btn btn-accent btn-block" id="unlockBtn">Show what to do about each <span aria-hidden="true">&rarr;</span></button>
+                <div class="scan__gateFine">No spam. One follow-up from a real person, usually with something useful.</div>
               </div>
             </div>
 
             <!-- MEETING GATE: remaining findings are reviewed in a working session -->
             <div id="meetingGate" style="display:none">
-              <div class="scan__findingsLabel" id="meetingLabel"></div>
-              <div id="meetingCards"></div>
               <div class="scan__meeting">
-                <div class="scan__meetingTitle">Your full report &mdash; first 15 minutes of the call.</div>
+                <div class="scan__meetingTitle">The rest of your report, in the first 15 minutes of a call.</div>
                 <div class="scan__meetingSub">
-                  Book a free 30-minute session. We open with your complete report, redacted findings included
-                  &mdash; we verify you&rsquo;re with the organization first, so its details never reach someone
-                  who simply filled out a form.
+                  Book a free 30-minute session. We open with the areas marked &ldquo;together in your
+                  working session&rdquo; above. We confirm you are with the organization first, so its
+                  details never go to someone who only filled out a form.
                 </div>
                 <button class="btn btn-accent btn-lg btn-block" id="meetingBookBtn">Book your 30-minute working session <span aria-hidden="true">&rarr;</span></button>
               </div>
             </div>
 
             <div class="scan__analyst" id="analystBox" style="display:none">
-              <div class="scan__analystLabel">ANALYST NOTE</div>
+              <div class="scan__analystLabel">A NOTE FROM OUR TEAM</div>
               <div class="scan__analystText" id="analystText"></div>
             </div>
 
@@ -190,13 +183,19 @@ import { SITE } from '../lib/site';
               <div class="scan__ctaNote">
                 <div class="scan__ctaTop">TURN THIS INTO A PLAN</div>
                 <div class="scan__ctaSub">
-                  In a free 30-minute review we walk your findings, show you what a governed Fortify AI
-                  rollout would put in place, and map the first deployment &mdash; a prompt-coaching win, a
-                  shared workflow, or a custom agent &mdash; that can be live within 30 days.
+                  In a free 30-minute review we walk through your results, show you what a
+                  company-controlled Fortify AI rollout puts in place, and pick the first project.
+                  That is usually a prompt coach for the team, a shared workflow, or a custom agent,
+                  live within 30 days.
                 </div>
               </div>
-              <button class="btn btn-accent btn-lg btn-block" id="bookBtn">Walk through my results &mdash; book 30 min <span aria-hidden="true">&rarr;</span></button>
+              <button class="btn btn-accent btn-lg btn-block" id="bookBtn">Walk through my results, book 30 minutes <span aria-hidden="true">&rarr;</span></button>
               <div class="scan__ctaFine">Free &middot; No obligation &middot; i-nett.ai</div>
+            </div>
+
+            <div class="scan__glossary" id="glossary" style="display:none">
+              <div class="scan__findingsLabel">TERMS USED IN THIS REPORT</div>
+              <dl class="scan__glossaryList" id="glossaryList"></dl>
             </div>
           </div>
         </div>
@@ -375,11 +374,31 @@ import { SITE } from '../lib/site';
   .scan__band--gray { background: #7A8594; }
   .scan__band--green { background: #0F8B5F; }
 
-  /* Critical bar: solid red, white bold, full width across the top of any
-     box where data can leave through an ungoverned model. */
-  .scan__critical { grid-column: 1 / -1; margin: -12px -14px 8px; padding: 6px 14px; background: #C13030; color: #fff; font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0.16em; border-radius: var(--radius-md) var(--radius-md) 0 0; }
-  .scan__finding .scan__critical, .scan__teaser .scan__critical { margin: calc(-1 * var(--space-5)) calc(-1 * var(--space-5)) 12px; padding-left: var(--space-5); }
-  .scan__locked .scan__critical { margin: -13px -14px 8px; }
+  /* Critical bar: solid red, white bold, pinned to the very top of the box so
+     it always runs edge to edge under the rounded corners. Boxes that carry it
+     get extra top padding via .scan__hasCritical. */
+  .scan__critical { position: absolute; top: 0; left: 0; right: 0; margin: 0; padding: 6px var(--space-5); background: #C13030; color: #fff; font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0.16em; line-height: 1.4; }
+  .scan__finding, .scan__row { position: relative; overflow: hidden; }
+  .scan__finding.scan__hasCritical { padding-top: calc(var(--space-5) + 32px); }
+  .scan__row.scan__hasCritical { padding-top: 42px; }
+  .scan__row .scan__critical { padding: 5px 14px; font-size: 10px; }
+
+  /* One compact row per area: tinted by band, score top-right, optional lock line. */
+  .scan__row { display: grid; grid-template-columns: 1fr auto; gap: 4px 14px; align-items: start; padding: 12px 14px; margin-bottom: 8px; border: 1px solid var(--color-border); border-left-width: 4px; border-radius: var(--radius-md); background: var(--color-bg); box-shadow: var(--shadow-sm); }
+  .scan__row--red { border-left-color: #C13030; border-color: rgba(193,48,48,0.45); background: rgba(193,48,48,0.06); }
+  .scan__row--orange { border-left-color: #C25A0C; border-color: rgba(194,90,12,0.45); background: rgba(194,90,12,0.06); }
+  .scan__row--yellow { border-left-color: #D9A400; border-color: rgba(217,164,0,0.5); background: rgba(217,164,0,0.08); }
+  .scan__row--gray { border-left-color: #7A8594; }
+  .scan__row--green { border-left-color: #0F8B5F; border-color: rgba(15,139,95,0.4); background: rgba(15,139,95,0.05); }
+  .scan__rowLock { grid-column: 1 / -1; font-size: 12px; color: var(--color-text-muted); display: flex; gap: 6px; align-items: center; margin-top: 2px; }
+
+  /* Glossary: every marked term, defined once at the very bottom. */
+  .scan__glossary { margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--color-border); }
+  .scan__glossaryList { margin: 0; display: grid; gap: 7px; font-size: 12px; line-height: 1.5; color: var(--color-text-soft); }
+  .scan__glossaryList > div { display: grid; grid-template-columns: 104px 1fr; gap: 10px; align-items: baseline; }
+  .scan__glossaryList dt { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--color-ink-800); }
+  .scan__glossaryList dd { margin: 0; }
+  @media (max-width: 480px) { .scan__glossaryList > div { grid-template-columns: 1fr; gap: 2px; } }
 
   /* Band-tinted boxes: the whole card carries its colour, not just an edge. */
   .scan__finding--red, .scan__teaser--red { background: rgba(193,48,48,0.10) !important; border-color: rgba(193,48,48,0.55) !important; border-left-color: #C13030 !important; }
@@ -676,18 +695,18 @@ import { SITE } from '../lib/site';
   // Prevalence estimates by segment (small / mid / enterprise) — framed as edge.
   type Prev = { s: number; m: number; e: number; edge: string };
   const PREV: Record<string, Prev> = {
-    'SHADOW AI': { s: 68, m: 55, e: 39, edge: 'Govern it and you’re ahead of two-thirds of organizations your size.' },
-    'COMPLIANCE': { s: 71, m: 57, e: 33, edge: 'Closing the gap before regulators or insurers look puts you ahead of most peers.' },
-    'EMPLOYEE POLICY': { s: 81, m: 63, e: 37, edge: 'A signed policy is standard at enterprises and rare at your size — an easy edge.' },
-    'ENABLEMENT': { s: 74, m: 61, e: 44, edge: 'Most teams never coach AISkill — the ones that do pull ahead fast.' },
-    'WORKFLOWS': { s: 79, m: 66, e: 48, edge: 'Almost no one shares AI wins across the team. Doing it compounds quietly.' },
-    'CUSTOM AGENTS': { s: 78, m: 66, e: 49, edge: 'Reclaiming these hours with agents is something most of your peers still haven’t done.' },
-    'VENDOR AI TERMS': { s: 92, m: 84, e: 63, edge: 'Almost nobody has this. Having it is a genuine differentiator.' },
-    'CYBER INSURANCE': { s: 74, m: 60, e: 34, edge: 'Knowing where you stand — and whether managed security can strengthen your coverage — beats most of the market.' },
-    'THIRD-PARTY ACCESS': { s: 70, m: 57, e: 41, edge: 'Most organizations never check this — you’d be ahead of them.' },
+    'SHADOW AI': { s: 68, m: 55, e: 39, edge: 'Put company rules and accounts in place and you are ahead of two thirds of organizations your size.' },
+    'COMPLIANCE': { s: 71, m: 57, e: 33, edge: 'Closing this gap before a regulator or insurer looks puts you ahead of most peers.' },
+    'EMPLOYEE POLICY': { s: 81, m: 63, e: 37, edge: 'A signed policy is normal at large companies and rare at your size. It is an easy win.' },
+    'ENABLEMENT': { s: 74, m: 61, e: 44, edge: 'Most teams never get coached on AI. The ones that do pull ahead fast.' },
+    'WORKFLOWS': { s: 79, m: 66, e: 48, edge: 'Almost no one shares AI wins across the team. Doing it adds up quietly.' },
+    'CUSTOM AGENTS': { s: 78, m: 66, e: 49, edge: 'Most of your peers have not handed this work to agents yet.' },
+    'VENDOR AI TERMS': { s: 92, m: 84, e: 63, edge: 'Almost nobody has this. Having it is a real advantage.' },
+    'CYBER INSURANCE': { s: 74, m: 60, e: 34, edge: 'Knowing where you stand, and whether managed security can improve your coverage, beats most of the market.' },
+    'THIRD-PARTY ACCESS': { s: 70, m: 57, e: 41, edge: 'Most organizations never check this. You would be ahead of them.' },
   };
   // (typo guard) fix the ENABLEMENT edge string cleanly
-  PREV['ENABLEMENT'].edge = 'Most teams never coach their people on AI — the ones that do pull ahead fast.';
+  PREV['ENABLEMENT'].edge = 'Most teams never coach their people on AI. The ones that do pull ahead fast.';
 
   const MSGS = [
     { t: '[ INIT ] Connecting to Fortify AI scan engine...', c: 't-default' },
@@ -956,12 +975,12 @@ import { SITE } from '../lib/site';
 
   /* ===== Deterministic report engine ===== */
   const FLAG_MAP: Record<string, string> = {
-    'Medical or health records': 'HIPAA — health data',
-    'Card payments': 'PCI-DSS — card payments',
-    'Legal or financial documents': 'Confidentiality — legal & financial records',
-    'Government / CJIS / CMMC data': 'CMMC / CJIS — government work',
-    'Children’s data': 'COPPA / FERPA — children’s data',
-    'Personal data (PII) of customers': 'GDPR / CCPA — personal data',
+    'Medical or health records': 'HIPAA (health data)',
+    'Card payments': 'PCI-DSS (card payments)',
+    'Legal or financial documents': 'Confidentiality (legal and financial records)',
+    'Government / CJIS / CMMC data': 'CMMC / CJIS (government work)',
+    'Children’s data': 'COPPA / FERPA (children’s data)',
+    'Personal data (PII) of customers': 'GDPR / CCPA (personal data)',
   };
 
   function computeReport(a: Record<string, any>): Report {
@@ -1045,15 +1064,15 @@ import { SITE } from '../lib/site';
 
     // Anything short of governed company accounts is HIGH: data can leave.
     const shadowLevel = aiManaged ? 'LOW' : 'HIGH';
-    const shadowSub = a.ai === 'On personal accounts — no rules' ? (toolList.length ? toolList.length + ' AI tools confirmed, on personal accounts with no rules' : 'AI in use on personal accounts with no usage rules')
-      : a.ai === 'We just started putting rules together' ? 'Rules started but not finished. Data can still leave through an ungoverned model'
-      : aiMostly ? 'Mostly in place means not in place. Data can still leave through an ungoverned model'
-      : a.ai === 'Not that I know of' ? 'Unmonitored — most teams are already using AI quietly'
-      : a.ai === 'We’ve banned it' ? 'Bans push AI use underground rather than stopping it'
-      : aiManaged ? 'Usage governed by clear rules — keep them current' : 'Unknown usage profile';
+    const shadowSub = a.ai === 'On personal accounts — no rules' ? (toolList.length ? toolList.length + ' AI tools confirmed, on personal accounts with no rules' : 'AI in use on personal accounts with no rules')
+      : a.ai === 'We just started putting rules together' ? 'Rules started but not finished. Data can still leave through an AI tool the company does not control'
+      : aiMostly ? 'Mostly in place means not in place. Data can still leave through an AI tool the company does not control'
+      : a.ai === 'Not that I know of' ? 'Not tracked. Most teams are already using AI quietly'
+      : a.ai === 'We’ve banned it' ? 'Bans push AI use underground instead of stopping it'
+      : aiManaged ? 'AI use runs on company rules. Keep them current' : 'Unknown usage profile';
 
-    const hoursVal = rec.weeklyHigh > 0 ? rec.weeklyLow + '–' + rec.weeklyHigh + ' hrs' : 'Untracked';
-    const hoursSub = rec.weeklyHigh > 0 ? 'Up to ' + usd(rec.annualHigh) + '/yr recoverable with automation' : 'Pick the tasks your team does by hand to size this';
+    const hoursVal = rec.weeklyHigh > 0 ? rec.weeklyLow + ' to ' + rec.weeklyHigh + ' hours' : 'Not sized yet';
+    const hoursSub = rec.weeklyHigh > 0 ? 'Up to ' + usd(rec.annualHigh) + ' a year you could win back with automation' : 'Pick the tasks your team does by hand to size this';
 
     const cands: Finding[] = [];
 
@@ -1062,12 +1081,12 @@ import { SITE } from '../lib/site';
       cands.push({
         w: enable + 5, sev: a.coaching === 'They mostly don’t use it yet' ? 'warn' : 'info', tag: 'ENABLEMENT',
         head: a.coaching === 'They mostly don’t use it yet'
-          ? 'Your team has room to get far more value from AI than it does today.'
-          : 'Your team is largely self-taught with AI, so it isn’t working nearly as effectively for them as it could.',
+          ? 'Your team could get far more out of AI than it does today.'
+          : 'Your team taught itself AI, so it is not working nearly as well for them as it could.',
         detail: a.coaching === 'They mostly don’t use it yet'
-          ? 'The gap between a team that uses AI well and one that doesn’t is becoming a real competitive difference. With the right guidance, employees move well beyond basic copy-paste use.'
-          : 'Self-taught users tend to write weaker prompts and receive poorer-quality responses, which can quietly lead to work being done incorrectly. Across large organizations — including 10,000+ employee enterprises — the majority of users experienced this before structured coaching was in place.',
-        fix: 'A prompt coach for every employee raises the quality and consistency of what AI produces. Published results for this coaching approach show up to 73% better AI outputs and roughly 65% lower risk of a poor result — with up to 80% stronger prompts and about 54% fewer tokens.',
+          ? 'Teams that use AI well are pulling ahead of teams that do not. With the right guidance, people move well past basic copy and paste.'
+          : 'Self-taught users write weaker prompts and get weaker answers. That can quietly lead to work being done wrong. Most users at large companies, including those with more than 10,000 employees, had this problem before coaching was in place.',
+        fix: 'A prompt coach for every employee raises the quality of what AI produces and keeps it consistent. Published results for this coaching approach show up to 73% better AI answers and about 65% less chance of a poor result, with up to 80% stronger prompts and about 54% less AI usage.',
       });
     }
 
@@ -1075,19 +1094,19 @@ import { SITE } from '../lib/site';
     if (!aiManaged) {
       cands.push({
         w: shadow, sev: (sensitive.length && !aiGoverned) ? 'danger' : 'warn', tag: 'SHADOW AI',
-        head: a.ai === 'We’ve banned it' ? 'Your AI ban isn’t stopping AI use — it’s hiding it from you.'
-          : a.ai === 'On personal accounts — no rules' ? (toolList.length ? 'Your team is already on ' + toolList.length + ' AI tools — through personal accounts, with no rules.' : 'Your team uses AI through personal accounts with no rules about what goes into it.')
-          : aiMostly ? 'Your AI rules are almost there — the win is finishing and enforcing them.'
-          : a.ai === 'We just started putting rules together' ? 'You’ve started on AI rules — until they’re finished, the exposure stays open.'
-          : 'AI is almost certainly in use at your organization — just not where you can see it.',
+        head: a.ai === 'We’ve banned it' ? 'Your AI ban is not stopping AI use. It is hiding it from you.'
+          : a.ai === 'On personal accounts — no rules' ? (toolList.length ? 'Your team already uses ' + toolList.length + ' AI tools through personal accounts, with no rules.' : 'Your team uses AI through personal accounts with no rules about what goes into it.')
+          : aiMostly ? 'Your AI rules are almost there. The win is finishing them and holding people to them.'
+          : a.ai === 'We just started putting rules together' ? 'You have started on AI rules. Until they are finished, the exposure stays open.'
+          : 'AI is almost certainly in use at your organization, just not where you can see it.',
         detail: (aiGoverned
-          ? 'Even a mostly-complete policy leaves gaps while it’s unfinished — employees still paste real work into free AI tools'
-          : 'Employees paste real work into free AI tools — customer details, pricing, contracts')
-          + (sensitive.length ? ', and in your case potentially ' + sensitive.join(', ').toLowerCase() : '')
-          + '. Public tools can retain and train on that data, outside any agreement that protects you.',
+          ? 'Even a mostly finished policy leaves gaps while it is unfinished. Employees still paste real work into free AI tools'
+          : 'Employees paste real work into free AI tools. That includes customer details, pricing and contracts')
+          + (sensitive.length ? ', and in your case possibly ' + sensitive.join(', ').toLowerCase() : '')
+          + '. Public tools can keep that data and learn from it, outside any agreement that protects you.',
         fix: (aiMostly || a.ai === 'We just started putting rules together')
-          ? 'We help you finish the AI usage policy and move the team onto governed, business-grade accounts — so the rules you started actually hold.'
-          : 'A one-page AI usage policy plus governed, business-grade AI accounts gives your team the productivity without the exposure.',
+          ? 'We help you finish the AI use policy and move the team onto company AI accounts with rules, so the rules you started actually hold.'
+          : 'A one-page AI use policy plus company AI accounts with rules gives your team the productivity without the exposure.',
       });
     }
 
@@ -1095,10 +1114,10 @@ import { SITE } from '../lib/site';
     if (flags.length && !aiGoverned) {
       cands.push({
         w: flags.length * 7 + 4, sev: 'danger', tag: 'COMPLIANCE',
-        head: 'Your data obligations and your AI usage haven’t met each other yet.',
-        detail: 'You handle ' + sensitive.join(', ').toLowerCase() + ', which commonly brings obligations under frameworks like ' + flags.map((f: string) => f.split(' — ')[0]).join(', ')
-          + '. Where those apply, ungoverned AI use with this kind of data is often the first gap regulators, insurers, and opposing counsel look at.',
-        fix: 'Access controls, an approved-tools list, and monitoring close the gap — usually without slowing anyone down.',
+        head: 'The rules for your data and the way your team uses AI have not met each other yet.',
+        detail: 'You handle ' + sensitive.join(', ').toLowerCase() + '. That usually brings rules such as ' + flags.map((f: string) => f.split(' (')[0]).join(', ')
+          + '. Where those rules apply, AI use without company controls is often the first gap a regulator, an insurer or a lawyer looks at.',
+        fix: 'Access controls, a list of approved tools and monitoring close the gap, usually without slowing anyone down.',
       });
     }
 
@@ -1106,9 +1125,9 @@ import { SITE } from '../lib/site';
     if (toolList.length >= 2 || a.goal === 'Roll AI out to the whole team') {
       cands.push({
         w: 8, sev: 'info', tag: 'WORKFLOWS',
-        head: 'When one person figures out a great AI workflow, does everyone doing that job get it?',
-        detail: 'In most organizations, one sharp employee builds a genuinely useful AI workflow — and it dies on their laptop. Everyone else keeps doing it the slow way, and the win never compounds.',
-        fix: 'We capture the workflows and skills that work and spread them to everyone in that role — so one person’s win becomes the whole team’s baseline.',
+        head: 'When one person finds a great way to use AI, does everyone doing that job get it?',
+        detail: 'In most organizations one sharp employee builds a truly useful AI workflow, and it stays on their laptop. Everyone else keeps doing it the slow way, and the win never spreads.',
+        fix: 'We capture the workflows and skills that work and give them to everyone in that role, so one person’s win becomes the whole team’s normal.',
       });
     }
 
@@ -1118,10 +1137,10 @@ import { SITE } from '../lib/site';
       cands.push({
         w: busyW, sev: 'info', tag: 'CUSTOM AGENTS',
         head: rec.weeklyHigh > 0
-          ? 'Your team is spending up to ' + rec.weeklyHigh + ' hours a week — ' + usd(rec.annualHigh) + ' a year — on work a custom agent should do.'
-          : 'The repetitive work your team does by hand is exactly what agents are built for.',
-        detail: 'Invoice processing, data entry, follow-up, resume screening, and copy-paste between systems are exactly the tasks a purpose-built agent removes first — and the tasks your best people resent most. Estimates are deliberately conservative; the real number is usually higher.',
-        fix: 'We build custom agents with you — starting with the task your team hates most — so the hours go back into work that actually earns.',
+          ? 'Your team spends up to ' + rec.weeklyHigh + ' hours a week, about ' + usd(rec.annualHigh) + ' a year, on work a custom agent should do.'
+          : 'The repeat work your team does by hand is exactly what agents are built for.',
+        detail: 'Invoice processing, data entry, follow-up, resume screening and copying between systems are the first tasks an agent built for the job takes over. They are also the tasks your best people like least. Our estimates are on purpose low. The real number is usually higher.',
+        fix: 'We build custom agents with you, starting with the task your team likes least, so the hours go back into work that earns.',
       });
     }
 
@@ -1129,25 +1148,25 @@ import { SITE } from '../lib/site';
     if (!empSigned && a.emppolicy) {
       cands.push({
         w: empNone ? 13 : 9, sev: empNone ? 'warn' : 'info', tag: 'EMPLOYEE POLICY',
-        head: empNone ? 'There’s no signed AI & data policy your team is actually held to.'
-          : 'You have a policy — but not everyone has signed it, so it’s hard to enforce.',
-        detail: 'A policy nobody signed is a suggestion, not a control. If an employee leaks data through an AI tool, “we told them not to” doesn’t hold up with a regulator, an insurer, or in court — a signed acknowledgment does.',
-        fix: 'We produce a plain-language AI & data use policy written for your organization, ready for every employee to sign — documented, acknowledged, and enforceable.',
+        head: empNone ? 'There is no signed AI and data policy your team is held to.'
+          : 'You have a policy, but not everyone has signed it, so it is hard to hold people to it.',
+        detail: 'A policy nobody signed is a suggestion, not a rule. If an employee leaks data through an AI tool, “we told them not to” does not hold up with a regulator, an insurer or in court. A signed policy does.',
+        fix: 'We write a plain-language AI and data use policy for your organization, ready for every employee to sign. It is documented, signed and something you can hold people to.',
       });
     }
 
     // Universal findings
     cands.push({
       w: 8, sev: 'warn', tag: 'THIRD-PARTY ACCESS',
-      head: 'Your vendors touch your data — do you know if they run it through their own AI?',
-      detail: 'Your bookkeeper, marketing help, IT contractor, and software vendors all handle your data. Any one of them pasting it into their own AI tools is exposure you inherit but can’t see — and their mistake becomes your problem.',
-      fix: 'We map who can reach what, and help you set the expectation that your data never goes into anyone’s ungoverned AI — yours or theirs.',
+      head: 'Your vendors touch your data. Do you know if they run it through their own AI?',
+      detail: 'Your bookkeeper, marketing help, technology contractor and software vendors all handle your data. Any one of them pasting it into their own AI tools is exposure you inherit but cannot see. Their mistake becomes your problem.',
+      fix: 'We map who can reach what, and help you set the expectation that your data never goes into anyone’s uncontrolled AI, yours or theirs.',
     });
     cands.push({
       w: 7, sev: 'info', tag: 'CYBER INSURANCE',
-      head: 'Even a clean setup: does your cyber policy actually cover an AI-related incident?',
-      detail: 'Many cyber policies written before the last renewal cycle have silent gaps or exclusions for AI-driven data exposure. As a Lloyd’s of London cyber-insurance partner, i-NETT can help you see where you stand — and because our managed security lowers risk, the organizations we manage can qualify for stronger coverage and better pricing.',
-      fix: 'We check your posture against how insurers now write AI exclusions, so you know exactly where you stand — and where managed security could strengthen your position — before you ever need to file.',
+      head: 'Even with a clean setup, does your cyber policy actually cover an AI-related incident?',
+      detail: 'Many cyber policies written before the last renewal have quiet gaps for data exposed through AI. As a Lloyd’s of London cyber insurance partner, we can help you see where you stand. Because our managed security lowers risk, the organizations we manage can qualify for stronger coverage and better pricing.',
+      fix: 'We check your coverage against how insurers now write AI exclusions, so you know where you stand, and where managed security could strengthen your position, before you ever need to file a claim.',
     });
 
     cands.sort((x, y) => y.w - x.w);
@@ -1158,22 +1177,22 @@ import { SITE } from '../lib/site';
     findings.push({
       w: 0, locked: true, sev: vendorYes ? 'warn' : 'danger', tag: 'VENDOR AI TERMS',
       head: vendorYes
-        ? 'You have vendor agreements — but do they actually mention AI, or just data?'
+        ? 'You have vendor agreements. Do they actually mention AI, or only data?'
         : 'Have the vendors who touch your data signed anything about using AI with it?',
       detail: vendorYes
-        ? 'Most vendor contracts signed before the last year or two govern data handling but say nothing about AI specifically. If your bookkeeper or agency runs your data through their own AI tools, an older data clause may not cover it — and the liability quietly drifts back to you.'
-        : 'This is the one almost nobody has covered. When a contractor or vendor runs your customer data, financials, or IP through an AI tool, whose liability is that? Without a signed agreement that specifically governs AI use of your data, the answer is usually you. It is the most overlooked exposure we find — and the easiest to close on paper.',
-      fix: 'We give you a plain-language AI data clause to add to your vendor agreements, so any third party handling your data is explicitly on the hook for how they use it. This is the first thing we’d put in front of you on a call.',
+        ? 'Most vendor contracts signed more than a year or two ago cover data handling but say nothing about AI. If your bookkeeper or agency runs your data through their own AI tools, an older data clause may not cover it, and the blame quietly drifts back to you.'
+        : 'This is the one almost nobody has covered. When a contractor or vendor runs your customer data, financials or private work through an AI tool, who is responsible? Without a signed agreement that covers AI use of your data, the answer is usually you. It is the most overlooked exposure we find, and the easiest to close on paper.',
+      fix: 'We give you a plain-language AI data clause to add to your vendor agreements, so any outside party handling your data is clearly on the hook for how they use it. This is the first thing we would put in front of you on a call.',
     });
 
     findings.forEach((f) => { if (PREV[f.tag]) f.prev = PREV[f.tag]; f.gen = GEN_BY_TAG[f.tag] ?? 4; });
 
     const industryPhrase = a.industry && a.industry !== 'Other' ? 'a ' + a.industry.toLowerCase() + ' organization' : 'an organization';
     const fallbackNote = 'For ' + industryPhrase + ' your size, this profile is '
-      + (band === 'LOW' ? 'in good shape — the findings above are refinements, not alarms' : band === 'MODERATE' ? 'typical, and typical means fixable'
-        : 'carrying real, addressable exposure') + '. '
+      + (band === 'LOW' ? 'in good shape. The findings above are fine-tuning, not alarms' : band === 'MODERATE' ? 'typical, and typical means fixable'
+        : 'carrying real exposure that can be fixed') + '. '
       + (findings.length ? 'The place to start is the top finding: ' + findings[0].head.toLowerCase().replace(/\.$/, '') + '. ' : '')
-      + 'None of this requires a big IT project — the first Fortify AI deployment is usually live within 30 days, and a free 30-minute review turns this report into that plan.';
+      + 'None of this needs a big technology project. The first Fortify AI deployment is usually live within 30 days, and a free 30-minute review turns this report into that plan.';
 
     // Scorecard: every area we assess gets its own 0-100 exposure score so the
     // report shows what is going well as plainly as what is not.
@@ -1187,43 +1206,43 @@ import { SITE } from '../lib/site';
       {
         tag: 'SHADOW AI', critical: !aiManaged,
         score: aiManaged ? 10 + j('SHADOW AI') : red(shadowUngoverned ? 86 : aiMostly ? 78 : 82, 'SHADOW AI'),
-        head: aiManaged ? 'AI use is governed with company accounts and clear rules.'
-          : aiMostly ? 'Rules are mostly in place, which means they are not in place. Data can still leave through an ungoverned model.'
-          : a.ai === 'We just started putting rules together' ? 'Rules are just getting started. Until they are finished and enforced, data can leave through an ungoverned model.'
-          : a.ai === 'We’ve banned it' ? 'A ban hides AI use rather than stopping it. Data is still leaving through personal accounts.'
-          : a.ai === 'Not that I know of' ? 'Untracked. Most teams are already using AI quietly, and anything pasted in is gone.'
+        head: aiManaged ? 'AI use runs on company accounts with clear rules.'
+          : aiMostly ? 'Rules are mostly in place, which means they are not in place. Data can still leave through an AI tool the company does not control.'
+          : a.ai === 'We just started putting rules together' ? 'Rules are just getting started. Until they are finished and enforced, data can leave through an AI tool the company does not control.'
+          : a.ai === 'We’ve banned it' ? 'A ban hides AI use instead of stopping it. Data is still leaving through personal accounts.'
+          : a.ai === 'Not that I know of' ? 'Not tracked. Most teams already use AI quietly, and anything pasted in is gone.'
           : 'AI is in use on personal accounts with no rules. Anything pasted in is gone.',
         sub: aiManaged ? shadowSub : 'One customer file, contract or price list in a free tool is a permanent loss, outside any agreement that protects you.',
       },
       {
         tag: 'COMPLIANCE', critical: flags.length > 0 && !fullyGoverned,
         score: flags.length ? (fullyGoverned ? Math.min(34, 18 + flags.length * 3) : red(78 + flags.length * 2, 'COMPLIANCE')) : 10 + j('COMPLIANCE'),
-        head: flags.length ? (fullyGoverned ? 'Regulated data is handled and AI use is fully governed. Keep the two aligned.' : 'Regulated data is handled and AI use is not fully governed around it.')
-          : 'No regulated data categories reported.',
-        sub: flags.length ? flags.join(' · ') : 'Nothing here to reconcile with AI use today.',
+        head: flags.length ? (fullyGoverned ? 'You handle regulated data and AI use is fully under company control. Keep the two lined up.' : 'You handle regulated data and AI use is not fully under company control around it.')
+          : 'No regulated data types reported.',
+        sub: flags.length ? flags.join(' · ') : 'Nothing here to line up with AI use today.',
       },
       {
         tag: 'ENABLEMENT', score: (a.coaching === 'They’re self-taught — figuring it out alone' ? 72 : a.coaching === 'They mostly don’t use it yet' ? 52 : a.coaching === 'Some ad-hoc training here and there' ? 40 : 12) + j('ENABLEMENT'),
-        head: a.coaching === 'Every employee gets structured coaching' ? 'Every employee gets structured coaching. That is rare and it shows in output quality.'
-          : a.coaching === 'Some ad-hoc training here and there' ? 'Some training happens, but it is ad hoc, so quality varies by person.'
+        head: a.coaching === 'Every employee gets structured coaching' ? 'Every employee gets structured coaching. That is rare and it shows in the quality of the work.'
+          : a.coaching === 'Some ad-hoc training here and there' ? 'Some training happens, but only here and there, so quality varies by person.'
           : a.coaching === 'They mostly don’t use it yet' ? 'The team is not really using AI yet, so the productivity gain is still on the table.'
-          : 'The team is self-taught, which usually means weak prompts and uneven results.',
+          : 'The team taught itself, which usually means weak prompts and uneven results.',
         sub: 'How well your people use AI decides whether it is a toy or a tool.',
       },
       {
         tag: 'EMPLOYEE POLICY', critical: !empSigned,
         score: empSigned ? 10 + j('EMPLOYEE POLICY') : red(empNone ? 84 : 77, 'EMPLOYEE POLICY'),
         head: empSigned ? 'A signed AI and data policy is in place for every employee.'
-          : empNone ? 'No signed AI and data policy the team is held to. Nothing stops an employee pasting your data into a public model.'
+          : empNone ? 'No signed AI and data policy the team is held to. Nothing stops an employee pasting your data into a public AI tool.'
           : 'A policy exists but not everyone has signed it, so it does not hold for the people who did not.',
-        sub: empSigned ? 'Enforceable, documented, and what an insurer or regulator asks for first.' : 'A policy nobody signed is a suggestion, not a control. "We told them not to" does not hold up with a regulator or an insurer.',
+        sub: empSigned ? 'Signed, documented, and the first thing an insurer or regulator asks for.' : 'A policy nobody signed is a suggestion, not a rule. "We told them not to" does not hold up with a regulator or an insurer.',
       },
       {
         tag: 'VENDOR AI TERMS', critical: !vendorOk,
         score: vendorOk ? 22 + j('VENDOR AI TERMS') : red(a.vendorterms === 'No — we’ve never asked' ? 88 : 81, 'VENDOR AI TERMS'),
-        head: vendorOk ? 'Vendor contracts address AI. Worth confirming the clause names AI, not only data.'
-          : a.vendorterms === 'Not sure' ? 'Unknown whether the vendors who touch your data have signed anything about AI. Their model becomes your leak.'
-          : 'The vendors who touch your data have never been asked about AI. Their model becomes your leak.',
+        head: vendorOk ? 'Vendor contracts cover AI. Worth confirming the clause names AI, not only data.'
+          : a.vendorterms === 'Not sure' ? 'Unknown whether the vendors who touch your data have signed anything about AI. Their AI tool becomes your leak.'
+          : 'The vendors who touch your data have never been asked about AI. Their AI tool becomes your leak.',
         sub: 'The most overlooked exposure we find, and the easiest to close on paper.',
       },
       {
@@ -1231,12 +1250,12 @@ import { SITE } from '../lib/site';
         head: a.insurance === 'Yes — we’ve confirmed it' ? 'Cyber coverage confirmed to include AI-related incidents.'
           : a.insurance === 'We don’t have cyber insurance' ? 'No cyber insurance in place.'
           : 'Cyber insurance exists, but AI-related incidents have not been checked.',
-        sub: 'Many policies written before the last renewal carry silent AI exclusions.',
+        sub: 'Many policies written before the last renewal quietly leave out AI.',
       },
       {
         tag: 'THIRD-PARTY ACCESS', critical: !vendorOk,
         score: vendorOk ? 24 + j('THIRD-PARTY ACCESS') : red(76, 'THIRD-PARTY ACCESS'),
-        head: 'Bookkeepers, agencies and IT contractors can reach your data. Their AI use is exposure you inherit and cannot see.',
+        head: 'Bookkeepers, agencies and technology contractors can reach your data. Their AI use is exposure you inherit and cannot see.',
         sub: 'Mapping who can reach what is a short exercise with a long payoff.',
       },
     ];
@@ -1298,7 +1317,7 @@ import { SITE } from '../lib/site';
           if (unlocked) {
             const el = $('analystText') as HTMLElement;
             el.style.opacity = '0';
-            setTimeout(() => { el.textContent = aiNote as string; el.style.opacity = '1'; }, 400);
+            setTimeout(() => { el.textContent = aiNote as string; el.style.opacity = '1'; applyGlossary(); }, 400);
           }
         }
       }).catch(() => { /* fallback covers this */ });
@@ -1313,7 +1332,7 @@ import { SITE } from '../lib/site';
     const sc = findingScore(f);
     const critical = !!currentReport?.areas.find((s) => s.tag === f.tag && s.critical);
     const bullets = f.detail.split(/(?<=[.!?])\s+(?=[A-Z“"])/).map((s) => s.trim()).filter(Boolean);
-    return '<div class="scan__finding ' + fc + ' scan__finding--' + bandFor(sc) + '">'
+    return '<div class="scan__finding ' + fc + ' scan__finding--' + bandFor(sc) + (critical ? ' scan__hasCritical' : '') + '">'
       + (critical ? CRITICAL_BAR : '')
       + '<div class="scan__findingTop"><span><span class="scan-tag ' + ft + '">' + f.tag + '</span> <span class="scan__findingNum">FINDING 0' + (i + 1) + '</span></span>' + bandBadge(sc) + '</div>'
       + '<div class="scan__findingHead">' + f.head + '</div>'
@@ -1357,7 +1376,7 @@ import { SITE } from '../lib/site';
     ($('shadowEst') as HTMLElement).textContent = r.shadowLevel;
     ($('shadowSub') as HTMLElement).textContent = r.shadowSub;
     ($('compFlags') as HTMLElement).textContent = String(r.flags.length);
-    ($('compSub') as HTMLElement).textContent = r.flags.length ? r.flags.join(' · ') : 'No regulated data categories reported';
+    ($('compSub') as HTMLElement).textContent = r.flags.length ? r.flags.join(' · ') : 'No regulated data types reported';
     ($('hoursVal') as HTMLElement).textContent = r.hoursVal;
     ($('hoursSub') as HTMLElement).textContent = r.hoursSub;
 
@@ -1368,11 +1387,11 @@ import { SITE } from '../lib/site';
       ($('recoverHero') as HTMLElement).textContent = 'Up to ' + usd(rec.annualHigh) + ' / year';
       const anyEdited = Object.keys(answers.headcountEdited || {}).length > 0;
       ($('recoverSub') as HTMLElement).textContent =
-        rec.weeklyLow + '–' + rec.weeklyHigh + ' hours a week, at $' + rec.rate + '/hr fully loaded — a deliberately conservative estimate'
+        rec.weeklyLow + ' to ' + rec.weeklyHigh + ' hours a week at $' + rec.rate + ' an hour including wages and benefits. A deliberately low estimate'
         + (anyEdited ? '.' : ', using industry-average headcounts for your size and sector.');
       ($('recoverList') as HTMLElement).innerHTML = rec.byTask
         .filter((t) => t.high > 0)
-        .map((t) => '<div class="scan__recoverItem"><span>' + t.label + '</span><span>up to ' + t.high + ' hrs/wk</span></div>')
+        .map((t) => '<div class="scan__recoverItem"><span>' + t.label + '</span><span>up to ' + t.high + ' hours a week</span></div>')
         .join('');
       ($('recoverNote') as HTMLElement).textContent = METHODOLOGY_NOTE;
       recBox.style.display = 'block';
@@ -1380,52 +1399,108 @@ import { SITE } from '../lib/site';
       recBox.style.display = 'none';
     }
 
-    // Scorecard: every area, best to worst, so strengths read first and the
-    // three biggest exposures sit at the bottom, right above what to do.
-    const sorted = [...r.areas].sort((x, y) => x.score - y.score);
-    const worst = sorted.slice(-3).map((s) => s.tag);
-    ($('scorecard') as HTMLElement).innerHTML =
-      '<div class="scan__cardKey">'
-      + '<span><i style="background:#0F8B5F"></i>0-19 strong</span><span><i style="background:#7A8594"></i>20-34 minor</span>'
-      + '<span><i style="background:#D9A400"></i>35-59 worth fixing</span><span><i style="background:#C25A0C"></i>60-74 elevated</span>'
-      + '<span><i style="background:#C13030"></i>75-100 high</span></div>'
-      + sorted.map((s) => '<div class="scan__card scan__card--' + bandFor(s.score) + '">'
-        + (s.critical ? CRITICAL_BAR : '')
-        + '<div><div class="scan__cardTag">' + s.tag + (worst.indexOf(s.tag) >= 0 ? ' · START HERE' : '') + '</div><div class="scan__cardHead">' + s.head + '</div></div>'
-        + bandBadge(s.score)
-        + '<div class="scan__cardSub">' + s.sub + '</div>'
-        + '</div>').join('');
-
+    // One list, one entry per area, best to worst. Strengths read first, the
+    // priorities sit at the bottom as full cards with what to do about each.
     const cv = genericView(r.findings);
-    // Lowest scores first, highest at the very bottom, in both lists.
-    const byScore = (x: Finding, y: Finding) => findingScore(x) - findingScore(y);
-    const shown = cv.findings.slice(0, SHOWN_FINDINGS).sort(byScore);
-    const hidden = [...cv.findings.slice(SHOWN_FINDINGS), ...cv.teasers, ...cv.locked].sort(byScore);
-    ($('findingsList') as HTMLElement).innerHTML = shown.map((f, i) => renderFinding(f, i)).join('');
-
-    ($('lockedLabel') as HTMLElement).textContent = hidden.length
-      ? ('+' + hidden.length + ' MORE FINDING' + (hidden.length > 1 ? 'S' : '') + ' IN YOUR REPORT')
-      : 'YOUR ANALYST NOTE';
-    // Locked cards show the category and the score; only the finding itself
-    // is withheld until the form.
-    ($('lockedCards') as HTMLElement).innerHTML = hidden.map((f, i) => {
-      const ft = f.sev === 'danger' ? 'scan-tag--danger' : f.sev === 'info' ? 'scan-tag--info' : 'scan-tag--warn';
-      const b = bandFor(findingScore(f));
-      const critical = !!currentReport?.areas.find((s) => s.tag === f.tag && s.critical);
-      return '<div class="scan__locked scan__locked--' + b + '">'
-        + (critical ? CRITICAL_BAR : '')
-        + '<div class="scan__lockedTop"><span><span class="scan-tag ' + ft + '">' + f.tag + '</span> <span class="scan__findingNum">FINDING 0' + (i + 1 + SHOWN_FINDINGS) + '</span></span>' + scoreBadge(f) + '</div>'
-        + '<div class="scan__lockedBody"><div class="scan__lockedGhost">'
-        + '<div class="scan__ghostBar" style="width:72%"></div><div class="scan__ghostBar" style="width:88%"></div><div class="scan__ghostBar" style="width:55%"></div></div>'
-        + '<div class="scan__lockedOverlay"><span style="font-size:15px">🔒</span><span class="scan__lockLabel">UNLOCKS WITH YOUR FULL REPORT</span></div></div></div>';
-    }).join('');
+    renderAreaList(r, cv, cv.findings.slice(0, SHOWN_FINDINGS).map((f) => f.tag));
 
     show('resultsScreen');
+    applyGlossary();
     const st = $('scanStatusLine') as HTMLElement; st.textContent = 'Scan complete'; st.dataset.phase = 'results';
     setTimeout(() => {
       const cta = $('ctaSection') as HTMLElement;
       cta.style.opacity = '1'; cta.style.transform = 'translateY(0)';
     }, 900);
+  }
+
+  // ---- Merged area list: scorecard rows and finding cards in one place ----
+  type AreaRow = { tag: string; score: number; head: string; sub: string; critical: boolean; f?: Finding; state: 'open' | 'locked' | 'session' | 'plain' };
+  const KEY_LINE = '<div class="scan__cardKey">'
+    + '<span><i style="background:#0F8B5F"></i>0-19 strong</span><span><i style="background:#7A8594"></i>20-34 minor</span>'
+    + '<span><i style="background:#D9A400"></i>35-59 worth fixing</span><span><i style="background:#C25A0C"></i>60-74 elevated</span>'
+    + '<span><i style="background:#C13030"></i>75-100 high</span></div>';
+
+  function buildRows(r: Report, cv: ReportOpts, openTags: string[]): AreaRow[] {
+    const all = [...cv.findings, ...cv.locked];
+    const rows: AreaRow[] = r.areas.map((s) => ({ tag: s.tag, score: s.score, head: s.head, sub: s.sub, critical: !!s.critical, state: 'plain' as const }));
+    all.forEach((f) => {
+      if (!rows.find((x) => x.tag === f.tag)) rows.push({ tag: f.tag, score: findingScore(f), head: f.head, sub: '', critical: false, state: 'plain' });
+    });
+    rows.forEach((row) => {
+      const f = all.find((x) => x.tag === row.tag);
+      if (!f) return;
+      row.f = f;
+      row.state = openTags.indexOf(f.tag) >= 0 ? 'open' : cv.findings.indexOf(f) >= 0 ? 'locked' : 'session';
+    });
+    return rows.sort((x, y) => x.score - y.score);
+  }
+
+  function renderRow(row: AreaRow): string {
+    const lock = row.state === 'locked' ? 'What to do about this unlocks with your details below.'
+      : row.state === 'session' ? 'We go through this one together in your working session.' : '';
+    return '<div class="scan__row scan__row--' + bandFor(row.score) + (row.critical ? ' scan__hasCritical' : '') + '">'
+      + (row.critical ? CRITICAL_BAR : '')
+      + '<div><div class="scan__cardTag">' + row.tag + '</div><div class="scan__cardHead">' + row.head + '</div></div>'
+      + bandBadge(row.score)
+      + (row.state === 'plain' && row.sub ? '<div class="scan__cardSub">' + row.sub + '</div>' : '')
+      + (lock ? '<div class="scan__rowLock"><span aria-hidden="true">🔒</span>' + lock + '</div>' : '')
+      + '</div>';
+  }
+
+  function renderAreaList(r: Report, cv: ReportOpts, openTags: string[]) {
+    const rows = buildRows(r, cv, openTags);
+    let n = 0;
+    ($('areaList') as HTMLElement).innerHTML = KEY_LINE
+      + rows.map((row) => (row.state === 'open' && row.f) ? renderFinding(row.f, n++) : renderRow(row)).join('');
+  }
+
+  // ---- Glossary: no unexplained short forms anywhere on the report ----
+  // Every term below that appears on screen gets an asterisk and one plain
+  // definition at the very bottom. "AI" is in the product name and every
+  // heading, so it is defined first without the asterisk.
+  const GLOSSARY: [string, string][] = [
+    ['AI', 'Artificial intelligence. Software such as ChatGPT or Copilot that can write, answer questions and do tasks. Used throughout this report.'],
+    ['PCI-DSS', 'The payment card industry rules for handling credit and debit card details.'],
+    ['HIPAA', 'The United States health privacy law. It covers medical records and patient information.'],
+    ['CMMC', 'The cybersecurity rules for companies that do work for the United States Department of Defense.'],
+    ['CJIS', 'The security rules for handling criminal justice and law enforcement data.'],
+    ['COPPA', 'The United States law on collecting data from children under 13.'],
+    ['FERPA', 'The United States law that protects student education records.'],
+    ['GDPR', 'The European Union privacy law. It can apply to any business with customers in Europe.'],
+    ['CCPA', 'The California privacy law. It gives California residents control over their personal data.'],
+    ['PII', 'Personal information such as names, addresses, phone numbers and dates of birth.'],
+    ['SOC 2', 'An independent audit standard for how a company protects customer data.'],
+    ['NIST', 'The United States standards body whose security guidelines many insurers and regulators follow.'],
+  ];
+  function termRegex(term: string): RegExp {
+    const t = term.replace(/[-/]/g, (c) => '\\' + c).replace(/ /g, '\\s');
+    return new RegExp('(^|[^A-Za-z0-9*])(' + t + ')(?![A-Za-z0-9*])', 'g');
+  }
+  function applyGlossary() {
+    const root = $('resultsScreen') as HTMLElement, box = $('glossary') as HTMLElement, list = $('glossaryList') as HTMLElement;
+    if (!root || !box || !list) return;
+    const used = new Set<string>();
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes: Text[] = [];
+    let n: Node | null;
+    while ((n = walker.nextNode())) {
+      const p = n.parentElement;
+      if (p && !p.closest('#glossary, script, style')) nodes.push(n as Text);
+    }
+    nodes.forEach((t) => {
+      let s = t.nodeValue || '';
+      let changed = false;
+      GLOSSARY.forEach(([term]) => {
+        if (term === 'AI') { if (/\bAI\b/.test(s)) used.add('AI'); return; }
+        const re = termRegex(term);
+        if (re.test(s)) { used.add(term); s = s.replace(re, '$1$2*'); changed = true; }
+      });
+      if (changed) t.nodeValue = s;
+    });
+    if (!used.size) { box.style.display = 'none'; return; }
+    list.innerHTML = GLOSSARY.filter(([k]) => used.has(k))
+      .map(([k, v]) => '<div><dt>' + k + (k === 'AI' ? '' : '*') + '</dt><dd>' + v + '</dd></div>').join('');
+    box.style.display = 'block';
   }
 
   /* ===== Lead gate ===== */
@@ -1470,43 +1545,24 @@ import { SITE } from '../lib/site';
     return bandBadge(findingScore(f));
   }
 
-  // Redacted item: full-size box, same treatment throughout — no headline
-  // teased anywhere, no shrinking these down. These are
-  // the higher-value findings we walk through in a session; showing them at
-  // full size (instead of a small chip) avoids reading as if we're hiding
-  // something, while the copy explains exactly why it's blanked out.
-  function renderRedacted(f: Finding): string {
-    const ft = f.sev === 'danger' ? 'scan-tag--danger' : f.sev === 'info' ? 'scan-tag--info' : 'scan-tag--warn';
-    const company = (capturedLead && capturedLead.company) || 'your organization';
-    const critical = !!currentReport?.areas.find((s) => s.tag === f.tag && s.critical);
-    return '<div class="scan__teaser scan__teaser--redacted scan__teaser--' + bandFor(findingScore(f)) + '">'
-      + (critical ? CRITICAL_BAR : '')
-      + '<div class="scan__findingTop"><span class="scan-tag ' + ft + '">' + f.tag + '</span>' + scoreBadge(f) + '</div>'
-      + '<div class="scan__redactedBar" aria-hidden="true"></div>'
-      + '<div class="scan__redactedBar scan__redactedBar--short" aria-hidden="true"></div>'
-      + '<div class="scan__teaserFoot">🔒 Redacted to protect ' + company + '&rsquo;s privacy and security. You&rsquo;ll receive this finding in full &mdash; completely unredacted &mdash; in your PDF after our working session.</div>'
-      + '</div>';
-  }
 
   function unlockReport() {
     unlocked = true;
     const r = currentReport as Report;
     const cv = genericView(r.findings);
-    const byScore = (x: Finding, y: Finding) => findingScore(x) - findingScore(y);
-    ($('findingsList') as HTMLElement).innerHTML = [...cv.findings].sort(byScore).map((f, i) => renderFinding(f, i)).join('');
-    ($('shownLabel') as HTMLElement).textContent = 'YOUR TOP ' + cv.findings.length + ' PRIORITIES — AND WHAT TO DO ABOUT EACH';
+    renderAreaList(r, cv, cv.findings.map((f) => f.tag));
+    ($('areaLabel') as HTMLElement).textContent = 'YOUR RESULTS, AREA BY AREA — BEST TO WORST, WITH WHAT TO DO';
     ($('gateSection') as HTMLElement).style.display = 'none';
-    const rest = [...cv.locked].sort(byScore).map((f) => renderRedacted(f)).join('');
-    if (rest) {
-      ($('meetingLabel') as HTMLElement).textContent = 'THE REST OF YOUR REPORT — ' + cv.locked.length + ' MORE';
-      ($('meetingCards') as HTMLElement).innerHTML = rest;
+    if (cv.locked.length) {
       ($('meetingGate') as HTMLElement).style.display = 'block';
       ($('ctaSection') as HTMLElement).style.display = 'none';
     }
     const box = $('analystBox') as HTMLElement;
     ($('analystText') as HTMLElement).textContent = aiNote || r.fallbackNote;
     box.style.display = 'block';
-    ($('findingsList') as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    applyGlossary();
+    const first = document.querySelector('#areaList .scan__finding') as HTMLElement | null;
+    (first || ($('areaList') as HTMLElement)).scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
   // ---- Map a scan Finding to the design-handoff ReportFinding shape ----
@@ -1553,9 +1609,9 @@ import { SITE } from '../lib/site';
       severityBand: severityBandFor(r.band),
       severityNote: severityNoteFor(r.band),
       metrics: [
-        { label: 'SHADOW AI', value: r.shadowLevel, accent: shadowRed ? '#B3261E' : '#C77A0A', valueColor: shadowRed ? '#B3261E' : '#C77A0A', blurb: r.shadowSub },
-        { label: 'COMPLIANCE FLAGS', value: String(r.flags.length), accent: r.flags.length ? '#C77A0A' : '#12A5DB', valueColor: r.flags.length ? '#C77A0A' : '#0B2440', blurb: r.flags.length ? r.flags.join(' · ') : 'No regulated data categories reported' },
-        { label: 'RECOVERABLE HRS / WK', value: r.hoursVal, accent: '#12A5DB', valueColor: '#0B2440', blurb: r.hoursSub },
+        { label: 'UNAPPROVED AI USE', value: r.shadowLevel, accent: shadowRed ? '#B3261E' : '#C77A0A', valueColor: shadowRed ? '#B3261E' : '#C77A0A', blurb: r.shadowSub },
+        { label: 'RULES THAT MAY APPLY', value: String(r.flags.length), accent: r.flags.length ? '#C77A0A' : '#12A5DB', valueColor: r.flags.length ? '#C77A0A' : '#0B2440', blurb: r.flags.length ? r.flags.join(' · ') : 'No regulated data types reported' },
+        { label: 'HOURS TO WIN BACK EACH WEEK', value: r.hoursVal, accent: '#12A5DB', valueColor: '#0B2440', blurb: r.hoursSub },
       ],
       findings: [],
       lockedAreas: [],
@@ -1563,11 +1619,11 @@ import { SITE } from '../lib/site';
       cta: { headline: 'These need to be walked through, not skimmed.', body: 'In a free 30-minute working session we go through each finding, what it means for you, and what to do first.', url: bookingUrl(), company: lead.company || '' },
       scanInputs: answerRows().map((a) => ({ question: a.label, answer: a.value })),
       preparedBy: { name: 'Nick Dreyfus', title: 'Vice President, Business Development · i-NETT / Fortify AI', contactLine: 'i-nett.ai · (858) 337-2866 · nickd@i-nett.com' },
-      disclaimer: METHODOLOGY_NOTE + ' This report is for general information only and is meant to be reviewed together with the i-NETT team. It is not a formal audit or assessment, and not legal, compliance, security, or insurance advice. Scores and estimates are illustrative and industry-informed; any frameworks named may or may not apply to your organization.',
+      disclaimer: METHODOLOGY_NOTE + ' This report is general information only, meant to be reviewed with the i-NETT team. It is not an audit, and not legal, compliance, security or insurance advice. Scores and estimates use industry averages, and any rules named may or may not apply to you.',
       recoverable: r.rec.weeklyHigh > 0 ? {
         heroText: 'Up to ' + usd(r.rec.annualHigh) + ' / year',
-        subText: r.rec.weeklyLow + '–' + r.rec.weeklyHigh + ' hrs/wk · $' + r.rec.rate + '/hr fully loaded · conservative estimate',
-        items: r.rec.byTask.filter((t) => t.high > 0).map((t) => ({ label: t.label, hrs: 'up to ' + t.high + ' hrs/wk' })),
+        subText: r.rec.weeklyLow + ' to ' + r.rec.weeklyHigh + ' hours a week · $' + r.rec.rate + ' an hour with benefits · a low estimate',
+        items: r.rec.byTask.filter((t) => t.high > 0).map((t) => ({ label: t.label, hrs: 'up to ' + t.high + ' hours a week' })),
       } : undefined,
     };
   }
