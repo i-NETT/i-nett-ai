@@ -625,7 +625,8 @@ import { SITE } from '../lib/site';
 </style>
 
 <script>
-  import { renderReport, encodeReport, type ReportData, type ReportFinding, type Peer } from '../lib/report';
+  import { encodeReport, type ReportData, type ReportFinding, type Peer } from '../lib/report';
+  import { renderReport } from '../lib/reportClient';
   // The capture/assembly pipeline lives in lib/reportPdf.ts so that the exact
   // code path that emails prospects can also be exercised from /report-pdf-test
   // without pushing a real lead through HubSpot.
@@ -1533,6 +1534,8 @@ import { SITE } from '../lib/site';
       body: f.detail,
       action: f.fix.replace(/(\d+%)/g, '<strong style="font-weight:600;">$1</strong>'),
       peers,
+      score: findingScore(f),
+      critical: !!currentReport?.areas.find((s) => s.tag === f.tag && s.critical),
     };
   }
 
@@ -1588,8 +1591,11 @@ import { SITE } from '../lib/site';
     const d = baseReportData(lead, r, note);
     d.findings = opts.findings.map((f, i) => toReportFinding(f, i));
     d.lockedAreas = [...opts.teasers, ...opts.locked].map((f) => ({
-      area: f.tag, assessment: riskLabel(f.sev), priority: f.sev === 'danger' ? 'high' as const : 'normal' as const, confidence: riskScore(f),
+      area: f.tag, assessment: riskLabel(f.sev), priority: f.sev === 'danger' ? 'high' as const : 'normal' as const,
+      confidence: findingScore(f), score: findingScore(f),
+      critical: !!r.areas.find((s) => s.tag === f.tag && s.critical),
     }));
+    d.scorecard = r.areas.map((s) => ({ tag: s.tag, score: s.score, head: s.head, sub: s.sub, critical: !!s.critical }));
     return d;
   }
 

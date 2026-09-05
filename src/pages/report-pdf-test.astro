@@ -45,7 +45,7 @@
     <script>
       import { sampleReport, type ReportData, type ReportFinding } from '../lib/report';
       import { htmlPagesToPdf, buildInternalReportPages, imageToDataUri, auditPageOverflow } from '../lib/reportPdf';
-      import { renderReport } from '../lib/report';
+      import { renderReport } from '../lib/reportClient';
       import { METHODOLOGY_NOTE } from '../lib/taskInventory';
 
       const log = (m: string) => { document.getElementById('log')!.textContent += m + '\n'; };

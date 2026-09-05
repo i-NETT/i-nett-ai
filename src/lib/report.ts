@@ -15,13 +15,19 @@ export type ReportFinding = {
   body: string;
   action: string;        // "What to do" — may contain <strong>
   peers: Peer[];         // 3 rows (small / mid / enterprise)
+  score?: number;        // 0-100 exposure score, same number as the on-screen badge
+  critical?: boolean;    // carries the CRITICAL: DATA LEAKAGE bar
 };
 export type LockedArea = {
   area: string;          // "SHADOW AI"
   assessment: string;    // "High priority" | "Worth reviewing"
   priority: 'high' | 'normal';
-  confidence: number;    // 0-100
+  confidence: number;    // 0-100 (legacy name; the client renderer prefers `score`)
+  score?: number;
+  critical?: boolean;
 };
+// One row of the on-screen scorecard, carried into the PDF as-is.
+export type ScoreRow = { tag: string; score: number; head: string; sub?: string; critical?: boolean };
 export type ReportData = {
   scanId: string;
   preparedFor: { name: string; company: string; email: string; phone: string; website: string; industry: string; sizeBand: string };
@@ -41,6 +47,8 @@ export type ReportData = {
   // Optional itemized recoverable-hours breakdown. When present it replaces the
   // page-1 navigation block (same footprint, so no overflow change).
   recoverable?: { heroText: string; subText: string; items: { label: string; hrs: string }[] };
+  // Every assessed area with its exposure score (client report page 1).
+  scorecard?: ScoreRow[];
 };
 
 export type RenderOpts = {
@@ -504,17 +512,26 @@ export function sampleReport(): ReportData {
       { label: 'RECOVERABLE HRS / WK', value: '12–30', accent: C.cyan, valueColor: C.navy, blurb: 'Repetitive work a custom agent could take off your team' },
     ],
     findings: [
-      { category: 'ENABLEMENT', index: 'FINDING 01', headline: "Your team is largely self-taught with AI, so it isn't working nearly as effectively for them as it could.", body: 'Self-taught users tend to write weaker prompts and receive poorer-quality responses, which can quietly lead to work being done incorrectly. Across large organizations — including 10,000+ employee enterprises — the majority of users experienced this before structured coaching was in place.', action: 'A prompt coach for every employee raises the quality and consistency of what AI produces. Published results show up to <strong style="font-weight:600;">73% better AI outputs</strong>, roughly <strong style="font-weight:600;">65% lower risk</strong> of a poor result, up to 80% stronger prompts, and about 54% fewer tokens.', peers: [{ label: 'Small business', pct: 74 }, { label: 'Mid-sized', pct: 61 }, { label: 'Enterprise', pct: 44 }] },
-      { category: 'THIRD-PARTY ACCESS', index: 'FINDING 02', headline: 'Your vendors touch your data — do you know if they run it through their own AI?', body: 'Your bookkeeper, marketing help, IT contractor, and software vendors all handle your data. Any one of them pasting it into their own AI tools is exposure you inherit but cannot see.', action: 'We map who can reach what, and help you set the expectation — in writing — that your data never goes into anyone’s ungoverned AI.', peers: [{ label: 'Small business', pct: 70 }, { label: 'Mid-sized', pct: 57 }, { label: 'Enterprise', pct: 41 }] },
-      { category: 'CYBER INSURANCE', index: 'FINDING 03', headline: 'Even with a clean setup: does your cyber policy actually cover an AI-related incident?', body: 'Many cyber policies written before the last renewal cycle have silent gaps or exclusions for AI-driven data exposure. As a Lloyd’s of London cyber-insurance partner, i-NETT can help you see where you stand — and because our managed security lowers risk, the organizations we manage can qualify for stronger coverage and better pricing.', action: 'We check your posture against how insurers now write AI exclusions, so you know exactly where you stand before you ever need to file.', peers: [{ label: 'Small business', pct: 74 }, { label: 'Mid-sized', pct: 60 }, { label: 'Enterprise', pct: 34 }] },
+      { category: 'ENABLEMENT', index: 'FINDING 01', headline: "Your team is largely self-taught with AI, so it isn't working nearly as effectively for them as it could.", body: 'Self-taught users tend to write weaker prompts and receive poorer-quality responses, which can quietly lead to work being done incorrectly. Across large organizations — including 10,000+ employee enterprises — the majority of users experienced this before structured coaching was in place.', action: 'A prompt coach for every employee raises the quality and consistency of what AI produces. Published results show up to <strong style="font-weight:600;">73% better AI outputs</strong>, roughly <strong style="font-weight:600;">65% lower risk</strong> of a poor result, up to 80% stronger prompts, and about 54% fewer tokens.', peers: [{ label: 'Small business', pct: 74 }, { label: 'Mid-sized', pct: 61 }, { label: 'Enterprise', pct: 44 }], score: 76 },
+      { category: 'THIRD-PARTY ACCESS', index: 'FINDING 02', headline: 'Your vendors touch your data — do you know if they run it through their own AI?', body: 'Your bookkeeper, marketing help, IT contractor, and software vendors all handle your data. Any one of them pasting it into their own AI tools is exposure you inherit but cannot see.', action: 'We map who can reach what, and help you set the expectation — in writing — that your data never goes into anyone’s ungoverned AI.', peers: [{ label: 'Small business', pct: 70 }, { label: 'Mid-sized', pct: 57 }, { label: 'Enterprise', pct: 41 }], score: 79, critical: true },
+      { category: 'CYBER INSURANCE', index: 'FINDING 03', headline: 'Even with a clean setup: does your cyber policy actually cover an AI-related incident?', body: 'Many cyber policies written before the last renewal cycle have silent gaps or exclusions for AI-driven data exposure. As a Lloyd’s of London cyber-insurance partner, i-NETT can help you see where you stand — and because our managed security lowers risk, the organizations we manage can qualify for stronger coverage and better pricing.', action: 'We check your posture against how insurers now write AI exclusions, so you know exactly where you stand before you ever need to file.', peers: [{ label: 'Small business', pct: 74 }, { label: 'Mid-sized', pct: 60 }, { label: 'Enterprise', pct: 34 }], score: 63 },
     ],
     policyFlag: { label: 'EMPLOYEE POLICY', text: "There's no signed AI & data policy your team is actually held to." },
     lockedAreas: [
-      { area: 'WORKFLOWS', assessment: 'Worth reviewing', priority: 'normal', confidence: 40 },
-      { area: 'SHADOW AI', assessment: 'High priority', priority: 'high', confidence: 90 },
-      { area: 'CUSTOM AGENTS', assessment: 'Worth reviewing', priority: 'normal', confidence: 42 },
-      { area: 'COMPLIANCE', assessment: 'High priority', priority: 'high', confidence: 90 },
-      { area: 'VENDOR AI TERMS', assessment: 'High priority', priority: 'high', confidence: 88 },
+      { area: 'WORKFLOWS', assessment: 'Worth reviewing', priority: 'normal', confidence: 40, score: 40 },
+      { area: 'SHADOW AI', assessment: 'High priority', priority: 'high', confidence: 90, score: 90, critical: true },
+      { area: 'CUSTOM AGENTS', assessment: 'Worth reviewing', priority: 'normal', confidence: 42, score: 42 },
+      { area: 'COMPLIANCE', assessment: 'High priority', priority: 'high', confidence: 90, score: 84, critical: true },
+      { area: 'VENDOR AI TERMS', assessment: 'High priority', priority: 'high', confidence: 88, score: 88, critical: true },
+    ],
+    scorecard: [
+      { tag: 'ENABLEMENT', score: 76, head: 'The team is self-taught, which usually means weak prompts and uneven results.' },
+      { tag: 'CYBER INSURANCE', score: 63, head: 'Cyber insurance exists, but AI-related incidents have not been checked.' },
+      { tag: 'THIRD-PARTY ACCESS', score: 79, head: 'Bookkeepers, agencies and IT contractors can reach your data. Their AI use is exposure you inherit.', critical: true },
+      { tag: 'COMPLIANCE', score: 84, head: 'Regulated data is handled and AI use is not fully governed around it.', critical: true },
+      { tag: 'EMPLOYEE POLICY', score: 86, head: 'No signed AI and data policy the team is held to.', critical: true },
+      { tag: 'VENDOR AI TERMS', score: 88, head: 'The vendors who touch your data have never been asked about AI.', critical: true },
+      { tag: 'SHADOW AI', score: 90, head: 'AI is in use on personal accounts with no rules. Anything pasted in is gone.', critical: true },
     ],
     analystNote: 'Northwind is running real legal work through personal AI accounts with no signed policy — the kind of exposure opposing counsel and insurers look at first. The place to start is moving the team onto governed accounts with a plain-language usage policy, then closing the vendor-AI gap on paper. None of this is a big IT project; a first Fortify AI deployment is usually live within 30 days, and a 30-minute review turns this into that plan.',
     cta: { headline: 'These need to be walked through, not skimmed.', body: 'In a free 30-minute working session we go through each finding, what it means for you, and what to do first.', url: 'https://i-nett.ai/resources', company: 'Northwind Legal' },

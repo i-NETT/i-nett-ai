@@ -32,7 +32,8 @@ import { reportCss } from '@lib/report';
   <div class="fa-report" id="report"></div>
 
   <script>
-    import { renderReport, decodeReport, sampleReport } from '@lib/report';
+    import { decodeReport, sampleReport } from '@lib/report';
+    import { renderReport } from '@lib/reportClient';
     const host = document.getElementById('report');
     const raw = location.hash.replace(/^#r?=?/, '');
     let data = raw ? decodeReport(decodeURIComponent(raw)) : null;
