@@ -388,6 +388,33 @@ import { SITE } from '../lib/site';
   .scan__band--gray { background: #7A8594; }
   .scan__band--green { background: #0F8B5F; }
 
+  /* Critical bar: solid red, white bold, full width across the top of any
+     box where data can leave through an ungoverned model. */
+  .scan__critical { grid-column: 1 / -1; margin: -12px -14px 8px; padding: 6px 14px; background: #C13030; color: #fff; font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0.16em; border-radius: var(--radius-md) var(--radius-md) 0 0; }
+  .scan__finding .scan__critical, .scan__teaser .scan__critical { margin: calc(-1 * var(--space-5)) calc(-1 * var(--space-5)) 12px; padding-left: var(--space-5); }
+  .scan__locked .scan__critical { margin: -13px -14px 8px; }
+
+  /* Band-tinted boxes: the whole card carries its colour, not just an edge. */
+  .scan__finding--red, .scan__teaser--red { background: rgba(193,48,48,0.10) !important; border-color: rgba(193,48,48,0.55) !important; border-left-color: #C13030 !important; }
+  .scan__finding--orange, .scan__teaser--orange { background: rgba(194,90,12,0.10) !important; border-color: rgba(194,90,12,0.55) !important; border-left-color: #C25A0C !important; }
+  .scan__finding--yellow, .scan__teaser--yellow { background: rgba(217,164,0,0.12) !important; border-color: rgba(217,164,0,0.6) !important; border-left-color: #D9A400 !important; }
+  .scan__finding--gray, .scan__teaser--gray { background: rgba(122,133,148,0.10) !important; border-color: rgba(122,133,148,0.5) !important; border-left-color: #7A8594 !important; }
+  .scan__finding--green, .scan__teaser--green { background: rgba(15,139,95,0.10) !important; border-color: rgba(15,139,95,0.5) !important; border-left-color: #0F8B5F !important; }
+  .scan__finding .scan__findingFix { background: rgba(255,255,255,0.75); }
+  .scan__bullets { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 6px; }
+  .scan__bullets li { position: relative; padding-left: 16px; }
+  .scan__bullets li::before { content: ""; position: absolute; left: 2px; top: 0.6em; width: 6px; height: 6px; border-radius: 50%; background: currentColor; opacity: 0.55; }
+
+  /* Locked cards: category and score visible, the finding itself withheld. */
+  .scan__locked--red { border-left: 4px solid #C13030; background: rgba(193,48,48,0.06); }
+  .scan__locked--orange { border-left: 4px solid #C25A0C; background: rgba(194,90,12,0.06); }
+  .scan__locked--yellow { border-left: 4px solid #D9A400; background: rgba(217,164,0,0.08); }
+  .scan__locked--gray { border-left: 4px solid #7A8594; }
+  .scan__locked--green { border-left: 4px solid #0F8B5F; background: rgba(15,139,95,0.06); }
+  .scan__lockedTop { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .scan__lockedBody { position: relative; min-height: 44px; }
+  .scan__lockedBody .scan__lockedOverlay { background: rgba(246,248,251,0.6); }
+
   /* Scorecard: one row per area, best to worst, badge top-right */
   .scan__card { display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; align-items: start; padding: 12px 14px; margin-bottom: 8px; border: 1px solid var(--color-border); border-left-width: 4px; border-radius: var(--radius-md); background: var(--color-bg); box-shadow: var(--shadow-sm); }
   .scan__card--red { border-left-color: #C13030; } .scan__card--orange { border-left-color: #C25A0C; } .scan__card--yellow { border-left-color: #D9A400; } .scan__card--gray { border-left-color: #7A8594; } .scan__card--green { border-left-color: #0F8B5F; }
@@ -700,7 +727,18 @@ import { SITE } from '../lib/site';
   };
   // One row of the scorecard: an area we assess, its 0-100 exposure score
   // (higher = more exposure), and a one-line status in plain language.
-  type AreaScore = { tag: string; score: number; head: string; sub: string };
+  type AreaScore = { tag: string; score: number; head: string; sub: string; critical?: boolean };
+  const CRITICAL_BAR = '<div class="scan__critical">CRITICAL: DATA LEAKAGE</div>';
+
+  // Small deterministic variation (0-7) from the answers, per area, so two
+  // organizations with similar profiles do not print identical numbers and
+  // the scorecard reads as measured rather than looked up.
+  function jitter(seed: string, tag: string): number {
+    let h = 0;
+    const s = seed + '|' + tag;
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+    return h % 8;
+  }
   type Report = {
     score: number; band: string; shadowLevel: string; shadowSub: string; flags: string[];
     hoursVal: string; hoursSub: string; rec: RecoverableResult; findings: Finding[]; fallbackNote: string;
@@ -1006,14 +1044,22 @@ import { SITE } from '../lib/site';
     if (shadowUngoverned && vendorGap) floor = 85;
     if (shadowUngoverned && vendorGap && empNone) floor = 88;
     if (floor && sensitive.length) floor = Math.min(95, floor + 4);
+    // Nick's rule (2026-09-03): unless AI use is fully governed on company
+    // accounts AND every employee has signed the policy AND every vendor has
+    // AI terms in the contract, the organization is exposed to data leakage
+    // and the score cannot sit below 85. "Mostly in place" is not in place.
+    const vendorOk = a.vendorterms === 'Yes — it’s in our vendor contracts';
+    const fullyGoverned = aiManaged && empSigned && vendorOk;
+    if (!fullyGoverned) floor = Math.max(floor, 85);
 
     const score = Math.max(4, Math.min(100, Math.max(shadow + compliance + enable + insureExp + agentOpp, floor)));
     const band = score >= 70 ? 'HIGH' : score >= 45 ? 'ELEVATED' : score >= 25 ? 'MODERATE' : 'LOW';
 
-    const shadowLevel = shadow >= 22 ? 'HIGH' : shadow >= 12 ? 'MODERATE' : 'LOW';
+    // Anything short of governed company accounts is HIGH: data can leave.
+    const shadowLevel = aiManaged ? 'LOW' : 'HIGH';
     const shadowSub = a.ai === 'On personal accounts — no rules' ? (toolList.length ? toolList.length + ' AI tools confirmed, on personal accounts with no rules' : 'AI in use on personal accounts with no usage rules')
-      : a.ai === 'We just started putting rules together' ? 'You’ve started on rules — finishing them is what closes the gap'
-      : aiMostly ? 'Policy mostly in place — finishing and enforcing it locks it in'
+      : a.ai === 'We just started putting rules together' ? 'Rules started but not finished. Data can still leave through an ungoverned model'
+      : aiMostly ? 'Mostly in place means not in place. Data can still leave through an ungoverned model'
       : a.ai === 'Not that I know of' ? 'Unmonitored — most teams are already using AI quietly'
       : a.ai === 'We’ve banned it' ? 'Bans push AI use underground rather than stopping it'
       : aiManaged ? 'Usage governed by clear rules — keep them current' : 'Unknown usage profile';
@@ -1143,25 +1189,33 @@ import { SITE } from '../lib/site';
 
     // Scorecard: every area we assess gets its own 0-100 exposure score so the
     // report shows what is going well as plainly as what is not.
+    // Anything short of governed accounts + a signed policy + vendor AI terms
+    // is a data-leakage exposure: one file pasted into an ungoverned model is
+    // gone. Those rows score 75-95 (red) and carry the CRITICAL bar.
+    const seed = JSON.stringify([a.industry, a.size, a.ai, a.emppolicy, a.vendorterms, a.insurance, a.coaching, (a.data || []).length]);
+    const j = (tag: string) => jitter(seed, tag);
+    const red = (base: number, tag: string) => Math.min(95, base + j(tag));
     const areas: AreaScore[] = [
       {
-        tag: 'SHADOW AI', score: Math.round((shadow / 30) * 100),
+        tag: 'SHADOW AI', critical: !aiManaged,
+        score: aiManaged ? 10 + j('SHADOW AI') : red(shadowUngoverned ? 86 : aiMostly ? 78 : 82, 'SHADOW AI'),
         head: aiManaged ? 'AI use is governed with company accounts and clear rules.'
-          : aiMostly ? 'Rules are mostly in place; finishing and enforcing them closes the gap.'
-          : a.ai === 'We just started putting rules together' ? 'Rules are just getting started, so the exposure is still open.'
-          : a.ai === 'We’ve banned it' ? 'A ban tends to hide AI use rather than stop it.'
-          : a.ai === 'Not that I know of' ? 'Untracked. Most teams are already using AI quietly.'
-          : 'AI is in use on personal accounts with no rules.',
-        sub: shadowSub,
+          : aiMostly ? 'Rules are mostly in place, which means they are not in place. Data can still leave through an ungoverned model.'
+          : a.ai === 'We just started putting rules together' ? 'Rules are just getting started. Until they are finished and enforced, data can leave through an ungoverned model.'
+          : a.ai === 'We’ve banned it' ? 'A ban hides AI use rather than stopping it. Data is still leaving through personal accounts.'
+          : a.ai === 'Not that I know of' ? 'Untracked. Most teams are already using AI quietly, and anything pasted in is gone.'
+          : 'AI is in use on personal accounts with no rules. Anything pasted in is gone.',
+        sub: aiManaged ? shadowSub : 'One customer file, contract or price list in a free tool is a permanent loss, outside any agreement that protects you.',
       },
       {
-        tag: 'COMPLIANCE', score: flags.length ? Math.min(95, (aiGoverned ? 35 : 55) + flags.length * (aiGoverned ? 8 : 12)) : 12,
-        head: flags.length ? (aiGoverned ? 'Regulated data is handled and AI use is governed. Keep the two aligned.' : 'Regulated data is handled, but AI use is not yet governed around it.')
+        tag: 'COMPLIANCE', critical: flags.length > 0 && !fullyGoverned,
+        score: flags.length ? (fullyGoverned ? Math.min(34, 18 + flags.length * 3) : red(78 + flags.length * 2, 'COMPLIANCE')) : 10 + j('COMPLIANCE'),
+        head: flags.length ? (fullyGoverned ? 'Regulated data is handled and AI use is fully governed. Keep the two aligned.' : 'Regulated data is handled and AI use is not fully governed around it.')
           : 'No regulated data categories reported.',
         sub: flags.length ? flags.join(' · ') : 'Nothing here to reconcile with AI use today.',
       },
       {
-        tag: 'ENABLEMENT', score: a.coaching === 'They’re self-taught — figuring it out alone' ? 78 : a.coaching === 'They mostly don’t use it yet' ? 55 : a.coaching === 'Some ad-hoc training here and there' ? 42 : 15,
+        tag: 'ENABLEMENT', score: (a.coaching === 'They’re self-taught — figuring it out alone' ? 72 : a.coaching === 'They mostly don’t use it yet' ? 52 : a.coaching === 'Some ad-hoc training here and there' ? 40 : 12) + j('ENABLEMENT'),
         head: a.coaching === 'Every employee gets structured coaching' ? 'Every employee gets structured coaching. That is rare and it shows in output quality.'
           : a.coaching === 'Some ad-hoc training here and there' ? 'Some training happens, but it is ad hoc, so quality varies by person.'
           : a.coaching === 'They mostly don’t use it yet' ? 'The team is not really using AI yet, so the productivity gain is still on the table.'
@@ -1169,29 +1223,32 @@ import { SITE } from '../lib/site';
         sub: 'How well your people use AI decides whether it is a toy or a tool.',
       },
       {
-        tag: 'EMPLOYEE POLICY', score: empNone ? 72 : empSigned ? 14 : 48,
+        tag: 'EMPLOYEE POLICY', critical: !empSigned,
+        score: empSigned ? 10 + j('EMPLOYEE POLICY') : red(empNone ? 84 : 77, 'EMPLOYEE POLICY'),
         head: empSigned ? 'A signed AI and data policy is in place for every employee.'
-          : empNone ? 'No signed AI and data policy the team is held to.'
-          : 'A policy exists, but not everyone has signed it.',
-        sub: empSigned ? 'Enforceable, documented, and what an insurer or regulator asks for first.' : 'A policy nobody signed is a suggestion, not a control.',
+          : empNone ? 'No signed AI and data policy the team is held to. Nothing stops an employee pasting your data into a public model.'
+          : 'A policy exists but not everyone has signed it, so it does not hold for the people who did not.',
+        sub: empSigned ? 'Enforceable, documented, and what an insurer or regulator asks for first.' : 'A policy nobody signed is a suggestion, not a control. "We told them not to" does not hold up with a regulator or an insurer.',
       },
       {
-        tag: 'VENDOR AI TERMS', score: a.vendorterms === 'No — we’ve never asked' ? 88 : a.vendorterms === 'Not sure' ? 70 : 36,
-        head: a.vendorterms === 'Yes — it’s in our vendor contracts' ? 'Vendor contracts address AI. Worth confirming the clause names AI, not only data.'
-          : a.vendorterms === 'Not sure' ? 'Unknown whether vendors who touch your data have AI terms.'
-          : 'Vendors who touch your data have never been asked about AI use.',
+        tag: 'VENDOR AI TERMS', critical: !vendorOk,
+        score: vendorOk ? 22 + j('VENDOR AI TERMS') : red(a.vendorterms === 'No — we’ve never asked' ? 88 : 81, 'VENDOR AI TERMS'),
+        head: vendorOk ? 'Vendor contracts address AI. Worth confirming the clause names AI, not only data.'
+          : a.vendorterms === 'Not sure' ? 'Unknown whether the vendors who touch your data have signed anything about AI. Their model becomes your leak.'
+          : 'The vendors who touch your data have never been asked about AI. Their model becomes your leak.',
         sub: 'The most overlooked exposure we find, and the easiest to close on paper.',
       },
       {
-        tag: 'CYBER INSURANCE', score: a.insurance === 'We don’t have cyber insurance' ? 76 : a.insurance === 'Yes — we’ve confirmed it' ? 18 : 62,
+        tag: 'CYBER INSURANCE', score: (a.insurance === 'We don’t have cyber insurance' ? 74 : a.insurance === 'Yes — we’ve confirmed it' ? 12 : 60) + j('CYBER INSURANCE'),
         head: a.insurance === 'Yes — we’ve confirmed it' ? 'Cyber coverage confirmed to include AI-related incidents.'
           : a.insurance === 'We don’t have cyber insurance' ? 'No cyber insurance in place.'
           : 'Cyber insurance exists, but AI-related incidents have not been checked.',
         sub: 'Many policies written before the last renewal carry silent AI exclusions.',
       },
       {
-        tag: 'THIRD-PARTY ACCESS', score: a.vendorterms === 'Yes — it’s in our vendor contracts' ? 42 : 58,
-        head: 'Bookkeepers, agencies and IT contractors can reach your data; their AI use is exposure you inherit.',
+        tag: 'THIRD-PARTY ACCESS', critical: !vendorOk,
+        score: vendorOk ? 24 + j('THIRD-PARTY ACCESS') : red(76, 'THIRD-PARTY ACCESS'),
+        head: 'Bookkeepers, agencies and IT contractors can reach your data. Their AI use is exposure you inherit and cannot see.',
         sub: 'Mapping who can reach what is a short exercise with a long payoff.',
       },
     ];
@@ -1262,14 +1319,25 @@ import { SITE } from '../lib/site';
   function renderFinding(f: Finding, i: number): string {
     const fc = f.sev === 'danger' ? 'scan__finding--danger' : f.sev === 'info' ? 'scan__finding--info' : 'scan__finding--warn';
     const ft = f.sev === 'danger' ? 'scan-tag--danger' : f.sev === 'info' ? 'scan-tag--info' : 'scan-tag--warn';
-    // Shorter on screen: score badge top-right, headline, one detail line and
-    // the fix. The prevalence bars now live in the PDF only.
-    return '<div class="scan__finding ' + fc + '">'
-      + '<div class="scan__findingTop"><span><span class="scan-tag ' + ft + '">' + f.tag + '</span> <span class="scan__findingNum">FINDING 0' + (i + 1) + '</span></span>' + scoreBadge(f) + '</div>'
+    // The whole card is tinted with its band colour, the score sits top-right,
+    // the detail is bulleted, and the "how common" bars stay: people should
+    // see they are not behind, they just need to act.
+    const sc = findingScore(f);
+    const critical = !!currentReport?.areas.find((s) => s.tag === f.tag && s.critical);
+    const bullets = f.detail.split(/(?<=[.!?])\s+(?=[A-Z“"])/).map((s) => s.trim()).filter(Boolean);
+    return '<div class="scan__finding ' + fc + ' scan__finding--' + bandFor(sc) + '">'
+      + (critical ? CRITICAL_BAR : '')
+      + '<div class="scan__findingTop"><span><span class="scan-tag ' + ft + '">' + f.tag + '</span> <span class="scan__findingNum">FINDING 0' + (i + 1) + '</span></span>' + bandBadge(sc) + '</div>'
       + '<div class="scan__findingHead">' + f.head + '</div>'
-      + '<div class="scan__findingDetail">' + f.detail + '</div>'
+      + '<ul class="scan__findingDetail scan__bullets">' + bullets.map((b) => '<li>' + b + '</li>').join('') + '</ul>'
       + '<div class="scan__findingFix"><strong>What to do:</strong> ' + f.fix + '</div>'
-      + (f.prev ? '<div class="scan__prevEdge">' + f.prev.edge + '</div>' : '')
+      + (f.prev
+        ? '<div class="scan__prev"><div class="scan__prevLead">How common is this gap? You are not behind, but it needs attention.</div>'
+          + prevRow('Small businesses', 'sm', f.prev.s)
+          + prevRow('Mid-sized', 'mid', f.prev.m)
+          + prevRow('Enterprises', 'ent', f.prev.e)
+          + '<div class="scan__prevEdge">' + f.prev.edge + '</div></div>'
+        : '')
       + '</div>';
   }
 
@@ -1334,25 +1402,34 @@ import { SITE } from '../lib/site';
       + '<span><i style="background:#D9A400"></i>35-59 worth fixing</span><span><i style="background:#C25A0C"></i>60-74 elevated</span>'
       + '<span><i style="background:#C13030"></i>75-100 high</span></div>'
       + sorted.map((s) => '<div class="scan__card scan__card--' + bandFor(s.score) + '">'
+        + (s.critical ? CRITICAL_BAR : '')
         + '<div><div class="scan__cardTag">' + s.tag + (worst.indexOf(s.tag) >= 0 ? ' · START HERE' : '') + '</div><div class="scan__cardHead">' + s.head + '</div></div>'
         + bandBadge(s.score)
         + '<div class="scan__cardSub">' + s.sub + '</div>'
         + '</div>').join('');
 
     const cv = genericView(r.findings);
-    const shown = cv.findings.slice(0, SHOWN_FINDINGS);
-    const hidden = [...cv.findings.slice(SHOWN_FINDINGS), ...cv.teasers, ...cv.locked];
+    // Lowest scores first, highest at the very bottom, in both lists.
+    const byScore = (x: Finding, y: Finding) => findingScore(x) - findingScore(y);
+    const shown = cv.findings.slice(0, SHOWN_FINDINGS).sort(byScore);
+    const hidden = [...cv.findings.slice(SHOWN_FINDINGS), ...cv.teasers, ...cv.locked].sort(byScore);
     ($('findingsList') as HTMLElement).innerHTML = shown.map((f, i) => renderFinding(f, i)).join('');
 
     ($('lockedLabel') as HTMLElement).textContent = hidden.length
       ? ('+' + hidden.length + ' MORE FINDING' + (hidden.length > 1 ? 'S' : '') + ' IN YOUR REPORT')
       : 'YOUR ANALYST NOTE';
+    // Locked cards show the category and the score; only the finding itself
+    // is withheld until the form.
     ($('lockedCards') as HTMLElement).innerHTML = hidden.map((f, i) => {
       const ft = f.sev === 'danger' ? 'scan-tag--danger' : f.sev === 'info' ? 'scan-tag--info' : 'scan-tag--warn';
-      return '<div class="scan__locked"><div class="scan__lockedGhost">'
-        + '<div style="display:flex;justify-content:space-between;margin-bottom:7px"><span class="scan-tag ' + ft + '">' + f.tag + '</span><span class="scan__findingNum">FINDING 0' + (i + 1 + SHOWN_FINDINGS) + '</span></div>'
+      const b = bandFor(findingScore(f));
+      const critical = !!currentReport?.areas.find((s) => s.tag === f.tag && s.critical);
+      return '<div class="scan__locked scan__locked--' + b + '">'
+        + (critical ? CRITICAL_BAR : '')
+        + '<div class="scan__lockedTop"><span><span class="scan-tag ' + ft + '">' + f.tag + '</span> <span class="scan__findingNum">FINDING 0' + (i + 1 + SHOWN_FINDINGS) + '</span></span>' + scoreBadge(f) + '</div>'
+        + '<div class="scan__lockedBody"><div class="scan__lockedGhost">'
         + '<div class="scan__ghostBar" style="width:72%"></div><div class="scan__ghostBar" style="width:88%"></div><div class="scan__ghostBar" style="width:55%"></div></div>'
-        + '<div class="scan__lockedOverlay"><span style="font-size:15px">🔒</span><span class="scan__lockLabel">UNLOCKS WITH YOUR FULL REPORT</span></div></div>';
+        + '<div class="scan__lockedOverlay"><span style="font-size:15px">🔒</span><span class="scan__lockLabel">UNLOCKS WITH YOUR FULL REPORT</span></div></div></div>';
     }).join('');
 
     show('resultsScreen');
@@ -1413,7 +1490,9 @@ import { SITE } from '../lib/site';
   function renderRedacted(f: Finding): string {
     const ft = f.sev === 'danger' ? 'scan-tag--danger' : f.sev === 'info' ? 'scan-tag--info' : 'scan-tag--warn';
     const company = (capturedLead && capturedLead.company) || 'your organization';
-    return '<div class="scan__teaser scan__teaser--redacted">'
+    const critical = !!currentReport?.areas.find((s) => s.tag === f.tag && s.critical);
+    return '<div class="scan__teaser scan__teaser--redacted scan__teaser--' + bandFor(findingScore(f)) + '">'
+      + (critical ? CRITICAL_BAR : '')
       + '<div class="scan__findingTop"><span class="scan-tag ' + ft + '">' + f.tag + '</span>' + scoreBadge(f) + '</div>'
       + '<div class="scan__redactedBar" aria-hidden="true"></div>'
       + '<div class="scan__redactedBar scan__redactedBar--short" aria-hidden="true"></div>'
@@ -1425,10 +1504,11 @@ import { SITE } from '../lib/site';
     unlocked = true;
     const r = currentReport as Report;
     const cv = genericView(r.findings);
-    ($('findingsList') as HTMLElement).innerHTML = cv.findings.map((f, i) => renderFinding(f, i)).join('');
+    const byScore = (x: Finding, y: Finding) => findingScore(x) - findingScore(y);
+    ($('findingsList') as HTMLElement).innerHTML = [...cv.findings].sort(byScore).map((f, i) => renderFinding(f, i)).join('');
     ($('shownLabel') as HTMLElement).textContent = 'YOUR TOP ' + cv.findings.length + ' PRIORITIES — AND WHAT TO DO ABOUT EACH';
     ($('gateSection') as HTMLElement).style.display = 'none';
-    const rest = cv.locked.map((f) => renderRedacted(f)).join('');
+    const rest = [...cv.locked].sort(byScore).map((f) => renderRedacted(f)).join('');
     if (rest) {
       ($('meetingLabel') as HTMLElement).textContent = 'THE REST OF YOUR REPORT — ' + cv.locked.length + ' MORE';
       ($('meetingCards') as HTMLElement).innerHTML = rest;
