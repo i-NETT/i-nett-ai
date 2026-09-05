@@ -42,22 +42,12 @@ import { SITE } from '../lib/site';
           </div>
           <h2 class="scan__introTitle">Is your organization getting the upside of AI &mdash; without the exposure?</h2>
           <p class="scan__introSub">
-            A short, no-jargon scan any leader can finish in about 90 seconds. It points to where AI is
-            already in use across your team, where it may be exposing you, and where a governed rollout
-            could help most. It&rsquo;s a starting point for a conversation with our team &mdash; general
-            information, not a formal audit or advice. No IT knowledge needed.
+            About 90 seconds, no IT knowledge needed. Where AI is already in use, where it exposes you, and what to do first.
           </p>
-          <div class="scan__checklist">
-            <div class="scan__checklistLabel">WHAT YOU GET INSTANTLY</div>
-            <div class="scan__check">AI exposure score (0&ndash;100)</div>
-            <div class="scan__check">Shadow AI &amp; compliance flags for your data</div>
-            <div class="scan__check">Hours a week your team could hand to custom agents</div>
-            <div class="scan__check">Your top findings &mdash; with what to do about each</div>
-          </div>
           <div class="scan__trust">
-            <span class="scan__trustItem"><span class="scan__dot"></span>No software to install</span>
-            <span class="scan__trustItem"><span class="scan__dot"></span>Private &mdash; answers aren&rsquo;t stored on the page</span>
-            <span class="scan__trustItem"><span class="scan__dot"></span>90 seconds</span>
+            <span class="scan__trustItem"><span class="scan__dot"></span>Exposure score</span>
+            <span class="scan__trustItem"><span class="scan__dot"></span>Top findings and next steps</span>
+            <span class="scan__trustItem"><span class="scan__dot"></span>Nothing to install</span>
           </div>
           <button class="btn btn-accent btn-lg btn-block" id="startBtn">
             Start my free scan <span aria-hidden="true">&rarr;</span>
@@ -213,12 +203,9 @@ import { SITE } from '../lib/site';
       </div>
 
       <p class="disclaimer scan__disclaimer">
-        This scan is for general information only and is meant to be reviewed together with the i-NETT
-        team. It is not a formal audit or assessment of your organization, and it is not legal,
-        compliance, security, or insurance advice. Scores and estimates are illustrative and
-        industry-informed, not a study of your specific situation, and any regulations named may or may
-        not apply to you. By submitting your details you consent to i-NETT contacting you about your
-        results. See our <a href="/privacy">privacy policy</a>.
+        General information only, not an audit or legal, compliance, security or insurance advice.
+        Scores and estimates use industry averages. Submitting your details lets i-NETT contact you
+        about your results. <a href="/privacy">Privacy policy</a>.
       </p>
     </div>
   </div>
@@ -611,7 +598,7 @@ import { SITE } from '../lib/site';
   .scan__ctaTop { font-family: var(--font-mono); font-size: 9px; color: var(--color-text-muted); letter-spacing: 2px; margin-bottom: 4px; }
   .scan__ctaSub { font-size: 13px; color: var(--color-text-soft); line-height: 1.6; }
   .scan__ctaFine { text-align: center; font-family: var(--font-mono); font-size: 10px; color: var(--color-text-muted); margin-top: 10px; }
-  .scan__disclaimer { text-align: center; margin: var(--space-2) auto 0; max-width: 68ch; }
+  .scan__disclaimer { text-align: center; margin: var(--space-2) auto 0; max-width: 72ch; font-size: 11px; line-height: 1.5; opacity: 0.8; }
 
   /* ===== Booking modal ===== */
   .scan-cal { display: none; position: fixed; inset: 0; background: rgba(5,11,20,0.75); z-index: 999; flex-direction: column; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
@@ -650,7 +637,7 @@ import { SITE } from '../lib/site';
 
   const QUESTIONS: Q[] = [
     { id: 'industry', label: 'What industry are you in?', type: 'single', options: ['Healthcare / Medical', 'Legal', 'Financial services', 'Professional services', 'Manufacturing', 'Retail / E-commerce', 'Real estate', 'Education / Schools', 'Nonprofit', 'Government / Public sector', 'Technology', 'Other'] },
-    { id: 'size', label: 'How many people work in the organization?', type: 'single', options: ['Just me', '2-10', '11-25', '26-100', '101-250', '250+'] },
+    { id: 'size', label: 'How many people work in the organization?', type: 'single', options: ['Just me', '2-10', '11-25', '26-100', '101-250', '250-500', '500-999', '1,000-2,500', '2,500-10,000', '10,000+'] },
     { id: 'tools', label: 'Which AI tools is your team using today?', note: 'Select all that apply — skip if you’re not sure', type: 'multi', options: ['ChatGPT', 'Microsoft Copilot', 'Claude', 'Google Gemini', 'Perplexity', 'Grammarly AI', 'GitHub Copilot', 'Midjourney / DALL-E', 'Something custom / other', 'None that I know of'] },
     { id: 'ai', label: 'How is AI being used for work?', type: 'single', options: ['With clear rules and company accounts', 'We have a policy mostly in place — still finishing it', 'We just started putting rules together', 'On personal accounts — no rules', 'Not that I know of', 'We’ve banned it'] },
     { id: 'emppolicy', label: 'Do you have an AI & data policy every employee has signed?', type: 'single', options: ['Yes — every employee has signed one', 'We have one, but not everyone has signed', 'No signed policy yet', 'Not sure'] },
@@ -868,7 +855,7 @@ import { SITE } from '../lib/site';
       return;
     }
     areas.forEach((area) => { if (!edited[area]) hc[area] = est[area]; });
-    const sizeTxt = answers.size ? (SIZE_MIDPOINT[answers.size] ? 'about ' + SIZE_MIDPOINT[answers.size] + ' people' : answers.size) : 'your size';
+    const sizeTxt = answers.size ? (SIZE_MIDPOINT[answers.size] ? 'about ' + SIZE_MIDPOINT[answers.size].toLocaleString('en-US') + ' people' : answers.size) : 'your size';
     const indTxt = answers.industry && answers.industry !== 'Other' ? answers.industry.toLowerCase() : 'your sector';
     list.innerHTML =
       '<div class="scan__hcIntro">Based on a ' + indTxt + ' organization of ' + sizeTxt + '. ' + ESTIMATE_NOTE + '</div>'
@@ -878,7 +865,7 @@ import { SITE } from '../lib/site';
           + '<span class="scan__hcLabel">' + AREA_LABEL[area] + '<span class="scan__hcHint" data-hint>' + (edited[area] ? 'your figure' : 'industry average, est.') + '</span></span>'
           + '<span class="scan__hcCtl">'
           + '<button class="scan__hcBtn" data-step="-1" type="button" aria-label="fewer people">−</button>'
-          + '<input class="scan__hcNum" type="number" min="1" max="500" value="' + v + '" inputmode="numeric" aria-label="people in ' + AREA_LABEL[area] + '">'
+          + '<input class="scan__hcNum" type="number" min="1" max="20000" value="' + v + '" inputmode="numeric" aria-label="people in ' + AREA_LABEL[area] + '">'
           + '<button class="scan__hcBtn" data-step="1" type="button" aria-label="more people">+</button>'
           + '<span class="scan__hcUnit">people</span>'
           + '</span></div>';
@@ -888,8 +875,8 @@ import { SITE } from '../lib/site';
       const input = row.querySelector('.scan__hcNum') as HTMLInputElement;
       const hint = row.querySelector('[data-hint]') as HTMLElement;
       const mark = () => { edited[area] = true; if (hint) hint.textContent = 'your figure'; };
-      const setVal = (n: number) => { const c = Math.max(1, Math.min(500, Math.round(n) || 1)); input.value = String(c); hc[area] = c; mark(); };
-      input.addEventListener('input', () => { const n = Number(input.value); if (Number.isFinite(n) && input.value !== '') { hc[area] = Math.max(1, Math.min(500, Math.round(n))); mark(); } });
+      const setVal = (n: number) => { const c = Math.max(1, Math.min(20000, Math.round(n) || 1)); input.value = String(c); hc[area] = c; mark(); };
+      input.addEventListener('input', () => { const n = Number(input.value); if (Number.isFinite(n) && input.value !== '') { hc[area] = Math.max(1, Math.min(20000, Math.round(n))); mark(); } });
       input.addEventListener('blur', () => setVal(Number(input.value)));
       row.querySelectorAll('.scan__hcBtn').forEach((b) =>
         b.addEventListener('click', () => setVal((hc[area] || 1) + Number((b as HTMLElement).dataset.step))));
